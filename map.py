@@ -12,6 +12,8 @@ class Map():
 		self.mapLayer.addChild(self.mapview)
 		self.mapview.x, self.mapview.y = (0,0)
 		self.scrollv = [0,0]
+		self.groundwidth = self.width * gridwidth/2
+		self.groundheight = self.height * gridheight
 	
 	def read(self,filename):
 		with open(filename) as f:
@@ -50,8 +52,8 @@ class Map():
 		self.mapview.y += self.scrollv[1] * scrollspeed
 		if self.mapview.x > 0: self.mapview.x = 0
 		if self.mapview.y > 0: self.mapview.y = 0
-		if self.mapview.x < -battlewidth: self.mapview.x = -battlewidth
-		if self.mapview.y < -battleheight: self.mapview.y = -battleheight
+		if self.mapview.x < battlewidth-self.groundwidth: self.mapview.x = battlewidth-self.groundwidth
+		if self.mapview.y < battleheight-self.groundheight: self.mapview.y = battleheight-self.groundheight
 		self.update()
 	
 	def update(self):
@@ -62,3 +64,12 @@ class Map():
 					piece.remove()
 				if self.inarea(piece.x,piece.y):
 					self.mapview.addChild(piece)
+	
+	def getGrid(self,x,y):
+		X,Y = x-self.mapview.x,y-self.mapview.y
+		X,Y = X/gridwidth*2,Y/gridheight*2
+		X,Y = int((X+Y+1)/2), int((-X+Y+1)/2+1000)-1000
+		row,col = int((X+Y)/2),X-Y
+		if row >= 0 and row < self.height and col >= 0 and col < self.width:
+			return self.pieces[col][row]
+		return None
