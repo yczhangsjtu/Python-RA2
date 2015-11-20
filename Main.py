@@ -157,7 +157,10 @@ def editMap(mapfile):
 	map.load(dataList)
 	editorPanel.remove()
 	ctrlLayer.addChild(colorPanel)
-	colorPanel.addEventListener(Event.ENTER_FRAME, mainloop)
+	colorPanel.addEventListener(Event.ENTER_FRAME, editorloop)
+	ctrlLayer.addEventListener(MouseEvent.MOUSE_MOVE, onEditMouseMove)
+	ctrlLayer.addEventListener(MouseEvent.MOUSE_DOWN, onEditMouseDown)
+	ctrlLayer.addEventListener(MouseEvent.MOUSE_UP, onEditMouseUp)
 	
 def startNewGame():
 	global startMenu, ctrlPanel, map, mapLayer
@@ -168,7 +171,23 @@ def startNewGame():
 	map.read("./map/map0.txt")
 	map.load(dataList)
 	ctrlPanel.addEventListener(Event.ENTER_FRAME, mainloop)
-
+	
+def onEditMouseMove(e):
+	global map
+	grid = map.getGrid(e.offsetX, e.offsetY)
+	if grid == None: return
+	if grid.parent != None:
+		grid.remove()
+	
+def onEditMouseDown(e):
+	pass
+	
+def onEditMouseUp(e):
+	pass
+	
+def editorloop(e):
+	map.scroll()
+	
 def mainloop(e):
 	map.scroll()
 	
