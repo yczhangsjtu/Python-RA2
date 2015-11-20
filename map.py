@@ -73,3 +73,20 @@ class Map():
 		if row >= 0 and row < self.height and col >= 0 and col < self.width:
 			return self.pieces[col][row]
 		return None
+	
+	def northeast(self,col,row):
+		return col+1,row-(col+1)%2
+	def southwest(self,col,row):
+		return col-1,row+col%2
+	def southeast(self,col,row):
+		return col+1,row+col%2
+	def northwest(self,col,row):
+		return col-1,row-(col+1)%2
+	def east(self,col,row):
+		return col+2,row
+	def west(self,col,row):
+		return col-2,row
+	def north(self,col,row):
+		return col,row-1
+	def south(self,col,row):
+		return col,row+1
