@@ -23,6 +23,8 @@ def main():
 		{"name":"editorpanel","path":"./img/editorpanel.png"},
 		{"name":"ground","path":"./img/ground.png"},
 		{"name":"lightground","path":"./img/lightground.png"},
+		{"name":"red","path":"./img/red.png"},
+		{"name":"green","path":"./img/green.png"},
 	]
 	loadingPage = RA2Loading()
 	addChild(loadingPage)
@@ -151,16 +153,19 @@ def startMapEditor():
 	ctrlLayer.addChild(editorPanel)
 
 def editMap(mapfile):
-	global colorPanel, editorPanel, ctrlLayer, map
+	global colorPanel, editorPanel, ctrlLayer, map, pointer
 	map = Map(200,200,mapLayer)
 	map.read(mapfile)
 	map.load(dataList)
+	pointer = Sprite()
+	pointer.addChild(Bitmap(BitmapData(dataList["green"])))
 	editorPanel.remove()
 	ctrlLayer.addChild(colorPanel)
 	colorPanel.addEventListener(Event.ENTER_FRAME, editorloop)
 	ctrlLayer.addEventListener(MouseEvent.MOUSE_MOVE, onEditMouseMove)
 	ctrlLayer.addEventListener(MouseEvent.MOUSE_DOWN, onEditMouseDown)
 	ctrlLayer.addEventListener(MouseEvent.MOUSE_UP, onEditMouseUp)
+	ctrlLayer.addChild(pointer)
 	
 def startNewGame():
 	global startMenu, ctrlPanel, map, mapLayer
@@ -173,11 +178,11 @@ def startNewGame():
 	ctrlPanel.addEventListener(Event.ENTER_FRAME, mainloop)
 	
 def onEditMouseMove(e):
-	global map
+	global map, pointer
 	grid = map.getGrid(e.offsetX, e.offsetY)
 	if grid == None: return
-	if grid.parent != None:
-		grid.remove()
+	pointer.x = grid.x + map.mapview.x
+	pointer.y = grid.y + map.mapview.y
 	
 def onEditMouseDown(e):
 	pass
