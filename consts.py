@@ -1,8 +1,8 @@
 gridwidth = 96
 gridheight = 47
-battlewidth = 600
-battleheight = 600
-scrollspeed = 15
+battlewidth = 580
+battleheight = 570
+scrollspeed = 25
 optionheight = 20
 boxwidth = 300
 boxheight = 500
@@ -12,3 +12,4 @@ colorbuttonx = 600
 colorbuttony = 270
 listboxx = 100
 listboxy = 50
+mousescrollwidth = 30
