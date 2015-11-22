@@ -11,9 +11,10 @@ from load import RA2Loading
 from button import RA2Button, PalatteButton
 from map import Map, initMap, groundData
 from listbox import ListBox
+from game import Game
 from consts import menubuttonx, menubuttony, listboxx, listboxy,\
 	gridwidth, gridheight, colorbuttonx, colorbuttony, mousescrollwidth,\
-	battlewidth, battleheight
+	battlewidth, battleheight, mapnamex, mapnamey
 
 def main():
 	loadList = [
@@ -22,6 +23,7 @@ def main():
 		{"name":"menu","path":"./img/menu.png"},
 		{"name":"ctrlpanel","path":"./img/ctrlpanel.png"},
 		{"name":"editorpanel","path":"./img/editorpanel.png"},
+		{"name":"selectmap","path":"./img/selectmap.png"},
 		{"name":"ground","path":"./img/ground.png"},
 		{"name":"lightground","path":"./img/lightground.png"},
 		{"name":"red","path":"./img/red.png"},
@@ -51,10 +53,12 @@ def gameInit():
 	
 	initMap(dataList)
 	initMapEditor()
+	initSelectMapPanel()
 	initCtrlLayer()
 
 def initCtrlLayer():
-	global ctrlLayer, startButton, mapEditorButton, startMenu
+	global ctrlLayer, startButton, selectMapButton, mapEditorButton, exitButton, startMenu,\
+		mapfile, mapname
 	
 	startMenu = Sprite()
 	ctrlLayer.addChild(startMenu)
@@ -65,24 +69,40 @@ def initCtrlLayer():
 	startButton.y = menubuttony
 	startMenu.addChild(startButton)
 	
+	selectMapButton = RA2Button("Select Map",dataList)
+	selectMapButton.x = menubuttonx
+	selectMapButton.y = menubuttony+startButton.height
+	startMenu.addChild(selectMapButton)
+	
 	mapEditorButton = RA2Button("Map Editor",dataList)
 	mapEditorButton.x = menubuttonx
-	mapEditorButton.y = menubuttony+mapEditorButton.height
+	mapEditorButton.y = menubuttony+selectMapButton.height*2
 	startMenu.addChild(mapEditorButton)
 	
 	exitButton = RA2Button("Exit",dataList)
 	exitButton.x = menubuttonx
-	exitButton.y = menubuttony+mapEditorButton.height*2
+	exitButton.y = menubuttony+mapEditorButton.height*3
 	startMenu.addChild(exitButton)
+	
+	mapname = TextField()
+	mapname.text = "map0.txt"
+	mapname.x = mapnamex
+	mapname.y = mapnamey
+	mapname.textColor = "white"
+	mapname.size = 20
+	startMenu.addChild(mapname)
 	
 	def clickStartButton(e):
 		startNewGame()
+	def clickSelectMapButton(e):
+		enterSelectMap()
 	def clickMapEditorButton(e):
 		startMapEditor()
 	def clickExitButton(e):
 		exit(0)
 		
 	startButton.addEventListener(MouseEvent.MOUSE_UP, clickStartButton)
+	selectMapButton.addEventListener(MouseEvent.MOUSE_UP, clickSelectMapButton)
 	mapEditorButton.addEventListener(MouseEvent.MOUSE_UP, clickMapEditorButton)
 	exitButton.addEventListener(MouseEvent.MOUSE_UP, clickExitButton)
 	stage.addEventListener(KeyboardEvent.KEY_DOWN, keydown)
@@ -95,9 +115,31 @@ def initCtrlPanel():
 	global ctrlPanel
 	ctrlPanel = Sprite()
 	ctrlPanel.addChild(Bitmap(BitmapData(dataList["ctrlpanel"])))
+
+def initSelectMapPanel():
+	global selectMapPanel
+	selectMapPanel = Sprite()
+	selectMapPanel.addChild(Bitmap(BitmapData(dataList["selectmap"])))
+	listBox = ListBox()
+	listBox.add("map0.txt")
+	listBox.add("map1.txt")
+	listBox.add("map2.txt")
+	listBox.add("map3.txt")
+	listBox.x = listboxx
+	listBox.y = listboxy
+	selectMapPanel.addChild(listBox)
+	
+	selectButton = RA2Button("Select",dataList)
+	selectButton.x = menubuttonx
+	selectButton.y = menubuttony
+	selectMapPanel.addChild(selectButton)
+	def onClickSelectButton(e):
+		goBackToStartMenu(selectMapPanel)
+		mapname.text = listBox.selectedtext()
+	selectButton.addEventListener(MouseEvent.MOUSE_UP,onClickSelectButton)
 	
 def initEditorPanel():
-	global editorPanel, listBox, editButton, backButton, ctrlLayer
+	global editorPanel, editButton, backButton, ctrlLayer
 	editorPanel = Sprite()
 	editorPanel.addChild(Bitmap(BitmapData(dataList["editorpanel"])))
 	listBox = ListBox()
@@ -122,7 +164,7 @@ def initEditorPanel():
 	backButton.y = menubuttony+backButton.height
 	editorPanel.addChild(backButton)
 	def onClickBackButton(e):
-		goBackToStartMenu()
+		goBackToStartMenu(editorPanel)
 	backButton.addEventListener(MouseEvent.MOUSE_UP,onClickBackButton)
 
 def initMapEditor():
@@ -186,8 +228,8 @@ def keyup(e):
 	elif e.keyCode == KeyCode.KEY_DOWN:
 		map.scrollv[3] = 0
 	
-def goBackToStartMenu():
-	editorPanel.remove()
+def goBackToStartMenu(panel):
+	panel.remove()
 	ctrlLayer.addChild(startMenu)
 
 def goBackToEditorPanel():
@@ -201,9 +243,14 @@ def goBackToEditorPanel():
 	ctrlLayer.removeEventListener(MouseEvent.MOUSE_UP, onEditMouseUp)
 
 def startMapEditor():
-	global startMenu, editorPanel, map, mapLayer
+	global startMenu, editorPanel
 	startMenu.remove()
 	ctrlLayer.addChild(editorPanel)
+	
+def enterSelectMap():
+	global startMenu, selectMapPanel
+	startMenu.remove()
+	ctrlLayer.addChild(selectMapPanel)
 
 def editMap(filename):
 	global colorPanel, editorPanel, ctrlLayer, map, mousepressed, mapfile
@@ -220,14 +267,17 @@ def editMap(filename):
 	mousepressed = False
 	
 def startNewGame():
-	global startMenu, ctrlPanel, map, mapLayer
+	global startMenu, ctrlPanel, map, mapLayer, game, mapname
+	map = Map(200,200,mapLayer)
+	map.read("./map/%s"%(mapname.text))
+	map.load()
+	game = Game(map)
 	startMenu.remove()
 	ctrlLayer.addChild(ctrlPanel)
-	
-	map = Map(200,200,mapLayer)
-	map.read("./map/map0.txt")
-	map.load()
 	ctrlPanel.addEventListener(Event.ENTER_FRAME, mainloop)
+	ctrlLayer.addEventListener(MouseEvent.MOUSE_MOVE, onCtrlMouseMove)
+	ctrlLayer.addEventListener(MouseEvent.MOUSE_DOWN, onCtrlMouseDown)
+	ctrlLayer.addEventListener(MouseEvent.MOUSE_UP, onCtrlMouseUp)
 	
 def updateScrollV():
 	global mousex, mousey, map
@@ -262,11 +312,23 @@ def onEditMouseUp(e):
 	global mousepressed
 	mousepressed = False
 	
+def onCtrlMouseMove(e):
+	global mousex, mousey, map, mousepressed
+	mousex, mousey = e.offsetX, e.offsetY
+	updateScrollV()
+	
+def onCtrlMouseDown(e):
+	global mousex, mousey, paint, mousepressed
+	mousepressed = True
+	
+def onCtrlMouseUp(e):
+	global mousepressed
+	mousepressed = False
+	
 def editorloop(e):
 	map.scroll()
 	
 def mainloop(e):
-	pass
 	map.scroll()
 	
 init(16, "Red Alert", 800, 600, main)

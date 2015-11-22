@@ -13,3 +13,5 @@ colorbuttony = 270
 listboxx = 100
 listboxy = 50
 mousescrollwidth = 30
+mapnamex = 634
+mapnamey = 100

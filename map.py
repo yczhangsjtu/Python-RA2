@@ -31,6 +31,7 @@ class Map():
 	def clear(self):
 		self.map = None
 		self.pieces = None
+		self.mapLayer.removeAllChildren()
 		
 	def initPointer(self):
 		self.greenPointer = Sprite()
