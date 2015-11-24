@@ -1,33 +1,56 @@
-from map import Map
 from pylash.display import Sprite
+from pylash.events import MouseEvent
+
+from map import Map
+from unit import Unit
 
 class Game():
-	def __init__(self,map):
+	def __init__(self,map,charLayer):
 		self.map = map
-		self.unitSet = UnitSet(BuildingSet(),InfantrySet(),VehicleSet())
+		self.unitSet = None
+		self.characterLayer = charLayer
 	
-class UnitSet():
-	def __init__(self,bset,iset,vset):
-		self.buildingSet = bset
-		self.infantrySet = iset
-		self.vehicleSet = vset
-		self.sprite = Sprite()
-		self.sprite.addChild(bset.sprite)
-		self.sprite.addChild(iset.sprite)
-		self.sprite.addChild(vset.sprite)
-
-class BuildingSet():
+	def initNewGame(self,dataList):
+		self.unitSet = UnitSet()
+		self.characterLayer.addChild(self.unitSet)
+		self.unitSet.addUnit(Unit("mcv",0,dataList),5,5)
+		self.unitSet.addUnit(Unit("adog",1,dataList),8,5)
+		self.unitSet.show(0)
+		self.unitSet.show(1)
+	
+	def onMouseDown(self,e):
+		pass
+	
+	def onMouseUp(self,e):
+		pass
+	
+	def onMouseMove(self,e):
+		pass
+	
+class UnitSet(Sprite):
 	def __init__(self):
-		self.sprite = Sprite()
-		self.buildings = []
-
-class InfantrySet():
-	def __init__(self):
-		self.sprite = Sprite()
-		self.infantries = []
+		super(UnitSet,self).__init__()
+		self.units = []
+	
+	def addUnit(self,unit):
+		self.units.append(unit)
 		
-class VehicleSet():
-	def __init__(self):
-		self.sprite = Sprite()
-		self.vehicles = []
+	def addUnit(self,unit,col,row):
+		unit.x, unit.y = Map.getAbsPos(col,row)
+		self.units.append(unit)
+		
+	def removeUnit(self,unit):
+		self.hide(unit)
+		self.units.remove(unit)
+		
+	def show(self,index):
+		if index >= 0 and index < len(self.units):
+			self.addChild(self.units[index])
 	
+	def hide(self,unit):
+		if unit.parent != None:
+			building.remove()
+				
+	def hide(self,index):
+		if index >= 0 and index < len(self.units):
+			self.hide(self.units[index])

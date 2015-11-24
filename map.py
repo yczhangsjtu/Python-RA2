@@ -127,6 +127,11 @@ class Map():
 				if self.inarea(piece.x,piece.y):
 					self.mapview.addChild(piece)
 	
+	def getAbsPos(col,row):
+		x = gridwidth/2 * (col-1)
+		y = gridheight*row - gridheight/2*((col+1)%2)
+		return x+gridwidth/2,y+gridheight/2
+	
 	def getGridPos(self,x,y):
 		X,Y = x-self.mapview.x,y-self.mapview.y
 		X,Y = X/gridwidth*2,Y/gridheight*2

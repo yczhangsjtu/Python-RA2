@@ -21,13 +21,18 @@ def main():
 		{"name":"loadimg","path":"./img/glsl.png"},
 		{"name":"menubttn","path":"./img/mnbttn.png"},
 		{"name":"menu","path":"./img/menu.png"},
-		{"name":"ctrlpanel","path":"./img/ctrlpanel.png"},
+		{"name":"ctrlpanel1","path":"./img/ctrlpanel1.png"},
+		{"name":"ctrlpanel2","path":"./img/ctrlpanel2.png"},
 		{"name":"editorpanel","path":"./img/editorpanel.png"},
 		{"name":"selectmap","path":"./img/selectmap.png"},
 		{"name":"ground","path":"./img/ground.png"},
 		{"name":"lightground","path":"./img/lightground.png"},
 		{"name":"red","path":"./img/red.png"},
 		{"name":"green","path":"./img/green.png"},
+		{"name":"aircmd","path":"./img/Building/aircmd.png"},
+		{"name":"gcnst","path":"./img/Building/gcnst.png"},
+		{"name":"adog","path":"./img/Infantry/adog.png"},
+		{"name":"mcv","path":"./img/Vehicle/mcv.png"},
 	]
 	loadingPage = RA2Loading()
 	addChild(loadingPage)
@@ -41,13 +46,15 @@ def main():
 	LoadManage.load(loadList, loadingPage.setProgress, loadComplete)
 
 def gameInit():
-	global ctrlLayer, characterLayer, mapLayer
+	global stageLayer, ctrlLayer, characterLayer, mapLayer
+	stageLayer = Sprite()
+	addChild(stageLayer)
 	mapLayer = Sprite()
-	addChild(mapLayer)
+	stageLayer.addChild(mapLayer)
 	characterLayer = Sprite()
-	addChild(characterLayer)
+	stageLayer.addChild(characterLayer)
 	ctrlLayer = Sprite()
-	addChild(ctrlLayer)
+	stageLayer.addChild(ctrlLayer)
 	fps = FPS()
 	addChild(fps)
 	
@@ -114,7 +121,14 @@ def initCtrlLayer():
 def initCtrlPanel():
 	global ctrlPanel
 	ctrlPanel = Sprite()
-	ctrlPanel.addChild(Bitmap(BitmapData(dataList["ctrlpanel"])))
+	bitmap1 = Bitmap(BitmapData(dataList["ctrlpanel1"]))
+	bitmap2 = Bitmap(BitmapData(dataList["ctrlpanel2"]))
+	bitmap1.x = battlewidth
+	bitmap1.y = 0
+	bitmap2.x = 0
+	bitmap2.y = battleheight
+	ctrlPanel.addChild(bitmap1)
+	ctrlPanel.addChild(bitmap2)
 
 def initSelectMapPanel():
 	global selectMapPanel
@@ -171,7 +185,14 @@ def initMapEditor():
 	global colorPanel, paint
 	paint = 1
 	colorPanel = Sprite()
-	colorPanel.addChild(Bitmap(BitmapData(dataList["ctrlpanel"])))
+	bitmap1 = Bitmap(BitmapData(dataList["ctrlpanel1"]))
+	bitmap2 = Bitmap(BitmapData(dataList["ctrlpanel2"]))
+	bitmap1.x = battlewidth
+	bitmap1.y = 0
+	bitmap2.x = 0
+	bitmap2.y = battleheight
+	colorPanel.addChild(bitmap1)
+	colorPanel.addChild(bitmap2)
 	grassButton = PalatteButton(0,0,dataList)
 	grassButton.x = colorbuttonx
 	grassButton.y = colorbuttony
@@ -238,9 +259,9 @@ def goBackToEditorPanel():
 	colorPanel.remove()
 	ctrlLayer.addChild(editorPanel)
 	colorPanel.removeEventListener(Event.ENTER_FRAME, editorloop)
-	ctrlLayer.removeEventListener(MouseEvent.MOUSE_MOVE, onEditMouseMove)
-	ctrlLayer.removeEventListener(MouseEvent.MOUSE_DOWN, onEditMouseDown)
-	ctrlLayer.removeEventListener(MouseEvent.MOUSE_UP, onEditMouseUp)
+	stageLayer.removeEventListener(MouseEvent.MOUSE_MOVE, onEditMouseMove)
+	stageLayer.removeEventListener(MouseEvent.MOUSE_DOWN, onEditMouseDown)
+	stageLayer.removeEventListener(MouseEvent.MOUSE_UP, onEditMouseUp)
 
 def startMapEditor():
 	global startMenu, editorPanel
@@ -261,23 +282,24 @@ def editMap(filename):
 	editorPanel.remove()
 	ctrlLayer.addChild(colorPanel)
 	colorPanel.addEventListener(Event.ENTER_FRAME, editorloop)
-	ctrlLayer.addEventListener(MouseEvent.MOUSE_MOVE, onEditMouseMove)
-	ctrlLayer.addEventListener(MouseEvent.MOUSE_DOWN, onEditMouseDown)
-	ctrlLayer.addEventListener(MouseEvent.MOUSE_UP, onEditMouseUp)
+	stageLayer.addEventListener(MouseEvent.MOUSE_MOVE, onEditMouseMove)
+	stageLayer.addEventListener(MouseEvent.MOUSE_DOWN, onEditMouseDown)
+	stageLayer.addEventListener(MouseEvent.MOUSE_UP, onEditMouseUp)
 	mousepressed = False
 	
 def startNewGame():
-	global startMenu, ctrlPanel, map, mapLayer, game, mapname
+	global startMenu, ctrlPanel, map, mapLayer, game, mapname, characterLayer
 	map = Map(200,200,mapLayer)
 	map.read("./map/%s"%(mapname.text))
 	map.load()
-	game = Game(map)
+	game = Game(map,characterLayer)
+	game.initNewGame(dataList)
 	startMenu.remove()
 	ctrlLayer.addChild(ctrlPanel)
-	ctrlPanel.addEventListener(Event.ENTER_FRAME, mainloop)
-	ctrlLayer.addEventListener(MouseEvent.MOUSE_MOVE, onCtrlMouseMove)
-	ctrlLayer.addEventListener(MouseEvent.MOUSE_DOWN, onCtrlMouseDown)
-	ctrlLayer.addEventListener(MouseEvent.MOUSE_UP, onCtrlMouseUp)
+	stageLayer.addEventListener(Event.ENTER_FRAME, mainloop)
+	stageLayer.addEventListener(MouseEvent.MOUSE_MOVE, onCtrlMouseMove)
+	stageLayer.addEventListener(MouseEvent.MOUSE_DOWN, onCtrlMouseDown)
+	stageLayer.addEventListener(MouseEvent.MOUSE_UP, onCtrlMouseUp)
 	
 def updateScrollV():
 	global mousex, mousey, map
@@ -316,19 +338,25 @@ def onCtrlMouseMove(e):
 	global mousex, mousey, map, mousepressed
 	mousex, mousey = e.offsetX, e.offsetY
 	updateScrollV()
+	game.onMouseMove(e)
 	
 def onCtrlMouseDown(e):
-	global mousex, mousey, paint, mousepressed
+	global mousex, mousey, paint, mousepressed, game
 	mousepressed = True
+	game.onMouseDown(e)
 	
 def onCtrlMouseUp(e):
 	global mousepressed
 	mousepressed = False
+	game.onMouseUp(e)
 	
 def editorloop(e):
 	map.scroll()
 	
 def mainloop(e):
+	global game, map
 	map.scroll()
+	game.unitSet.x = map.mapview.x
+	game.unitSet.y = map.mapview.y
 	
 init(16, "Red Alert", 800, 600, main)

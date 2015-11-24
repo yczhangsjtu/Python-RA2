@@ -1,6 +1,6 @@
 gridwidth = 96
 gridheight = 47
-battlewidth = 580
+battlewidth = 600
 battleheight = 570
 scrollspeed = 25
 optionheight = 20
@@ -15,3 +15,4 @@ listboxy = 50
 mousescrollwidth = 30
 mapnamex = 634
 mapnamey = 100
+animationspeed = 1
