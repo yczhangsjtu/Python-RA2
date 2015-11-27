@@ -28,6 +28,8 @@ class Building(Unit):
 	def __init__(self,owner,animationset):
 		super(Building,self).__init__(owner,animationset)
 		self.rect = buildingRect
+		self.modifyx = 0
+		self.modifyy = 0
 	
 	def get_rect(self):
 		self.rect.width = self.size * 40
@@ -92,6 +94,8 @@ class AirCmdAnimation(AnimationSet):
 		image = images["aircmd"]
 		offsetx,offsety = 140,170
 		self.originalAnimation = "build"
+		self.modifyx = -50
+		self.modifyy = 0
 		width,height = 282,243
 		owneroffset = 486
 		
@@ -126,6 +130,8 @@ class GcnstAnimation(AnimationSet):
 		self.originalAnimation = "build"
 		width,height = 426,339
 		owneroffset = 2034
+		self.modifyx = 0
+		self.modifyy = 0
 		
 		x,y,i0,j0,left,right,count = 0,1356,0,0,0,20,29
 		for owner in range(2):

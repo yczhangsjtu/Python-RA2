@@ -127,6 +127,8 @@ class GameController(SpriteContainer):
 		self.background = ImageSprite(images["ctrlpanel"])
 		self.add(self.background)
 		self.map = None
+		self.mousedrag = False
+		self.characters = None
 		
 		self.buttons = pygame.sprite.Group()
 	
@@ -136,17 +138,44 @@ class GameController(SpriteContainer):
 	def draw(self,screen):
 		super(GameController,self).draw(screen)
 		self.buttons.draw(screen)
+		if self.mousedrag:
+			x = min(self.mousedownx,self.mousex)
+			y = min(self.mousedowny,self.mousey)
+			w = abs(self.mousedownx-self.mousex)
+			h = abs(self.mousedowny-self.mousey)
+			rect = pygame.Rect(x,y,w,h)
+			pygame.draw.rect(screen,WHITE,rect,1)
 	
 	def onMouseMove(self,x,y,button1=None,button2=None,button3=None):
 		super(GameController,self).onMouseMove(x,y,button1,button2,button3)
 		if self.map != None:
 			self.map.updateScrollV(x,y)
+		if button1 != None and button1:
+			self.mousex = min(x,battlewidth)
+			self.mousey = min(y,battleheight)
+			self.mousedrag = True
 		
 	def onMouseDown(self,x,y,button):
 		super(GameController,self).onMouseDown(x,y,button)
+		if button == 1:
+			self.mousedownx = x
+			self.mousedowny = y
+		elif button == 3:
+			self.mousedrag = False
 		
 	def onMouseUp(self,x,y,button):
 		super(GameController,self).onMouseUp(x,y,button)
+		if button == 1:
+			if self.mousedrag:
+				x = min(self.mousedownx,self.mousex)
+				y = min(self.mousedowny,self.mousey)
+				w = abs(self.mousedownx-self.mousex)
+				h = abs(self.mousedowny-self.mousey)
+				rect = pygame.Rect(x,y,w,h)
+				for unit in self.characters.units:
+					if rect.contains(unit.get_rect()):
+						unit.selected = True
+			self.mousedrag = False
 	
 	def onKeyDown(self,keyCode,mod):
 		if keyCode == pygame.K_LEFT:

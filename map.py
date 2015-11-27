@@ -20,6 +20,10 @@ def getGridPos(x,y):
 	X,Y = (X+Y+1)/2, (-X+Y+1+1000)/2-500
 	row,col = (X+Y)/2,X-Y
 	return col,row
+
+def getGridCenter(x,y):
+	col,row = getGridPos(x,y)
+	return getAbsPos(col,row,True)
 		
 def initMap():
 	offsety = gridheight

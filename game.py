@@ -1,7 +1,7 @@
 import pygame
 import importlib
 
-from map import Map, getAbsPos
+from map import Map, getAbsPos, getGridCenter
 from unit import Unit
 from vehicle import *
 from infantry import *
@@ -48,10 +48,15 @@ class Game():
 		for unit in self.units:
 			unit.step()
 			if hasattr(unit,"replace") and unit.replace != None:
-				newunit = getattr(importlib.import_module(unit.replace[0]),unit.replace[1])(unit.owner)
+				type = unit.replace[0]
+				name = unit.replace[1]
+				newunit = getattr(importlib.import_module(type),name)(unit.owner)
 				newunit.HP = unit.HP
 				newunit.fullHP = unit.fullHP
-				newunit.offsetx,newunit.offsety = unit.offsetx,unit.offsety
+				if type == "building":
+					unit.offsetx,unit.offsety = getGridCenter(unit.offsetx,unit.offsety)
+				newunit.offsetx = unit.offsetx + newunit.animationset.modifyx
+				newunit.offsety = unit.offsety + newunit.animationset.modifyy
 				addunitlist.append(newunit)
 				removeunitlist.append(unit)
 		for unit in removeunitlist:

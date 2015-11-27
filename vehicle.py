@@ -68,7 +68,7 @@ class MCV(Vehicle):
 		self.range = 0
 		self.fullHP = 3000
 		self.HP = self.fullHP
-		self.expandInto = "AirCmd"
+		self.expandInto = "Gcnst"
 		
 	def onDoubleClick(self):
 		self.expand()

@@ -61,7 +61,8 @@ def startNewGame():
 	mapLayer = Map(mapwidth,mapheight)
 	characterLayer = Game(mapLayer)
 	characterLayer.initNewGame(defaultplayers)
-	gameController.map = mapLayer
+	ctrlLayer.characters = characterLayer
+	ctrlLayer.map = mapLayer
 	mapLayer.read(mapfile)
 	loader = Loader()
 	loader.load(images["loadmap"],screen,mapLayer.load,\
