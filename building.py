@@ -30,6 +30,7 @@ class Building(Unit):
 		self.rect = buildingRect
 		self.modifyx = 0
 		self.modifyy = 0
+		self.regionselectable = False
 	
 	def get_rect(self):
 		self.rect.width = self.size * 8
@@ -82,7 +83,7 @@ class Gcnst(Building):
 	def __init__(self,owner):
 		animationset = gcnstAnimation
 		super(Gcnst,self).__init__(owner,animationset)
-		self.size = 25
+		self.size = 20
 		self.fullHP = 3000
 		self.HP = self.fullHP
 	def drawBloodBar(self,screen):

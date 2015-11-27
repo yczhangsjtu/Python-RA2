@@ -24,6 +24,8 @@ animationspeed = 1
 defaultmapfile = "map0.txt"
 mapwidth = 200
 mapheight = 200
+minimapx = 595
+minimapy = 30
 barlength = 160
 barheight = 10
 barx = 50
@@ -32,13 +34,17 @@ bary = 150
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
 RED = (255, 0, 0)
+
+colorofowner = [RED,BLUE]
 
 loadList = {
 	"loadimg":"./img/startimage.png",
 	"loadmap":"./img/loadmap.png",
 	"menubttn":"./img/mnbttn.png",
 	"menu":"./img/menu.png",
+	"allyflag":"./img/icons/allyflag.png",
 	"ctrlpanel":"./img/ctrlpanel.png",
 	"editorpanel":"./img/editorpanel.png",
 	"selectmap":"./img/selectmap.png",

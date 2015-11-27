@@ -81,9 +81,12 @@ class Game():
 		self.step()
 	
 	def inarea(self,unit):
-		x,y = unit.offsetx+self.x,unit.offsety+self.y
-		w,h = unit.width(),unit.height()
-		return x > -w and y > -h and x < battlewidth and y < battleheight
+		rect = unit.get_rect().copy()
+		center = rect.center
+		rect.width *= 3
+		rect.height *= 3
+		rect.center = center
+		return rect.colliderect(pygame.Rect(0,0,battlewidth,battleheight))
 	
 	def draw(self,screen):
 		self.updatePosition()

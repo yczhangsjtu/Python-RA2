@@ -57,6 +57,7 @@ class MapEditor(SpriteContainer):
 		self.map = None
 		self.mapfile = ""
 		self.paint = 1
+		self.mouseMinimapDown = False
 		
 		self.buttons = pygame.sprite.Group()
 		self.grassButton = PalatteButton(0,0)
@@ -75,6 +76,7 @@ class MapEditor(SpriteContainer):
 		self.backButton.setMouseListener(back)
 		self.buttons.add(self.backButton)
 		self.addSprite(self.backButton,menubuttonx,self.saveButton.bottom())
+		self.minimap = images["allyflag"]
 	
 	def save(self):
 		self.map.write(self.mapfile)
@@ -87,19 +89,41 @@ class MapEditor(SpriteContainer):
 	def draw(self,screen):
 		super(MapEditor,self).draw(screen)
 		self.buttons.draw(screen)
+		screen.blit(self.minimap,(minimapx,minimapy))
+		x = (-self.map.x) * self.minimap.get_rect().width / self.map.groundwidth + minimapx
+		y = (-self.map.y) * self.minimap.get_rect().height / self.map.groundheight + minimapy
+		w = battlewidth * self.minimap.get_rect().width / self.map.groundwidth
+		h = battleheight * self.minimap.get_rect().height / self.map.groundheight
+		view = pygame.Rect(x,y,w,h)
+		pygame.draw.rect(screen,RED,view,1)
 	
 	def onMouseMove(self,x,y,button1=None,button2=None,button3=None):
 		super(MapEditor,self).onMouseMove(x,y,button1,button2,button3)
 		if self.map != None:
-			self.map.updateScrollV(x,y)
+			self.map.updateScrollV(x,y,button3==True)
 			if button1 != None and button1:
 				self.map.paint(x,y,self.paint)
+		if self.mouseMinimapDown:
+			self.updateMinimapView(x,y)
 		
 	def onMouseDown(self,x,y,button):
 		super(MapEditor,self).onMouseDown(x,y,button)
+		self.updateMinimapView(x,y)
+	
+	def updateMinimapView(self,x,y):
+		minimapw = self.minimap.get_rect().width
+		minimaph = self.minimap.get_rect().height
+		if x >= minimapx and x <= minimapx + minimapw and\
+			 y >= minimapy and y <= minimapy + minimaph:
+			self.map.x = -(x-minimapx)*self.map.groundwidth/minimapw
+			self.map.y = -(y-minimapy)*self.map.groundheight/minimaph
+			self.map.fitOffset()
+			self.mouseMinimapDown = True
 		
 	def onMouseUp(self,x,y,button):
 		super(MapEditor,self).onMouseUp(x,y,button)
+		self.mouseMinimapDown = False
+		self.mousedown = False
 	
 	def onKeyDown(self,keyCode,mod):
 		if keyCode == pygame.K_LEFT:
@@ -128,9 +152,12 @@ class GameController(SpriteContainer):
 		self.add(self.background)
 		self.map = None
 		self.mousedrag = False
+		self.mousedown = False
+		self.mouseMinimapDown = False
 		self.characters = None
 		
 		self.buttons = pygame.sprite.Group()
+		self.minimap = images["allyflag"]
 	
 	def save(self):
 		pass
@@ -138,6 +165,8 @@ class GameController(SpriteContainer):
 	def draw(self,screen):
 		super(GameController,self).draw(screen)
 		self.buttons.draw(screen)
+		minimapw = self.minimap.get_rect().width
+		minimaph = self.minimap.get_rect().height
 		if self.mousedrag:
 			x = min(self.mousedownx,self.mousex)
 			y = min(self.mousedowny,self.mousey)
@@ -145,23 +174,46 @@ class GameController(SpriteContainer):
 			h = abs(self.mousedowny-self.mousey)
 			rect = pygame.Rect(x,y,w,h)
 			pygame.draw.rect(screen,WHITE,rect,1)
+		screen.blit(self.minimap,(minimapx,minimapy))
+		x = (-self.map.x) * minimapw / self.map.groundwidth + minimapx
+		y = (-self.map.y) * minimaph / self.map.groundheight + minimapy
+		w = battlewidth * self.minimap.get_rect().width / self.map.groundwidth
+		h = battleheight * self.minimap.get_rect().height / self.map.groundheight
+		view = pygame.Rect(x,y,w,h)
+		pygame.draw.rect(screen,RED,view,1)
 	
 	def onMouseMove(self,x,y,button1=None,button2=None,button3=None):
 		super(GameController,self).onMouseMove(x,y,button1,button2,button3)
 		if self.map != None:
-			self.map.updateScrollV(x,y)
-		if button1 != None and button1:
+			self.map.updateScrollV(x,y,button3==True)
+		if button1 != None and button1 and self.mousedown:
 			self.mousex = min(x,battlewidth)
 			self.mousey = min(y,battleheight)
 			self.mousedrag = True
+		if self.mouseMinimapDown:
+			self.updateMinimapView(x,y)
 		
 	def onMouseDown(self,x,y,button):
 		super(GameController,self).onMouseDown(x,y,button)
 		if button == 1:
-			self.mousedownx = x
-			self.mousedowny = y
+			if x >= 0 and x <= battlewidth and\
+			   y >= 0 and y <= battleheight:
+				self.mousedownx = x
+				self.mousedowny = y
+				self.mousedown = True
 		elif button == 3:
 			self.mousedrag = False
+		self.updateMinimapView(x,y)
+	
+	def updateMinimapView(self,x,y):
+		minimapw = self.minimap.get_rect().width
+		minimaph = self.minimap.get_rect().height
+		if x >= minimapx and x <= minimapx + minimapw and\
+			 y >= minimapy and y <= minimapy + minimaph:
+			self.map.x = -(x-minimapx)*self.map.groundwidth/minimapw
+			self.map.y = -(y-minimapy)*self.map.groundheight/minimaph
+			self.map.fitOffset()
+			self.mouseMinimapDown = True
 		
 	def onMouseUp(self,x,y,button):
 		super(GameController,self).onMouseUp(x,y,button)
@@ -174,8 +226,11 @@ class GameController(SpriteContainer):
 				rect = pygame.Rect(x,y,w,h)
 				for unit in self.characters.units:
 					if rect.contains(unit.get_rect()):
-						unit.selected = True
+						if unit.regionselectable:
+							unit.selected = True
 			self.mousedrag = False
+			self.mousedown = False
+		self.mouseMinimapDown = False
 	
 	def onKeyDown(self,keyCode,mod):
 		if keyCode == pygame.K_LEFT:

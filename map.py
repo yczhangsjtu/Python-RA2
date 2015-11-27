@@ -16,8 +16,8 @@ def getAbsPos(col,row,center=False):
 	return x,y
 
 def getGridPos(x,y):
-	X,Y = x*2/gridwidth,y*2/gridheight
-	X,Y = (X+Y+1)/2, (-X+Y+1+1000)/2-500
+	X,Y = float(x*2)/gridwidth,float(y*2)/gridheight
+	X,Y = int((X+Y+1)/2), int(-X+Y+1+1000)/2-500
 	row,col = (X+Y)/2,X-Y
 	return col,row
 
@@ -63,6 +63,7 @@ class Map(SpriteContainer):
 		self.groundbox = pygame.sprite.Group()
 		self.groundbox.add(self.ground)
 		self.addSprite(self.ground)
+		self.minimap = pygame.Surface([self.width,self.height])
 		
 	def read(self,filename):
 		with open(filename) as f:
@@ -99,6 +100,7 @@ class Map(SpriteContainer):
 		x,y = getAbsPos(col,row)
 		if k == 1:
 			self.groundimg.blit(images["grass"],(x,y))
+			pygame.draw.rect(self.minimap,GREEN,pygame.Rect(col,row,1,1),1)
 			if self.northeastv(col,row) == 0:
 				self.groundimg.blit(images["northeast"],(x,y))
 			if self.northwestv(col,row) == 0:
@@ -117,6 +119,7 @@ class Map(SpriteContainer):
 				self.groundimg.blit(images["south"],(x,y))
 		elif k == 0:
 			self.groundimg.blit(images["water"],(x,y))
+			pygame.draw.rect(self.minimap,BLUE,pygame.Rect(col,row,1,1),1)
 	
 	def setNeighborBitmap(self,col,row):
 		for col,row in self.neighbors(col,row):
@@ -128,36 +131,39 @@ class Map(SpriteContainer):
 			and realy > -gridheight and realy < battleheight
 	
 	def scroll(self):
-		if self.scrollv[0]==1 or self.scrollv[4] == 1:
-			self.movex(scrollspeed)
-		if self.scrollv[1]==1 or self.scrollv[5] == 1:
-			self.movex(-scrollspeed)
-		if self.scrollv[2]==1 or self.scrollv[6] == 1:
-			self.movey(scrollspeed)
-		if self.scrollv[3]==1 or self.scrollv[7] == 1:
-			self.movey(-scrollspeed)
+		self.movex(scrollspeed * max(self.scrollv[0],self.scrollv[4]))
+		self.movex(-scrollspeed * max(self.scrollv[1],self.scrollv[5]))
+		self.movey(scrollspeed * max(self.scrollv[2],self.scrollv[6]))
+		self.movey(-scrollspeed * max(self.scrollv[3],self.scrollv[7]))
+		self.fitOffset()
+	
+	def fitOffset(self):
 		if self.x > 0: self.setx(0)
 		if self.y > 0: self.sety(0)
-		if self.x < battlewidth-self.groundwidth: self.setx(battlewidth-self.groundwidth)
-		if self.y < battleheight-self.groundheight: self.sety(battleheight-self.groundheight)
+		if self.x < battlewidth-self.groundwidth+50: self.setx(battlewidth-self.groundwidth+50)
+		if self.y < battleheight-self.groundheight+50: self.sety(battleheight-self.groundheight+50)
 	
-	def updateScrollV(self,x,y):
+	def updateScrollV(self,x,y,button):
 		if x <= mousescrollwidth:
 			self.scrollv[4] = 1
 		else:
 			self.scrollv[4] = 0
+		if button: self.scrollv[4] *= 2
 		if x >= winwidth - mousescrollwidth:
 			self.scrollv[5] = 1
 		else:
 			self.scrollv[5] = 0
+		if button: self.scrollv[5] *= 2
 		if y <= mousescrollwidth:
 			self.scrollv[6] = 1
 		else:
 			self.scrollv[6] = 0
+		if button: self.scrollv[6] *= 2
 		if y >= winheight - mousescrollwidth:
 			self.scrollv[7] = 1
 		else:
 			self.scrollv[7] = 0
+		if button: self.scrollv[7] *= 2
 		
 	def update(self):
 		self.scroll()

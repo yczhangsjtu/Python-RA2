@@ -67,6 +67,7 @@ def startNewGame():
 	loader = Loader()
 	loader.load(images["loadmap"],screen,mapLayer.load,\
 		[images["bar"].subsurface(0,0,barlength,barheight),(barx,bary)])
+	ctrlLayer.minimap = mapLayer.minimap
 
 def selectMap():
 	global ctrlLayer
@@ -102,6 +103,7 @@ def editMap():
 	loader = Loader()
 	loader.load(images["loadmap"],screen,mapLayer.load,\
 		[images["bar"].subsurface(0,0,barlength,barheight),(barx,bary)])
+	ctrlLayer.minimap = mapLayer.minimap
 	
 def onMouseDown(x,y,button):
 	if hasattr(ctrlLayer,"onMouseDown"):

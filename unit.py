@@ -1,7 +1,7 @@
 import pygame
 from random import choice
 
-# from data import unitData
+from map import getGridCenter
 from animation import Animation, AnimationSet
 from consts import *
 from data import images
@@ -24,10 +24,20 @@ class Unit(object):
 		self.water = False
 		self.air = False
 		self.HP = 0
+		self.selectable = True
+		self.regionselectable = True
 		self.x = 0
 		self.y = 0
 	
+	def drawArea(self,screen):
+		pointlist = [(self.x+self.size*8,self.y)]
+		pointlist.append((self.x,self.y-self.size*4))
+		pointlist.append((self.x-self.size*8,self.y))
+		pointlist.append((self.x,self.y+self.size*4))
+		pygame.draw.polygon(screen,WHITE,pointlist)
+	
 	def draw(self,screen):
+		self.drawArea(screen)
 		self.animationset.setState(self.animation,self.index)
 		self.animationset.setpos(self.x,self.y)
 		self.animationset.draw(screen)
@@ -55,25 +65,29 @@ class Unit(object):
 		if self.animation == "runs_%d"%(self.owner):
 			offsety += self.speed
 		if self.animation == "runne_%d"%(self.owner):
-			offsetx += self.speed/2
-			offsety -= self.speed/2
+			offsetx += self.speed*2/3
+			offsety -= self.speed/3
 		if self.animation == "runnw_%d"%(self.owner):
-			offsetx -= self.speed/2
-			offsety -= self.speed/2
+			offsetx -= self.speed*2/3
+			offsety -= self.speed/3
 		if self.animation == "runse_%d"%(self.owner):
-			offsetx += self.speed/2
-			offsety += self.speed/2
+			offsetx += self.speed*2/3
+			offsety += self.speed/3
 		if self.animation == "runsw_%d"%(self.owner):
-			offsetx -= self.speed/2
-			offsety += self.speed/2
+			offsetx -= self.speed*2/3
+			offsety += self.speed/3
+		success = False
 		if map.island(offsetx,offsety) and self.land or\
 		   map.iswater(offsetx,offsety) and self.water:
 			if characters.available(self,offsetx,offsety):
 				self.offsetx = offsetx
 				self.offsety = offsety
+				success = True
+		if not success:
+			self.setStopAnimation()
 	
 	def startAnimation(self,animation):
-		if self.animation == animation and not self.end:
+		if not self.end: #self.animation == animation:
 				return
 		self.animation,self.index = animation,0
 			
@@ -82,29 +96,41 @@ class Unit(object):
 			self.offsetx,self.offsety = x,y
 			self.stop()
 		else:
-			options = []
+			corner = None
+			directx = None
+			directy = None
 			if x > self.offsetx + self.speed:
-				options.append(self.moveRight)
-			elif x < self.offsetx:
-				options.append(self.moveLeft)
+				directx = self.moveRight
+			elif x < self.offsetx - self.speed:
+				directx = self.moveLeft
 			if y > self.offsety + self.speed:
-				options.append(self.moveDown)
-				if self.moveLeft in options:
-					options.append(self.moveDownLeft)
-				elif self.moveRight in options:
-					options.append(self.moveDownRight)
-			elif y < self.offsety:
-				options.append(self.moveUp)
-				if self.moveLeft in options:
-					options.append(self.moveUpLeft)
-				elif self.moveRight in options:
-					options.append(self.moveUpRight)
-			if len(options) == 0:
+				directy = self.moveDown
+				if directx == self.moveLeft:
+					corner = self.moveDownLeft
+				elif directx == self.moveRight:
+					corner = self.moveDownRight
+			elif y < self.offsety - self.speed:
+				directy = self.moveUp
+				if directx == self.moveLeft:
+					corner = self.moveUpLeft
+				elif directx == self.moveRight:
+					corner = self.moveUpRight
+			if corner == None and directx == None and directy == None:
 				self.offsetx,self.offsety = x,y
 				self.stop()
+			elif directx == None:
+				directy()
+			elif directy == None:
+				directx()
 			else:
-				option = choice(options)
-				option()
+				ratioxy = abs(self.offsetx-x)/abs(self.offsety-y)
+				ratioyx = abs(self.offsety-y)/abs(self.offsetx-x)
+				if ratioxy > 2:
+					directx()
+				elif ratioyx > 2:
+					directy()
+				else:
+					corner()
 				
 	def moveRight(self):
 		self.startAnimation("rune_%d"%(self.owner))
@@ -122,14 +148,17 @@ class Unit(object):
 		self.startAnimation("runne_%d"%(self.owner))
 	def moveUpLeft(self):
 		self.startAnimation("runnw_%d"%(self.owner))
-	def stop(self):
+	
+	def setStopAnimation(self):
 		for direction in directions:
 			if self.animation == "run%s_%d"%(direction,self.owner) or\
 				self.animation == "crawl%s_%d"%(direction,self.owner):
 				self.startAnimation("stand%s_%d"%(direction,self.owner))
-				if self.target != None and isinstance(self.target,tuple):
-					self.target = None
-				return
+	def stop(self):
+		self.setStopAnimation()
+		if self.target != None and isinstance(self.target,tuple):
+			self.target = None
+		return
 	
 	def onMouseDown(self,x,y,button):
 		rect = self.get_rect()
@@ -137,7 +166,8 @@ class Unit(object):
 			if rect.contains(pygame.Rect(x,y,1,1)):
 				if self.selected:
 					self.onDoubleClick()
-				self.selected = True
+				if self.selectable:
+					self.selected = True
 			else:
 				self.selected = False
 		elif button == 3:

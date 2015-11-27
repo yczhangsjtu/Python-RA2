@@ -68,7 +68,7 @@ class MCV(Vehicle):
 		self.range = 0
 		self.fullHP = 3000
 		self.HP = self.fullHP
-		self.expandInto = "AirCmd"
+		self.expandInto = "Gcnst"
 	
 	def get_rect(self):
 		self.rect.center = (self.x,self.y-20)
@@ -102,8 +102,13 @@ class MCVAnimation(AnimationSet):
 			for direction in ["w","sw","s","se","e","ne","n","nw"]:
 				animation = Animation()
 				animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-				animation.loop = True
-				# animation.next = self.getAnimation("stand%s_%d"%(direction,owner))
+				animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
+				animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
+				animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
+				animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
+				animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
+				animation.loop = False
+				animation.next = self.getAnimation("stand%s_%d"%(direction,owner))
 				self.addAnimation("run%s_%d"%(direction,owner),animation)
 				x += width * m * 2
 			y += owneroffset
