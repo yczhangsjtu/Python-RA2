@@ -30,6 +30,8 @@ barlength = 160
 barheight = 10
 barx = 50
 bary = 150
+occupyx = 8
+occupyy = 4
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)

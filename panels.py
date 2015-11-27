@@ -224,7 +224,7 @@ class GameController(SpriteContainer):
 				w = abs(self.mousedownx-self.mousex)
 				h = abs(self.mousedowny-self.mousey)
 				rect = pygame.Rect(x,y,w,h)
-				for unit in self.characters.units:
+				for unit in self.characters.unitSet:
 					if rect.contains(unit.get_rect()):
 						if unit.regionselectable:
 							unit.selected = True

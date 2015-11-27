@@ -2,7 +2,7 @@ import pygame
 import importlib
 
 from map import Map, getAbsPos, getGridCenter
-from treecontainer import collide
+from treecontainer import collide, TreeContainer
 from unit import Unit
 from vehicle import *
 from infantry import *
@@ -17,8 +17,7 @@ class Game():
 		self.y = map.y
 	
 	def initNewGame(self,playerData):
-		self.unitSet = UnitSet()
-		self.units = self.unitSet.units
+		self.unitSet = TreeContainer(0,0,self.map.groundwidth,self.map.groundheight)
 		
 		for player in playerData:
 			data = playerData[player]
@@ -35,13 +34,13 @@ class Game():
 			self.update()
 	
 	def addUnit(self,unit,x,y):
-		self.unitSet.addUnit(unit,x,y)
+		self.unitSet.addPos(unit,x,y)
 		
 	def addUnitGrid(self,unit,col,row):
-		self.unitSet.addUnitGrid(unit,col,row)
+		self.unitSet.addGrid(unit,col,row)
 	
 	def removeUnit(self,unit):
-		self.unitSet.removeUnit(unit)
+		self.unitSet.remove(unit)
 	
 	def available(self,unit,x,y):
 		return self.unitSet.available(unit,x,y)
@@ -49,7 +48,7 @@ class Game():
 	def step(self):
 		addunitlist = []
 		removeunitlist = []
-		for unit in self.units:
+		for unit in self.unitSet:
 			unit.step(self.map,self)
 			if hasattr(unit,"replace") and unit.replace != None:
 				type = unit.replace[0]
@@ -72,7 +71,7 @@ class Game():
 	def updatePosition(self):
 		self.x = self.map.x
 		self.y = self.map.y
-		for unit in self.units:
+		for unit in self.unitSet:
 			unit.x = self.x + unit.offsetx
 			unit.y = self.y + unit.offsety
 			
@@ -90,12 +89,12 @@ class Game():
 	
 	def draw(self,screen):
 		self.updatePosition()
-		for unit in self.units:
+		for unit in self.unitSet:
 			if self.inarea(unit):
 				unit.draw(screen)
 	
 	def onMouseDown(self,x,y,button):
-		for unit in self.units:
+		for unit in self.unitSet:
 			unit.onMouseDown(x,y,button)
 	
 	def onMouseUp(self,x,y,button):
@@ -104,6 +103,7 @@ class Game():
 	def onMouseMove(self,x,y,button1=None,button2=None,button3=None):
 		pass
 	
+"""
 class UnitSet():
 	def __init__(self):
 		self.units = []
@@ -128,3 +128,4 @@ class UnitSet():
 			if collide(u.offsetx,u.offsety,u.size,x,y,unit.size):
 				return False
 		return True
+"""
