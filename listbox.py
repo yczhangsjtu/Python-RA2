@@ -1,47 +1,71 @@
-from pylash.display import Sprite
-from pylash.text import TextField
-from pylash.events import Event, MouseEvent
-from consts import optionheight, boxwidth, boxheight
+import pygame
 
-class ListBox(Sprite):
+from consts import optionheight, boxwidth, boxheight, boxpad, WHITE
+from data import images
+from button import TextButton
+from imagesprite import ImageSprite
+from spritecontainer import SpriteContainer
+
+class ListBox(SpriteContainer):
 	def __init__(self):
 		super(ListBox,self).__init__()
 		self.textlist = []
+		self.buttonlist = []
+		self.buttons = pygame.sprite.Group()
 		self.select = -1
-		self.background = Sprite()
-		self.selectBar = Sprite()
-		self.addChild(self.background)
-		self.selectBar.x = 0
-		self.selectBar.graphics.beginFill("red")
-		self.selectBar.graphics.drawRect(0,0,boxwidth,optionheight)
-		self.selectBar.graphics.endFill()
-		self.background.graphics.lineStyle(2,"white")
-		#self.background.graphics.beginFill("black")
-		self.background.graphics.drawRect(0,0,boxwidth,boxheight)
-		#self.background.graphics.endFill()
-		self.addEventListener(MouseEvent.MOUSE_DOWN, self.mouseClicked)
+		self.background = ImageSprite(images["listboxbg"])
+		self.add(self.background)
+		self.addSprite(self.background)
+	"""
+	def setx(self,x):
+		self.x = x
+		self.background.image.rect.topleft = (self.x,self.y)
+		self.updateButtonPosition()
+	def sety(self,y):
+		self.y = y
+		self.background.rect.topleft = (self.x,self.y)
+		self.updateButtonPosition()
+	def setpos(self,x,y):
+		self.x,self.y = x,y
+		self.background.rect.topleft = (self.x,self.y)
+		self.updateButtonPosition()
+	def updateButtonPosition(self):
+		for i in range(len(self.buttonlist)):
+			self.buttonlist[i].setpos(self.x+boxpad,self.y+i*optionheight+boxpad)
+	"""
 	
-	def add(self,text):
-		textfield = TextField()
-		textfield.text = text
-		textfield.textColor = "white"
-		textfield.size = optionheight
-		textfield.x = 0
-		textfield.y = len(self.textlist) * optionheight
-		self.addChild(textfield)
+	def addItem(self,text):
+		font = pygame.font.Font(None,24)
+		img = images["listboxbar"]
+		btnwidth = img.get_rect().width
+		btnheight = img.get_rect().height/2
+		normal = img.subsurface(pygame.Rect(0,0,btnwidth,btnheight))
+		selected = img.subsurface(pygame.Rect(0,btnheight,btnwidth,btnheight))
+		button = TextButton(text,font,normal,normal,selected)
 		self.textlist.append(text)
+		self.buttonlist.append(button)
+		self.addSprite(button,boxpad,len(self.buttons)*optionheight+boxpad)
+		self.buttons.add(button)
+		
 		if self.select == -1:
-			self.select = 0
-			self.background.addChild(self.selectBar)
-			self.selectBar.y = self.select * optionheight
+			self.selectItem(0)
 	
-	def mouseClicked(self,e):
-		k = int((e.offsetY - self.y)/ optionheight)
-		if k >= 0 and k < len(self.textlist):
-			self.select = k
-			self.selectBar.y = self.select * optionheight
+	def selectItem(self,index):
+		if index < 0 or index >= len(self.textlist):return
+		self.select = index
+		for button in self.buttonlist:
+			button.recover()
+		self.buttonlist[index].under()
+	
+	def onMouseDown(self,x,y):
+		k = int(y/optionheight)
+		self.selectItem(k)
 	
 	def selectedtext(self):
 		if self.select == -1:
 			return ""
 		return self.textlist[self.select]
+	
+	def draw(self,screen):
+		super(ListBox,self).draw(screen)
+		self.buttons.draw(screen)

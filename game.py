@@ -1,56 +1,110 @@
-from pylash.display import Sprite
-from pylash.events import MouseEvent
+import pygame
+import importlib
 
-from map import Map
+from map import Map, getAbsPos
 from unit import Unit
+from vehicle import *
+from infantry import *
+from building import *
+from consts import *
 
 class Game():
-	def __init__(self,map,charLayer):
+	def __init__(self,map):
 		self.map = map
 		self.unitSet = None
-		self.characterLayer = charLayer
+		self.x = map.x
+		self.y = map.y
 	
-	def initNewGame(self,dataList):
+	def initNewGame(self,playerData):
 		self.unitSet = UnitSet()
-		self.characterLayer.addChild(self.unitSet)
-		self.unitSet.addUnit(Unit("mcv",0,dataList),5,5)
-		self.unitSet.addUnit(Unit("adog",1,dataList),8,5)
-		self.unitSet.show(0)
-		self.unitSet.show(1)
+		self.units = self.unitSet.units
+		
+		for player in playerData:
+			data = playerData[player]
+			flag = data["flag"]
+			col,row = data["position"]
+			mcv = MCV(flag)
+			self.addUnitGrid(mcv,col,row)
+			for unitdata in data["initials"]:
+				name = unitdata["name"]
+				type = unitdata["type"]
+				x,y = unitdata["pos"]
+				x,y = x+mcv.offsetx,y+mcv.offsety
+				self.addUnit(getattr(importlib.import_module(type),name)(flag),x,y)
+			self.update()
 	
-	def onMouseDown(self,e):
+	def addUnit(self,unit,x,y):
+		self.unitSet.addUnit(unit,x,y)
+		
+	def addUnitGrid(self,unit,col,row):
+		self.unitSet.addUnitGrid(unit,col,row)
+	
+	def removeUnit(self,unit):
+		self.unitSet.removeUnit(unit)
+	
+	def step(self):
+		addunitlist = []
+		removeunitlist = []
+		for unit in self.units:
+			unit.step()
+			if hasattr(unit,"replace") and unit.replace != None:
+				newunit = getattr(importlib.import_module(unit.replace[0]),unit.replace[1])(unit.owner)
+				newunit.HP = unit.HP
+				newunit.offsetx,newunit.offsety = unit.offsetx,unit.offsety
+				addunitlist.append(newunit)
+				removeunitlist.append(unit)
+		for unit in removeunitlist:
+			self.removeUnit(unit)
+		
+		for unit in addunitlist:
+			self.addUnit(unit,unit.offsetx,unit.offsety)
+	
+	def updatePosition(self):
+		self.x = self.map.x
+		self.y = self.map.y
+		for unit in self.units:
+			unit.x = self.x + unit.offsetx
+			unit.y = self.y + unit.offsety
+			
+	def update(self):
+		self.updatePosition()
+		self.step()
+	
+	def inarea(self,unit):
+		x,y = unit.offsetx+self.x,unit.offsety+self.y
+		w,h = unit.width(),unit.height()
+		return x > -w and y > -h and x < battlewidth and y < battleheight
+	
+	def draw(self,screen):
+		self.updatePosition()
+		for unit in self.units:
+			if self.inarea(unit):
+				unit.draw(screen)
+	
+	def onMouseDown(self,x,y,button):
+		for unit in self.units:
+			unit.onMouseDown(x,y,button)
+	
+	def onMouseUp(self,x,y,button):
 		pass
 	
-	def onMouseUp(self,e):
+	def onMouseMove(self,x,y,button1=None,button2=None,button3=None):
 		pass
 	
-	def onMouseMove(self,e):
-		pass
-	
-class UnitSet(Sprite):
+class UnitSet():
 	def __init__(self):
-		super(UnitSet,self).__init__()
 		self.units = []
 	
 	def addUnit(self,unit):
 		self.units.append(unit)
 		
-	def addUnit(self,unit,col,row):
-		unit.x, unit.y = Map.getAbsPos(col,row)
+	def addUnit(self,unit,x,y):
+		unit.offsetx, unit.offsety = x,y
+		self.units.append(unit)
+		
+	def addUnitGrid(self,unit,col,row):
+		unit.offsetx, unit.offsety = getAbsPos(col,row)
 		self.units.append(unit)
 		
 	def removeUnit(self,unit):
-		self.hide(unit)
 		self.units.remove(unit)
-		
-	def show(self,index):
-		if index >= 0 and index < len(self.units):
-			self.addChild(self.units[index])
-	
-	def hide(self,unit):
-		if unit.parent != None:
-			building.remove()
-				
-	def hide(self,index):
-		if index >= 0 and index < len(self.units):
-			self.hide(self.units[index])

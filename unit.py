@@ -1,110 +1,128 @@
-from pylash.display import Sprite, Bitmap, BitmapData, Animation, AnimationSet, AnimationPlayMode
-from pylash.events import AnimationEvent, MouseEvent
+import pygame
 
-from data import unitData
-from consts import animationspeed
+# from data import unitData
+from animation import Animation, AnimationSet
+from consts import *
+from data import images
 
-class Unit(Sprite):
-	def __init__(self,name,owner,datalist):
-		super(Unit,self).__init__()
-		self.datalist = datalist
-		self.init(name,owner)
-		self.addEventListener(MouseEvent.MOUSE_DOWN,self.onClick)
-		self.addEventListener(MouseEvent.DOUBLE_CLICK,self.onDoubleClick)
+directions = ["nw","w","sw","s","se","e","ne","n"]
+
+def dist(x1,y1,x2,y2):
+	return abs(x1-x2)+abs(y1-y2)
 	
-	def init(self,name,owner):
-		self.removeAllChildren()
-		data = unitData[name]
-		image = self.datalist[name]
-		self.type = data["type"]
+class Unit(object):
+	def __init__(self,owner,animationset):
 		self.owner = owner
-		offset = data["owneroffset"] * owner
-		list = data["animationlist"]
-		self.animationSet = AnimationSet()
-		self.animationSet.x = -data["origin"][0]
-		self.animationSet.y = -data["origin"][1]
-		self.addChild(self.animationSet)
-		self.currentAnimation = data["origanim"]
-		self.speed = data["speed"]
-		self.doubleclick = data["doubleclick"]
+		self.animationset = animationset
+		self.animation = "%s_%d"%(animationset.originalAnimation,owner)
+		self.index = 0
 		self.selected = False
-		self.next = {}
-		self.stopmethod = {}
-		self.framemethod = {}
-		for animationName in list:
-			animationdata = list[animationName]
-			offsetx,offsety,w,h,n = animationdata["num"]
-			offsety += offset
-			framelist = Animation.divideUniformSizeFrames(w, h, n, 1)
-			skip = animationdata["skip"]
-			framelist = [framelist[0][::skip+1]]
-			bmpdata = BitmapData(image, offsetx, offsety, w, h)
-			animation = Animation(bmpdata, framelist)
-			animation.playMode = AnimationPlayMode.HORIZONTAL
-			animation.speed = animationspeed
-			animation.loop = animationdata["loop"]
-			animation.name = animationName
-			self.stopmethod[animationName] = animationdata["stopmethod"]
-			self.framemethod[animationName] = animationdata["framemethod"]
-			self.next[animationName] = animationdata["next"]
-			animation.addEventListener(AnimationEvent.STOP,self.animationStop)
-			animation.addEventListener(AnimationEvent.CHANGE_FRAME,self.animate)
-			self.animationSet.addAnimation(animationName,animation)
-		self.changeAnimation(self.currentAnimation)
+		self.target = None
+		self.HP = 0
+		self.x = 0
+		self.y = 0
 	
-	def changeAnimation(self,animation):
-		self.currentAnimation = animation
-		self.animationSet.changeAnimation(animation)
+	def draw(self,screen):
+		self.animationset.setState(self.animation,self.index)
+		self.animationset.setpos(self.x,self.y)
+		self.animationset.draw(screen)
+		if self.selected:
+			self.drawBloodBar(screen)
 	
-	def animate(self,e):
-		framemethod = self.framemethod[self.currentAnimation]
-		if framemethod != None:
-			framemethod = framemethod.split(' ')
-			getattr(Unit,framemethod[0])(self,*framemethod[1:])
+	def drawBloodBar(self,screen):
+		pass
 	
-	def animationStop(self,e):
-		stopmethod = self.stopmethod[self.currentAnimation]
-		if stopmethod != None:
-			stopmethod = stopmethod.split(' ')
-			getattr(Unit,stopmethod[0])(self,*stopmethod[1:])
-			return
-		next = self.next[self.currentAnimation]
-		if next != None:
-			self.changeAnimation(next)
+	def get_rect(self):
+		self.animationset.setState(self.animation,self.index)
+		self.animationset.setpos(self.x,self.y)
+		return self.animationset.get_rect()
 	
-	def transform(self,name):
-		self.init(name,self.owner)
+	def step(self):
+		self.animation,self.index = self.animationset.step(self.animation,self.index)
+		self.end = self.animationset.end
+		if self.animation == "rune_%d"%(self.owner):
+			self.offsetx += self.speed
+		if self.animation == "runw_%d"%(self.owner):
+			self.offsetx -= self.speed
+		if self.animation == "runn_%d"%(self.owner):
+			self.offsety -= self.speed
+		if self.animation == "runs_%d"%(self.owner):
+			self.offsety += self.speed
+		if self.animation == "runne_%d"%(self.owner):
+			self.offsetx += self.speed/2
+			self.offsety -= self.speed/2
+		if self.animation == "runnw_%d"%(self.owner):
+			self.offsetx -= self.speed/2
+			self.offsety -= self.speed/2
+		if self.animation == "runse_%d"%(self.owner):
+			self.offsetx += self.speed/2
+			self.offsety += self.speed/2
+		if self.animation == "runsw_%d"%(self.owner):
+			self.offsetx -= self.speed/2
+			self.offsety += self.speed/2
 	
-	def onClick(self,e):
-		if not self.selected:
-			self.selected = True
+	def startAnimation(self,animation):
+		if self.animation == animation and not self.end:
+				return
+		self.animation,self.index = animation,0
+			
+	def moveTo(self,x,y):
+		if dist(self.offsetx,self.offsety,x,y) < 2*self.speed:
+			self.offsetx,self.offsety = x,y
+			self.stop()
 		else:
-			if self.doubleclick != None:
-				self.changeAnimation(self.doubleclick)
-
-	def onDoubleClick(self,e):
-		self.selected = False
-		if self.doubleclick != None:
-			self.changeAnimation(self.doubleclick)
+			if x > self.offsetx + self.speed:
+				self.moveRight()
+			elif x < self.offsetx:
+				self.moveLeft()
+			elif y > self.offsety + self.speed:
+				self.moveDown()
+			elif y < self.offsety:
+				self.moveUp()
+			else:
+				self.offsetx,self.offsety = x,y
+				self.stop()
+				
+	def moveRight(self):
+		self.startAnimation("rune_%d"%(self.owner))
+	def moveLeft(self):
+		self.startAnimation("runw_%d"%(self.owner))
+	def moveDown(self):
+		self.startAnimation("runs_%d"%(self.owner))
+	def moveUp(self):
+		self.startAnimation("runn_%d"%(self.owner))
+	def stop(self):
+		for direction in directions:
+			if self.animation == "run%s_%d"%(direction,self.owner) or\
+				self.animation == "crawl%s_%d"%(direction,self.owner):
+				self.startAnimation("stand%s_%d"%(direction,self.owner))
+				if self.target != None and isinstance(self.target,tuple):
+					self.target = None
+				return
 	
-	def moven(self):
-		self.y -= self.speed
-	def movenw(self):
-		self.x -= self.speed
-		self.y -= self.speed
-	def movew(self):
-		self.x -= self.speed
-	def movesw(self):
-		self.x -= self.speed
-		self.y -= self.speed
-	def moves(self):
-		self.y += self.speed
-	def movese(self):
-		self.x += self.speed
-		self.y -= self.speed
-	def movee(self):
-		self.x += self.speed
-	def movene(self):
-		self.x += self.speed
-		self.y -= self.speed
+	def onMouseDown(self,x,y,button):
+		rect = self.get_rect()
+		if button == 1:
+			if rect.contains(pygame.Rect(x,y,1,1)):
+				if self.selected:
+					self.onDoubleClick()
+				self.selected = True
+			else:
+				self.selected = False
+		elif button == 3:
+			if self.selected:
+				self.target = (self.offsetx+(x-self.x),self.offsety+(y-self.y))
 		
+	def onMouseUp(self,x,y,button):
+		pass
+		
+	def onMouseMove(self,x,y,button1=None,button2=None,button3=None):
+		pass
+	
+	def onDoubleClick(self):
+		pass
+	
+	def width(self):
+		return self.get_rect().width
+	def height(self):
+		return self.get_rect().height

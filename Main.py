@@ -1,362 +1,179 @@
 import sys
+import pygame
 
-from pylash.utils import stage, init, addChild, KeyCode
-from pylash.system import LoadManage
-from pylash.display import Sprite, BitmapData, Bitmap, FPS
-from pylash.text import TextField, TextFormatWeight
-from pylash.events import MouseEvent, Event, KeyboardEvent
-from pylash.ui import LoadingSample2, Button, ButtonState
-
-from load import RA2Loading
+"""
 from button import RA2Button, PalatteButton
 from map import Map, initMap, groundData
-from listbox import ListBox
 from game import Game
-from consts import menubuttonx, menubuttony, listboxx, listboxy,\
-	gridwidth, gridheight, colorbuttonx, colorbuttony, mousescrollwidth,\
-	battlewidth, battleheight, mapnamex, mapnamey
+"""
+from load import Loader
+from consts import *
+from data import images
+from startmenu import StartMenu
+from listbox import ListBox
+from panels import SelectMapPanel, MapEditor, GameController
+from map import Map, initMap
+from game import Game
+from building import initBuildingAnimations
+from infantry import initInfantryAnimations
+from vehicle import initVehicleAnimations
 
-def main():
-	loadList = [
-		{"name":"loadimg","path":"./img/glsl.png"},
-		{"name":"menubttn","path":"./img/mnbttn.png"},
-		{"name":"menu","path":"./img/menu.png"},
-		{"name":"ctrlpanel1","path":"./img/ctrlpanel1.png"},
-		{"name":"ctrlpanel2","path":"./img/ctrlpanel2.png"},
-		{"name":"editorpanel","path":"./img/editorpanel.png"},
-		{"name":"selectmap","path":"./img/selectmap.png"},
-		{"name":"ground","path":"./img/ground.png"},
-		{"name":"lightground","path":"./img/lightground.png"},
-		{"name":"red","path":"./img/red.png"},
-		{"name":"green","path":"./img/green.png"},
-		{"name":"aircmd","path":"./img/Building/aircmd.png"},
-		{"name":"gcnst","path":"./img/Building/gcnst.png"},
-		{"name":"adog","path":"./img/Infantry/adog.png"},
-		{"name":"mcv","path":"./img/Vehicle/mcv.png"},
-	]
-	loadingPage = RA2Loading()
-	addChild(loadingPage)
+def load():
+	global screen
+	loader = Loader()
 	
-	def loadComplete(result):
-		global dataList
-		loadingPage.remove()
-		dataList = result
-		gameInit()
+	def loadImages(progress):
+		N = len(loadList)+1
+		n = 0
+		for imgname in loadList:
+			loader.loadimg(imgname)
+			n += 1
+			progress[0] = float(n)/N
+		initMap()
+		initBuildingAnimations()
+		initInfantryAnimations()
+		initVehicleAnimations()
+		progress[0] = 1
 	
-	LoadManage.load(loadList, loadingPage.setProgress, loadComplete)
+	loader.loadimg("loadimg")
+	loader.load(images["loadimg"],screen,loadImages)
 
 def gameInit():
-	global stageLayer, ctrlLayer, characterLayer, mapLayer
-	stageLayer = Sprite()
-	addChild(stageLayer)
-	mapLayer = Sprite()
-	stageLayer.addChild(mapLayer)
-	characterLayer = Sprite()
-	stageLayer.addChild(characterLayer)
-	ctrlLayer = Sprite()
-	stageLayer.addChild(ctrlLayer)
-	fps = FPS()
-	addChild(fps)
+	global ctrlLayer, characterLayer, mapLayer, startMenu, selectMapPanel, editMapPanel, mapfile,\
+		mapEditor, gameController
 	
-	initMap(dataList)
-	initMapEditor()
-	initSelectMapPanel()
-	initCtrlLayer()
+	mapfile = "map0.txt"
 
-def initCtrlLayer():
-	global ctrlLayer, startButton, selectMapButton, mapEditorButton, exitButton, startMenu,\
-		mapfile, mapname
+	startMenu = StartMenu(startNewGame, selectMap, startMapEditor, quit)
+	selectMapPanel = SelectMapPanel(selectMapBack,backToStartMenu)
+	editMapPanel = SelectMapPanel(editMap,backToStartMenu)
+	mapEditor = MapEditor(backToStartMenu)
+	gameController = GameController()
 	
-	startMenu = Sprite()
-	ctrlLayer.addChild(startMenu)
-	startMenu.addChild(Bitmap(BitmapData(dataList["menu"])))
-	
-	startButton = RA2Button("Start",dataList)
-	startButton.x = menubuttonx
-	startButton.y = menubuttony
-	startMenu.addChild(startButton)
-	
-	selectMapButton = RA2Button("Select Map",dataList)
-	selectMapButton.x = menubuttonx
-	selectMapButton.y = menubuttony+startButton.height
-	startMenu.addChild(selectMapButton)
-	
-	mapEditorButton = RA2Button("Map Editor",dataList)
-	mapEditorButton.x = menubuttonx
-	mapEditorButton.y = menubuttony+selectMapButton.height*2
-	startMenu.addChild(mapEditorButton)
-	
-	exitButton = RA2Button("Exit",dataList)
-	exitButton.x = menubuttonx
-	exitButton.y = menubuttony+mapEditorButton.height*3
-	startMenu.addChild(exitButton)
-	
-	mapname = TextField()
-	mapname.text = "map0.txt"
-	mapname.x = mapnamex
-	mapname.y = mapnamey
-	mapname.textColor = "white"
-	mapname.size = 20
-	startMenu.addChild(mapname)
-	
-	def clickStartButton(e):
-		startNewGame()
-	def clickSelectMapButton(e):
-		enterSelectMap()
-	def clickMapEditorButton(e):
-		startMapEditor()
-	def clickExitButton(e):
-		exit(0)
-		
-	startButton.addEventListener(MouseEvent.MOUSE_UP, clickStartButton)
-	selectMapButton.addEventListener(MouseEvent.MOUSE_UP, clickSelectMapButton)
-	mapEditorButton.addEventListener(MouseEvent.MOUSE_UP, clickMapEditorButton)
-	exitButton.addEventListener(MouseEvent.MOUSE_UP, clickExitButton)
-	stage.addEventListener(KeyboardEvent.KEY_DOWN, keydown)
-	stage.addEventListener(KeyboardEvent.KEY_UP, keyup)
-	
-	initCtrlPanel()
-	initEditorPanel()
-	
-def initCtrlPanel():
-	global ctrlPanel
-	ctrlPanel = Sprite()
-	bitmap1 = Bitmap(BitmapData(dataList["ctrlpanel1"]))
-	bitmap2 = Bitmap(BitmapData(dataList["ctrlpanel2"]))
-	bitmap1.x = battlewidth
-	bitmap1.y = 0
-	bitmap2.x = 0
-	bitmap2.y = battleheight
-	ctrlPanel.addChild(bitmap1)
-	ctrlPanel.addChild(bitmap2)
-
-def initSelectMapPanel():
-	global selectMapPanel
-	selectMapPanel = Sprite()
-	selectMapPanel.addChild(Bitmap(BitmapData(dataList["selectmap"])))
-	listBox = ListBox()
-	listBox.add("map0.txt")
-	listBox.add("map1.txt")
-	listBox.add("map2.txt")
-	listBox.add("map3.txt")
-	listBox.x = listboxx
-	listBox.y = listboxy
-	selectMapPanel.addChild(listBox)
-	
-	selectButton = RA2Button("Select",dataList)
-	selectButton.x = menubuttonx
-	selectButton.y = menubuttony
-	selectMapPanel.addChild(selectButton)
-	def onClickSelectButton(e):
-		goBackToStartMenu(selectMapPanel)
-		mapname.text = listBox.selectedtext()
-	selectButton.addEventListener(MouseEvent.MOUSE_UP,onClickSelectButton)
-	
-def initEditorPanel():
-	global editorPanel, editButton, backButton, ctrlLayer
-	editorPanel = Sprite()
-	editorPanel.addChild(Bitmap(BitmapData(dataList["editorpanel"])))
-	listBox = ListBox()
-	listBox.add("map0.txt")
-	listBox.add("map1.txt")
-	listBox.add("map2.txt")
-	listBox.add("map3.txt")
-	listBox.x = listboxx
-	listBox.y = listboxy
-	editorPanel.addChild(listBox)
-	
-	editButton = RA2Button("Edit",dataList)
-	editButton.x = menubuttonx
-	editButton.y = menubuttony
-	editorPanel.addChild(editButton)
-	def onClickEditButton(e):
-		editMap("./map/%s"%(listBox.selectedtext()))
-	editButton.addEventListener(MouseEvent.MOUSE_UP,onClickEditButton)
-	
-	backButton = RA2Button("Back",dataList)
-	backButton.x = menubuttonx
-	backButton.y = menubuttony+backButton.height
-	editorPanel.addChild(backButton)
-	def onClickBackButton(e):
-		goBackToStartMenu(editorPanel)
-	backButton.addEventListener(MouseEvent.MOUSE_UP,onClickBackButton)
-
-def initMapEditor():
-	global colorPanel, paint
-	paint = 1
-	colorPanel = Sprite()
-	bitmap1 = Bitmap(BitmapData(dataList["ctrlpanel1"]))
-	bitmap2 = Bitmap(BitmapData(dataList["ctrlpanel2"]))
-	bitmap1.x = battlewidth
-	bitmap1.y = 0
-	bitmap2.x = 0
-	bitmap2.y = battleheight
-	colorPanel.addChild(bitmap1)
-	colorPanel.addChild(bitmap2)
-	grassButton = PalatteButton(0,0,dataList)
-	grassButton.x = colorbuttonx
-	grassButton.y = colorbuttony
-	colorPanel.addChild(grassButton)
-	waterButton = PalatteButton(0,1,dataList)
-	waterButton.x = colorbuttonx + gridwidth
-	waterButton.y = colorbuttony
-	colorPanel.addChild(waterButton)
-	saveButton = RA2Button("Save",dataList)
-	saveButton.x = menubuttonx
-	saveButton.y = colorbuttony + 100
-	colorPanel.addChild(saveButton)
-	backButton = RA2Button("Back",dataList)
-	backButton.x = menubuttonx
-	backButton.y = colorbuttony + saveButton.height + 100
-	colorPanel.addChild(backButton)
-	def onClickGrassButton(e):
-		global paint
-		paint = 1
-	def onClickWaterButton(e):
-		global paint
-		paint = 0
-	def onClickSaveButton(e):
-		global map, mapfile
-		map.write(mapfile)
-	def onClickBackButton(e):
-		global map, mapfile
-		mapfile = ""
-		goBackToEditorPanel()
-	grassButton.addEventListener(MouseEvent.MOUSE_UP,onClickGrassButton)
-	waterButton.addEventListener(MouseEvent.MOUSE_UP,onClickWaterButton)
-	saveButton.addEventListener(MouseEvent.MOUSE_UP,onClickSaveButton)
-	backButton.addEventListener(MouseEvent.MOUSE_UP,onClickBackButton)
-	
-def keydown(e):
-	global map
-	if e.keyCode == KeyCode.KEY_LEFT:
-		map.scrollv[0] = 1
-	elif e.keyCode == KeyCode.KEY_RIGHT:
-		map.scrollv[1] = 1
-	elif e.keyCode == KeyCode.KEY_UP:
-		map.scrollv[2] = 1
-	elif e.keyCode == KeyCode.KEY_DOWN:
-		map.scrollv[3] = 1
-		
-def keyup(e):
-	global map
-	if e.keyCode == KeyCode.KEY_LEFT:
-		map.scrollv[0] = 0
-	elif e.keyCode == KeyCode.KEY_RIGHT:
-		map.scrollv[1] = 0
-	elif e.keyCode == KeyCode.KEY_UP:
-		map.scrollv[2] = 0
-	elif e.keyCode == KeyCode.KEY_DOWN:
-		map.scrollv[3] = 0
-	
-def goBackToStartMenu(panel):
-	panel.remove()
-	ctrlLayer.addChild(startMenu)
-
-def goBackToEditorPanel():
-	global map
-	map.clear()
-	colorPanel.remove()
-	ctrlLayer.addChild(editorPanel)
-	colorPanel.removeEventListener(Event.ENTER_FRAME, editorloop)
-	stageLayer.removeEventListener(MouseEvent.MOUSE_MOVE, onEditMouseMove)
-	stageLayer.removeEventListener(MouseEvent.MOUSE_DOWN, onEditMouseDown)
-	stageLayer.removeEventListener(MouseEvent.MOUSE_UP, onEditMouseUp)
-
-def startMapEditor():
-	global startMenu, editorPanel
-	startMenu.remove()
-	ctrlLayer.addChild(editorPanel)
-	
-def enterSelectMap():
-	global startMenu, selectMapPanel
-	startMenu.remove()
-	ctrlLayer.addChild(selectMapPanel)
-
-def editMap(filename):
-	global colorPanel, editorPanel, ctrlLayer, map, mousepressed, mapfile
-	mapfile = filename
-	map = Map(200,200,mapLayer)
-	map.read(filename)
-	map.load()
-	editorPanel.remove()
-	ctrlLayer.addChild(colorPanel)
-	colorPanel.addEventListener(Event.ENTER_FRAME, editorloop)
-	stageLayer.addEventListener(MouseEvent.MOUSE_MOVE, onEditMouseMove)
-	stageLayer.addEventListener(MouseEvent.MOUSE_DOWN, onEditMouseDown)
-	stageLayer.addEventListener(MouseEvent.MOUSE_UP, onEditMouseUp)
-	mousepressed = False
+	ctrlLayer = startMenu
+	characterLayer = pygame.sprite.Group()
+	mapLayer = pygame.sprite.Group()
 	
 def startNewGame():
-	global startMenu, ctrlPanel, map, mapLayer, game, mapname, characterLayer
-	map = Map(200,200,mapLayer)
-	map.read("./map/%s"%(mapname.text))
-	map.load()
-	game = Game(map,characterLayer)
-	game.initNewGame(dataList)
-	startMenu.remove()
-	ctrlLayer.addChild(ctrlPanel)
-	stageLayer.addEventListener(Event.ENTER_FRAME, mainloop)
-	stageLayer.addEventListener(MouseEvent.MOUSE_MOVE, onCtrlMouseMove)
-	stageLayer.addEventListener(MouseEvent.MOUSE_DOWN, onCtrlMouseDown)
-	stageLayer.addEventListener(MouseEvent.MOUSE_UP, onCtrlMouseUp)
-	
-def updateScrollV():
-	global mousex, mousey, map
-	if mousex > 0 and mousex < mousescrollwidth:
-		map.scrollv[4] = 1
-	else:
-		map.scrollv[4] = 0
-	if mousex > stage.width - mousescrollwidth and mousex < stage.width:
-		map.scrollv[5] = 1
-	else:
-		map.scrollv[5] = 0
-	if mousey > 0 and mousey < mousescrollwidth:
-		map.scrollv[6] = 1
-	else:
-		map.scrollv[6] = 0
-	if mousey > stage.height - mousescrollwidth and mousey < stage.height:
-		map.scrollv[7] = 1
-	else:
-		map.scrollv[7] = 0
+	global ctrlLayer, startMenu, mapLayer, characterLayer
+	mapfile = "./map/%s"%(startMenu.mapfilename)
+	ctrlLayer = gameController
+	mapLayer = Map(mapwidth,mapheight)
+	characterLayer = Game(mapLayer)
+	characterLayer.initNewGame(defaultplayers)
+	gameController.map = mapLayer
+	mapLayer.read(mapfile)
+	loader = Loader()
+	loader.load(images["loadmap"],screen,mapLayer.load,\
+		[images["bar"].subsurface(0,0,barlength,barheight),(barx,bary)])
 
-def onEditMouseMove(e):
-	global mousex, mousey, map, mousepressed
-	mousex, mousey = e.offsetX, e.offsetY
-	updateScrollV()
-	if mousepressed: map.paint(mousex,mousey,paint)
+def selectMap():
+	global ctrlLayer
+	ctrlLayer = selectMapPanel
 	
-def onEditMouseDown(e):
-	global mousex, mousey, paint, mousepressed
-	mousepressed = True
+def selectMapBack():
+	global ctrlLayer
+	ctrlLayer = startMenu
+	mapfile = selectMapPanel.listBox.selectedtext()
+	startMenu.setMapFile(mapfile)
+
+def startMapEditor():
+	global ctrlLayer
+	ctrlLayer = editMapPanel
 	
-def onEditMouseUp(e):
-	global mousepressed
-	mousepressed = False
+def quit():
+	pygame.quit()
+	exit(0)
+
+def backToStartMenu():
+	global ctrlLayer, mapLayer
+	ctrlLayer = startMenu
+	mapLayer = pygame.sprite.Group()
 	
-def onCtrlMouseMove(e):
-	global mousex, mousey, map, mousepressed
-	mousex, mousey = e.offsetX, e.offsetY
-	updateScrollV()
-	game.onMouseMove(e)
+def editMap():
+	global mapEditor, ctrlLayer, mapLayer, mapfile
+	mapfile = "./map/%s"%(editMapPanel.listBox.selectedtext())
+	ctrlLayer = mapEditor
+	mapEditor.mapfile = mapfile
+	mapLayer = Map(mapwidth,mapheight)
+	mapEditor.map = mapLayer
+	mapLayer.read(mapfile)
+	loader = Loader()
+	loader.load(images["loadmap"],screen,mapLayer.load,\
+		[images["bar"].subsurface(0,0,barlength,barheight),(barx,bary)])
 	
-def onCtrlMouseDown(e):
-	global mousex, mousey, paint, mousepressed, game
-	mousepressed = True
-	game.onMouseDown(e)
+def onMouseDown(x,y,button):
+	if hasattr(ctrlLayer,"onMouseDown"):
+		ctrlLayer.onMouseDown(x,y,button)
+	if hasattr(characterLayer,"onMouseDown"):
+		characterLayer.onMouseDown(x,y,button)
+	if hasattr(mapLayer,"onMouseDown"):
+		mapLayer.onMouseDown(x,y,button)
+		
+def onMouseUp(x,y,button):
+	if hasattr(ctrlLayer,"onMouseUp"):
+		ctrlLayer.onMouseUp(x,y,button)
+	if hasattr(characterLayer,"onMouseUp"):
+		characterLayer.onMouseUp(x,y,button)
+	if hasattr(mapLayer,"onMouseUp"):
+		mapLayer.onMouseUp(x,y,button)
+		
+def onMouseMove(x,y,button1=None,button2=None,button3=None):
+	if hasattr(ctrlLayer,"onMouseMove"):
+		ctrlLayer.onMouseMove(x,y,button1,button2,button3)
+	if hasattr(characterLayer,"onMouseMove"):
+		characterLayer.onMouseMove(x,y,button1,button2,button3)
+	if hasattr(mapLayer,"onMouseMove"):
+		mapLayer.onMouseMove(x,y,button1,button2,button3)
+
+def onKeyDown(keyCode,mod):
+	if hasattr(ctrlLayer,"onKeyDown"):
+		ctrlLayer.onKeyDown(keyCode,mod)
+		
+def onKeyUp(keyCode,mod):
+	if hasattr(ctrlLayer,"onKeyUp"):
+		ctrlLayer.onKeyUp(keyCode,mod)
 	
-def onCtrlMouseUp(e):
-	global mousepressed
-	mousepressed = False
-	game.onMouseUp(e)
+def update(t):
+	if hasattr(ctrlLayer,"update"):
+		ctrlLayer.update()
+	if hasattr(characterLayer,"update"):
+		characterLayer.update()
+	if hasattr(mapLayer,"update"):
+		mapLayer.update()
+
+if __name__ == "__main__":
+	global screen, clock, startMenu
+	pygame.init()
+	size = (winwidth,winheight)
+	screen = pygame.display.set_mode(size)
+	screen.convert_alpha()
+	pygame.display.set_caption(APP_CAPTION)
+	pygame.display.toggle_fullscreen()
+	clock = pygame.time.Clock()
 	
-def editorloop(e):
-	map.scroll()
+	load()
+	gameInit()
 	
-def mainloop(e):
-	global game, map
-	map.scroll()
-	game.unitSet.x = map.mapview.x
-	game.unitSet.y = map.mapview.y
-	
-init(16, "Red Alert", 800, 600, main)
+	while True:
+		mapLayer.draw(screen)
+		characterLayer.draw(screen)
+		ctrlLayer.draw(screen)
+		pygame.display.flip()
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				pygame.quit()
+				exit(0)
+			if event.type == pygame.MOUSEBUTTONDOWN:
+				onMouseDown(event.pos[0],event.pos[1],event.button)
+			if event.type == pygame.MOUSEBUTTONUP:
+				onMouseUp(event.pos[0],event.pos[1],event.button)
+			if event.type == pygame.MOUSEMOTION:
+				onMouseMove(*(event.pos+event.buttons))
+			if event.type == pygame.KEYDOWN:
+				onKeyDown(event.key,event.mod)
+			if event.type == pygame.KEYUP:
+				onKeyUp(event.key,event.mod)
+		clock.tick(16)
+		update(pygame.time.get_ticks())
+		
