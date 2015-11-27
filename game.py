@@ -15,9 +15,11 @@ class Game():
 		self.unitSet = None
 		self.x = map.x
 		self.y = map.y
+		self.running = False
 	
 	def initNewGame(self,playerData):
 		self.unitSet = TreeContainer(0,0,self.map.groundwidth,self.map.groundheight)
+		self.running = False
 		
 		for player in playerData:
 			data = playerData[player]
@@ -31,7 +33,7 @@ class Game():
 				x,y = unitdata["pos"]
 				x,y = x+mcv.offsetx,y+mcv.offsety
 				self.addUnit(getattr(importlib.import_module(type),name)(flag),x,y)
-			self.update()
+		self.updatePosition()
 	
 	def addUnit(self,unit,x,y):
 		self.unitSet.addPos(unit,x,y)
@@ -46,9 +48,10 @@ class Game():
 		return self.unitSet.available(unit,x,y)
 
 	def step(self):
-		addunitlist = []
-		removeunitlist = []
+		unitlist = []
 		for unit in self.unitSet:
+			unitlist.append(unit)
+		for unit in unitlist:
 			unit.step(self.map,self)
 			if hasattr(unit,"replace") and unit.replace != None:
 				type = unit.replace[0]
@@ -60,13 +63,8 @@ class Game():
 					unit.offsetx,unit.offsety = getGridCenter(unit.offsetx,unit.offsety)
 				newunit.offsetx = unit.offsetx + newunit.animationset.modifyx
 				newunit.offsety = unit.offsety + newunit.animationset.modifyy
-				addunitlist.append(newunit)
-				removeunitlist.append(unit)
-		for unit in removeunitlist:
-			self.removeUnit(unit)
-		
-		for unit in addunitlist:
-			self.addUnit(unit,unit.offsetx,unit.offsety)
+				self.removeUnit(unit)
+				self.addUnit(newunit,newunit.offsetx,newunit.offsety)
 	
 	def updatePosition(self):
 		self.x = self.map.x
@@ -77,7 +75,8 @@ class Game():
 			
 	def update(self):
 		self.updatePosition()
-		self.step()
+		if self.running:
+			self.step()
 	
 	def inarea(self,unit):
 		rect = unit.get_rect().copy()
@@ -102,30 +101,3 @@ class Game():
 	
 	def onMouseMove(self,x,y,button1=None,button2=None,button3=None):
 		pass
-	
-"""
-class UnitSet():
-	def __init__(self):
-		self.units = []
-	
-	def addUnit(self,unit):
-		self.units.append(unit)
-		
-	def addUnit(self,unit,x,y):
-		unit.offsetx, unit.offsety = x,y
-		self.units.append(unit)
-		
-	def addUnitGrid(self,unit,col,row):
-		unit.offsetx, unit.offsety = getAbsPos(col,row)
-		self.units.append(unit)
-		
-	def removeUnit(self,unit):
-		self.units.remove(unit)
-	
-	def available(self,unit,x,y):
-		for u in self.units:
-			if u == unit: continue
-			if collide(u.offsetx,u.offsety,u.size,x,y,unit.size):
-				return False
-		return True
-"""

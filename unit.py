@@ -76,15 +76,14 @@ class Unit(object):
 		if self.animation == "runsw_%d"%(self.owner):
 			offsetx -= self.speed*2/3
 			offsety += self.speed/3
-		success = False
-		if map.island(offsetx,offsety) and self.land or\
-		   map.iswater(offsetx,offsety) and self.water:
-			if characters.available(self,offsetx,offsety):
-				self.offsetx = offsetx
-				self.offsety = offsety
-				success = True
-		if not success:
-			self.setStopAnimation()
+
+		if self.offsetx != offsetx or self.offsety != offsety:
+			success = False
+			if map.island(offsetx,offsety) and self.land or\
+			   map.iswater(offsetx,offsety) and self.water:
+				success = characters.unitSet.move(self,offsetx,offsety)
+			if not success:
+				self.setStopAnimation()
 	
 	def startAnimation(self,animation):
 		if not self.end: #self.animation == animation:

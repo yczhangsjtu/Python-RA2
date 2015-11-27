@@ -68,6 +68,7 @@ def startNewGame():
 	loader.load(images["loadmap"],screen,mapLayer.load,\
 		[images["bar"].subsurface(0,0,barlength,barheight),(barx,bary)])
 	ctrlLayer.minimap = mapLayer.minimap
+	characterLayer.running = True
 
 def selectMap():
 	global ctrlLayer
