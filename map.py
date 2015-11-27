@@ -168,6 +168,22 @@ class Map(SpriteContainer):
 	def validPos(self,col,row):
 		return row >= 0 and row < self.height and col >= 0 and col < self.width
 	
+	def island(self,x,y):
+		col,row = getGridPos(x,y)
+		return self.islandGrid(col,row)
+	
+	def islandGrid(self,col,row):
+		if not self.validPos(col,row): return False
+		return self.map[col][row] == 1
+	
+	def iswater(self,x,y):
+		col,row = getGridPos(x,y)
+		return self.iswaterGrid(col,row)
+	
+	def iswaterGrid(self,col,row):
+		if not self.validPos(col,row): return False
+		return self.map[col][row] == 0
+	
 	def draw(self,screen):
 		super(Map,self).draw(screen)
 		self.groundbox.draw(screen)

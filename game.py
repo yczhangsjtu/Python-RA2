@@ -2,6 +2,7 @@ import pygame
 import importlib
 
 from map import Map, getAbsPos, getGridCenter
+from treecontainer import collide
 from unit import Unit
 from vehicle import *
 from infantry import *
@@ -42,11 +43,14 @@ class Game():
 	def removeUnit(self,unit):
 		self.unitSet.removeUnit(unit)
 	
+	def available(self,unit,x,y):
+		return self.unitSet.available(unit,x,y)
+
 	def step(self):
 		addunitlist = []
 		removeunitlist = []
 		for unit in self.units:
-			unit.step()
+			unit.step(self.map,self)
 			if hasattr(unit,"replace") and unit.replace != None:
 				type = unit.replace[0]
 				name = unit.replace[1]
@@ -114,3 +118,10 @@ class UnitSet():
 		
 	def removeUnit(self,unit):
 		self.units.remove(unit)
+	
+	def available(self,unit,x,y):
+		for u in self.units:
+			if u == unit: continue
+			if collide(u.offsetx,u.offsety,u.size,x,y,unit.size):
+				return False
+		return True

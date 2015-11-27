@@ -88,7 +88,7 @@ class SpriteContainer(pygame.sprite.Group):
 			sprite.onMouseMove(x,y)
 	def onKeyDown(self,keyCode,mod):
 		for sprite in self.spriteset:
-			sprite.onKeyDown(x,y)
+			sprite.onKeyDown(keyCode,mod)
 	def onKeyUp(self,keyCode,mod):
 		for sprite in self.spriteset:
-			sprite.onKeyUp(x,y)
+			sprite.onKeyUp(keyCode,mod)

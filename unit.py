@@ -1,4 +1,5 @@
 import pygame
+from random import choice
 
 # from data import unitData
 from animation import Animation, AnimationSet
@@ -19,6 +20,9 @@ class Unit(object):
 		self.selected = False
 		self.target = None
 		self.rect = pygame.Rect(0,0,1,1)
+		self.land = True
+		self.water = False
+		self.air = False
 		self.HP = 0
 		self.x = 0
 		self.y = 0
@@ -38,29 +42,35 @@ class Unit(object):
 		self.rect.bottom = self.y
 		return self.rect
 	
-	def step(self):
+	def step(self,map,characters):
 		self.animation,self.index = self.animationset.step(self.animation,self.index)
 		self.end = self.animationset.end
+		offsetx,offsety = self.offsetx,self.offsety
 		if self.animation == "rune_%d"%(self.owner):
-			self.offsetx += self.speed
+			offsetx += self.speed
 		if self.animation == "runw_%d"%(self.owner):
-			self.offsetx -= self.speed
+			offsetx -= self.speed
 		if self.animation == "runn_%d"%(self.owner):
-			self.offsety -= self.speed
+			offsety -= self.speed
 		if self.animation == "runs_%d"%(self.owner):
-			self.offsety += self.speed
+			offsety += self.speed
 		if self.animation == "runne_%d"%(self.owner):
-			self.offsetx += self.speed/2
-			self.offsety -= self.speed/2
+			offsetx += self.speed/2
+			offsety -= self.speed/2
 		if self.animation == "runnw_%d"%(self.owner):
-			self.offsetx -= self.speed/2
-			self.offsety -= self.speed/2
+			offsetx -= self.speed/2
+			offsety -= self.speed/2
 		if self.animation == "runse_%d"%(self.owner):
-			self.offsetx += self.speed/2
-			self.offsety += self.speed/2
+			offsetx += self.speed/2
+			offsety += self.speed/2
 		if self.animation == "runsw_%d"%(self.owner):
-			self.offsetx -= self.speed/2
-			self.offsety += self.speed/2
+			offsetx -= self.speed/2
+			offsety += self.speed/2
+		if map.island(offsetx,offsety) and self.land or\
+		   map.iswater(offsetx,offsety) and self.water:
+			if characters.available(self,offsetx,offsety):
+				self.offsetx = offsetx
+				self.offsety = offsety
 	
 	def startAnimation(self,animation):
 		if self.animation == animation and not self.end:
@@ -72,17 +82,29 @@ class Unit(object):
 			self.offsetx,self.offsety = x,y
 			self.stop()
 		else:
+			options = []
 			if x > self.offsetx + self.speed:
-				self.moveRight()
+				options.append(self.moveRight)
 			elif x < self.offsetx:
-				self.moveLeft()
-			elif y > self.offsety + self.speed:
-				self.moveDown()
+				options.append(self.moveLeft)
+			if y > self.offsety + self.speed:
+				options.append(self.moveDown)
+				if self.moveLeft in options:
+					options.append(self.moveDownLeft)
+				elif self.moveRight in options:
+					options.append(self.moveDownRight)
 			elif y < self.offsety:
-				self.moveUp()
-			else:
+				options.append(self.moveUp)
+				if self.moveLeft in options:
+					options.append(self.moveUpLeft)
+				elif self.moveRight in options:
+					options.append(self.moveUpRight)
+			if len(options) == 0:
 				self.offsetx,self.offsety = x,y
 				self.stop()
+			else:
+				option = choice(options)
+				option()
 				
 	def moveRight(self):
 		self.startAnimation("rune_%d"%(self.owner))
@@ -92,6 +114,14 @@ class Unit(object):
 		self.startAnimation("runs_%d"%(self.owner))
 	def moveUp(self):
 		self.startAnimation("runn_%d"%(self.owner))
+	def moveDownRight(self):
+		self.startAnimation("runse_%d"%(self.owner))
+	def moveDownLeft(self):
+		self.startAnimation("runsw_%d"%(self.owner))
+	def moveUpRight(self):
+		self.startAnimation("runne_%d"%(self.owner))
+	def moveUpLeft(self):
+		self.startAnimation("runnw_%d"%(self.owner))
 	def stop(self):
 		for direction in directions:
 			if self.animation == "run%s_%d"%(direction,self.owner) or\

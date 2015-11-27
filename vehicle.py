@@ -7,9 +7,9 @@ from animation import Animation, AnimationSet
 from data import images
 
 
-vehicleRect = pygame.Rect(0,0,100,70)
+vehicleRect = pygame.Rect(0,0,100,50)
 mcvAnimation = None
-directions = ["n","wn","w","sw","s","se","e","ne"]
+directions = ["n","nw","w","sw","s","se","e","ne"]
 
 def initVehicleAnimations():
 	global bloodbarimg, vehicleHealthBlood, vehicleHurtBlood, vehicleDangerBlood
@@ -42,8 +42,8 @@ class Vehicle(Unit):
 			ngrid = self.HP * 24 / self.fullHP
 			screen.blit(vehicleDangerBlood.subsurface(0,0,ngrid*3+1,5),(self.x-36,self.y-50))
 			
-	def step(self):
-		super(Vehicle,self).step()
+	def step(self,map,characters):
+		super(Vehicle,self).step(map,characters)
 		if self.target != None:
 			if isinstance(self.target,tuple):
 				x,y = self.target
@@ -64,11 +64,15 @@ class MCV(Vehicle):
 		animationset = mcvAnimation
 		super(MCV,self).__init__(owner,animationset)
 		self.speed = 5
-		self.size = 1
+		self.size = 6
 		self.range = 0
 		self.fullHP = 3000
 		self.HP = self.fullHP
-		self.expandInto = "Gcnst"
+		self.expandInto = "AirCmd"
+	
+	def get_rect(self):
+		self.rect.center = (self.x,self.y-20)
+		return self.rect
 		
 	def onDoubleClick(self):
 		self.expand()
@@ -85,7 +89,7 @@ class MCVAnimation(AnimationSet):
 		y,m,n = 0,1,1
 		for owner in range(2):
 			x = 0
-			for direction in ["w","sw","s","se","e","ne","n","wn"]:
+			for direction in ["w","sw","s","se","e","ne","n","nw"]:
 				animation = Animation()
 				animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
 				self.addAnimation("stand%s_%d"%(direction,owner),animation)
@@ -95,7 +99,7 @@ class MCVAnimation(AnimationSet):
 		y,m,n = 0,1,1
 		for owner in range(2):
 			x = 0
-			for direction in ["w","sw","s","se","e","ne","n","wn"]:
+			for direction in ["w","sw","s","se","e","ne","n","nw"]:
 				animation = Animation()
 				animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
 				animation.loop = True

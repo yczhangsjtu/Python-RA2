@@ -32,13 +32,13 @@ class Building(Unit):
 		self.modifyy = 0
 	
 	def get_rect(self):
-		self.rect.width = self.size * 40
-		self.rect.height = self.size * 20
+		self.rect.width = self.size * 8
+		self.rect.height = self.size * 4
 		self.rect.center = (self.x,self.y)
 		return self.rect
 	
 	def drawLongBloodBar(self,screen):
-		offsetx,offsety = 200,150
+		offsetx,offsety = 200,200
 		rotate = 30
 		if self.HP >= self.fullHP/2:
 			ngrid = self.HP * 30 / self.fullHP
@@ -72,7 +72,7 @@ class AirCmd(Building):
 	def __init__(self,owner):
 		animationset = aircmdAnimation
 		super(AirCmd,self).__init__(owner,animationset)
-		self.size = 3
+		self.size = 12
 		self.fullHP = 1000
 		self.HP = self.fullHP
 	def drawBloodBar(self,screen):
@@ -82,7 +82,7 @@ class Gcnst(Building):
 	def __init__(self,owner):
 		animationset = gcnstAnimation
 		super(Gcnst,self).__init__(owner,animationset)
-		self.size = 4
+		self.size = 25
 		self.fullHP = 3000
 		self.HP = self.fullHP
 	def drawBloodBar(self,screen):
@@ -126,12 +126,12 @@ class GcnstAnimation(AnimationSet):
 	def __init__(self):
 		super(GcnstAnimation,self).__init__()
 		image = images["gcnst"]
-		offsetx,offsety = 198,234
+		offsetx,offsety = 213,263
 		self.originalAnimation = "build"
 		width,height = 426,339
 		owneroffset = 2034
-		self.modifyx = 0
-		self.modifyy = 0
+		self.modifyx = 20
+		self.modifyy = -20
 		
 		x,y,i0,j0,left,right,count = 0,1356,0,0,0,20,29
 		for owner in range(2):

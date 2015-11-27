@@ -8,7 +8,7 @@ from data import images
 
 e3Animation = None
 adogAnimation = None
-directions = ["n","wn","w","sw","s","se","e","ne"]
+directions = ["n","nw","w","sw","s","se","e","ne"]
 infantryRect = pygame.Rect(0,0,15,25)
 	
 def initInfantryAnimations():
@@ -37,8 +37,8 @@ class Infantry(Unit):
 			ngrid = self.HP * 8 / self.fullHP
 			screen.blit(infantryDangerBlood.subsurface(0,0,ngrid*3+1,5),(self.x-12,self.y-40))
 	
-	def step(self):
-		super(Infantry,self).step()
+	def step(self,map,characters):
+		super(Infantry,self).step(map,characters)
 		if self.target != None:
 			if isinstance(self.target,tuple):
 				x,y = self.target
