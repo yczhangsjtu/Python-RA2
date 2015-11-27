@@ -127,6 +127,9 @@ def onMouseMove(x,y,button1=None,button2=None,button3=None):
 		mapLayer.onMouseMove(x,y,button1,button2,button3)
 
 def onKeyDown(keyCode,mod):
+	if keyCode == pygame.K_ESCAPE:
+		pygame.quit()
+		exit(0)
 	if hasattr(ctrlLayer,"onKeyDown"):
 		ctrlLayer.onKeyDown(keyCode,mod)
 		

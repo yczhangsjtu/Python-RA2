@@ -48,6 +48,7 @@ loadList = {
 	"green":"./img/green.png",
 	"bar":"./img/bar.png",
 	"bloodbar":"./img/bloodbar.png",
+	"buildingbloodbar":"./img/buildingbloodbar.png",
 	"listboxbg":"./img/listboxbg.png",
 	"listboxbar":"./img/listboxbar.png",
 	"aircmd":"./img/Building/aircmd.png",

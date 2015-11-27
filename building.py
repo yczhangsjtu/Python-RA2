@@ -5,17 +5,66 @@ from map import getAbsPos, getGridPos
 from animation import Animation, AnimationSet
 from data import images
 
+buildingRect = pygame.Rect(0,0,1,1)
 aircmdAnimation = None
 gcnstAnimation = None
 
 def initBuildingAnimations():
+	global longBuildingHealthBlood, longBuildingHurtBlood,\
+           longBuildingDangerBlood, shortBuildingHealthBlood,\
+           shortBuildingHurtBlood, shortBuildingDangerBlood
 	global aircmdAnimation, gcnstAnimation
+	bloodbarimg = images["buildingbloodbar"]
+	longBuildingHealthBlood  = bloodbarimg.subsurface(0,0,300,10)
+	longBuildingHurtBlood    = bloodbarimg.subsurface(0,10,300,10)
+	longBuildingDangerBlood  = bloodbarimg.subsurface(0,20,300,10)
+	shortBuildingHealthBlood = bloodbarimg.subsurface(0,0,150,10)
+	shortBuildingHurtBlood   = bloodbarimg.subsurface(0,10,150,10)
+	shortBuildingDangerBlood = bloodbarimg.subsurface(0,20,150,10)
 	aircmdAnimation = AirCmdAnimation()
 	gcnstAnimation = GcnstAnimation()
 
 class Building(Unit):
 	def __init__(self,owner,animationset):
 		super(Building,self).__init__(owner,animationset)
+		self.rect = buildingRect
+	
+	def get_rect(self):
+		self.rect.width = self.size * 40
+		self.rect.height = self.size * 20
+		self.rect.center = (self.x,self.y)
+		return self.rect
+	
+	def drawLongBloodBar(self,screen):
+		offsetx,offsety = 200,150
+		rotate = 30
+		if self.HP >= self.fullHP/2:
+			ngrid = self.HP * 30 / self.fullHP
+			blood = longBuildingHealthBlood.subsurface(0,0,ngrid*10,10)
+			screen.blit(pygame.transform.rotate(blood,rotate),(self.x-offsetx,self.y-offsety))
+		elif self.HP >= self.fullHP/4:
+			ngrid = self.HP * 30 / self.fullHP
+			blood = longBuildingHealthBlood.subsurface(0,0,ngrid*10,10)
+			screen.blit(pygame.transform.rotate(blood,rotate),(self.x-offsetx,self.y-offsety))
+		else:
+			ngrid = self.HP * 30 / self.fullHP
+			blood = longBuildingHealthBlood.subsurface(0,0,ngrid*10,10)
+			screen.blit(pygame.transform.rotate(blood,rotate),(self.x-offsetx,self.y-offsety))
+	def drawShortBloodBar(self,screen):
+		offsetx,offsety = 100,150
+		rotate = 30
+		if self.HP >= self.fullHP/2:
+			ngrid = self.HP * 15 / self.fullHP
+			blood = shortBuildingHealthBlood.subsurface(0,0,ngrid*10,10)
+			screen.blit(pygame.transform.rotate(blood,rotate),(self.x-offsetx,self.y-offsety))
+		elif self.HP >= self.fullHP/4:
+			ngrid = self.HP * 15 / self.fullHP
+			blood = shortBuildingHealthBlood.subsurface(0,0,ngrid*10,10)
+			screen.blit(pygame.transform.rotate(blood,rotate),(self.x-offsetx,self.y-offsety))
+		else:
+			ngrid = self.HP * 15 / self.fullHP
+			blood = shortBuildingHealthBlood.subsurface(0,0,ngrid*10,10)
+			screen.blit(pygame.transform.rotate(blood,rotate),(self.x-offsetx,self.y-offsety))
 
 class AirCmd(Building):
 	def __init__(self,owner):
@@ -24,6 +73,8 @@ class AirCmd(Building):
 		self.size = 3
 		self.fullHP = 1000
 		self.HP = self.fullHP
+	def drawBloodBar(self,screen):
+		self.drawShortBloodBar(screen)
 		
 class Gcnst(Building):
 	def __init__(self,owner):
@@ -32,12 +83,14 @@ class Gcnst(Building):
 		self.size = 4
 		self.fullHP = 3000
 		self.HP = self.fullHP
+	def drawBloodBar(self,screen):
+		self.drawLongBloodBar(screen)
 
 class AirCmdAnimation(AnimationSet):
 	def __init__(self):
 		super(AirCmdAnimation,self).__init__()
 		image = images["aircmd"]
-		offsetx,offsety = 91,171
+		offsetx,offsety = 140,170
 		self.originalAnimation = "build"
 		width,height = 282,243
 		owneroffset = 486

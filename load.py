@@ -21,6 +21,10 @@ class Loader():
 				if event.type == pygame.QUIT:
 					pygame.quit()
 					exit(0)
+				if event.type == pygame.KEYDOWN:
+					if event.key == pygame.K_ESCAPE:
+						pygame.quit()
+						exit(0)
 			screen.blit(img,(0,0))
 			if progressbar != None:
 				rect = progressbar[0].get_rect().copy()

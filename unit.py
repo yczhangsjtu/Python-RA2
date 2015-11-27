@@ -18,6 +18,7 @@ class Unit(object):
 		self.index = 0
 		self.selected = False
 		self.target = None
+		self.rect = pygame.Rect(0,0,1,1)
 		self.HP = 0
 		self.x = 0
 		self.y = 0
@@ -33,9 +34,9 @@ class Unit(object):
 		pass
 	
 	def get_rect(self):
-		self.animationset.setState(self.animation,self.index)
-		self.animationset.setpos(self.x,self.y)
-		return self.animationset.get_rect()
+		self.rect.centerx = self.x
+		self.rect.bottom = self.y
+		return self.rect
 	
 	def step(self):
 		self.animation,self.index = self.animationset.step(self.animation,self.index)

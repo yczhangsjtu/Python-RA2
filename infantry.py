@@ -9,7 +9,7 @@ from data import images
 e3Animation = None
 adogAnimation = None
 directions = ["n","wn","w","sw","s","se","e","ne"]
-
+infantryRect = pygame.Rect(0,0,15,25)
 	
 def initInfantryAnimations():
 	global bloodbarimg, infantryHealthBlood, infantryHurtBlood, infantryDangerBlood
@@ -24,6 +24,7 @@ def initInfantryAnimations():
 class Infantry(Unit):
 	def __init__(self,owner,animationset):
 		super(Infantry,self).__init__(owner,animationset)
+		self.rect = infantryRect
 	
 	def drawBloodBar(self,screen):
 		if self.HP >= self.fullHP/2:

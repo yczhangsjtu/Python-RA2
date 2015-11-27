@@ -138,19 +138,19 @@ class Map(SpriteContainer):
 		if self.y < battleheight-self.groundheight: self.sety(battleheight-self.groundheight)
 	
 	def updateScrollV(self,x,y):
-		if x > 0 and x < mousescrollwidth:
+		if x <= mousescrollwidth:
 			self.scrollv[4] = 1
 		else:
 			self.scrollv[4] = 0
-		if x > winwidth - mousescrollwidth and x < winwidth:
+		if x >= winwidth - mousescrollwidth:
 			self.scrollv[5] = 1
 		else:
 			self.scrollv[5] = 0
-		if y > 0 and y < mousescrollwidth:
+		if y <= mousescrollwidth:
 			self.scrollv[6] = 1
 		else:
 			self.scrollv[6] = 0
-		if y > winheight - mousescrollwidth and y < winheight:
+		if y >= winheight - mousescrollwidth:
 			self.scrollv[7] = 1
 		else:
 			self.scrollv[7] = 0
@@ -159,7 +159,7 @@ class Map(SpriteContainer):
 		self.scroll()
 	
 	def getGridPos(self,x,y):
-		return getGridPos(self,x-self.x,y-self.y)
+		return getGridPos(x-self.x,y-self.y)
 	
 	def validPos(self,col,row):
 		return row >= 0 and row < self.height and col >= 0 and col < self.width

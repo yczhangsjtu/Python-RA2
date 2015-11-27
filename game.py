@@ -50,6 +50,7 @@ class Game():
 			if hasattr(unit,"replace") and unit.replace != None:
 				newunit = getattr(importlib.import_module(unit.replace[0]),unit.replace[1])(unit.owner)
 				newunit.HP = unit.HP
+				newunit.fullHP = unit.fullHP
 				newunit.offsetx,newunit.offsety = unit.offsetx,unit.offsety
 				addunitlist.append(newunit)
 				removeunitlist.append(unit)

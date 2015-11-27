@@ -7,6 +7,7 @@ from animation import Animation, AnimationSet
 from data import images
 
 
+vehicleRect = pygame.Rect(0,0,100,70)
 mcvAnimation = None
 directions = ["n","wn","w","sw","s","se","e","ne"]
 
@@ -24,6 +25,11 @@ class Vehicle(Unit):
 		super(Vehicle,self).__init__(owner,animationset)
 		self.expandInto = None
 		self.replace = None
+		self.rect = vehicleRect
+	
+	def get_rect(self):
+		self.rect.center = (self.x,self.y)
+		return self.rect
 	
 	def drawBloodBar(self,screen):
 		if self.HP >= self.fullHP/2:
@@ -62,7 +68,7 @@ class MCV(Vehicle):
 		self.range = 0
 		self.fullHP = 3000
 		self.HP = self.fullHP
-		self.expandInto = "Gcnst"
+		self.expandInto = "AirCmd"
 		
 	def onDoubleClick(self):
 		self.expand()
@@ -71,7 +77,7 @@ class MCVAnimation(AnimationSet):
 	def __init__(self):
 		super(MCVAnimation,self).__init__()
 		image = images["mcv"]
-		offsetx,offsety = 90,80
+		offsetx,offsety = 94,77
 		self.originalAnimation = "standne"
 		width,height = 188,154
 		owneroffset = 154
