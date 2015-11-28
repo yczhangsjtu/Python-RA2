@@ -21,8 +21,8 @@ def initVehicleAnimations():
 	mcvAnimation = MCVAnimation()
 
 class Vehicle(Unit):
-	def __init__(self,owner,animationset):
-		super(Vehicle,self).__init__(owner,animationset)
+	def __init__(self,owner,animationset,animation=None):
+		super(Vehicle,self).__init__(owner,animationset,animation)
 		self.expandInto = None
 		self.replace = None
 		self.rect = vehicleRect
@@ -76,15 +76,15 @@ class Vehicle(Unit):
 		self.size = oldsize
 		
 class MCV(Vehicle):
-	def __init__(self,owner):
+	def __init__(self,owner,animation=None):
 		animationset = mcvAnimation
-		super(MCV,self).__init__(owner,animationset)
+		super(MCV,self).__init__(owner,animationset,animation)
 		self.speed = 5
 		self.size = sizeofunit["MCV"]
 		self.range = 0
 		self.fullHP = 3000
 		self.HP = self.fullHP
-		self.expandInto = "AirCmd"
+		self.expandInto = "Gcnst"
 	
 	def get_rect(self):
 		self.rect.center = (self.x,self.y-20)

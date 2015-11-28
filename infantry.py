@@ -23,8 +23,8 @@ def initInfantryAnimations():
 	adogAnimation = AdogAnimation()
 
 class Infantry(Unit):
-	def __init__(self,owner,animationset):
-		super(Infantry,self).__init__(owner,animationset)
+	def __init__(self,owner,animationset,animation=None):
+		super(Infantry,self).__init__(owner,animationset,animation)
 		self.rect = infantryRect
 	
 	def drawBloodBar(self,screen):
@@ -51,9 +51,9 @@ class Infantry(Unit):
 		
 		
 class Adog(Infantry):
-	def __init__(self,owner):
+	def __init__(self,owner,animation=None):
 		animationset = adogAnimation
-		super(Adog,self).__init__(owner,animationset)
+		super(Adog,self).__init__(owner,animationset,animation)
 		self.speed = 10
 		self.size = sizeofunit["adog"]
 		self.range = 0
@@ -62,9 +62,9 @@ class Adog(Infantry):
 classmap["Adog"] = Adog
 
 class E3(Infantry):
-	def __init__(self,owner):
+	def __init__(self,owner,animation=None):
 		animationset = e3Animation
-		super(E3,self).__init__(owner,animationset)
+		super(E3,self).__init__(owner,animationset,animation)
 		self.speed = 4
 		self.size = sizeofunit["E3"]
 		self.range = 100
@@ -177,7 +177,7 @@ class AdogAnimation(AnimationSet):
 	def __init__(self):
 		super(AdogAnimation,self).__init__()
 		image = images["adog"]
-		offsetx,offsety = 36,27
+		offsetx,offsety = 36,38
 		self.originalAnimation = "runsw"
 		width,height = 74,72
 		owneroffset = 288

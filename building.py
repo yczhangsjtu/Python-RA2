@@ -26,8 +26,8 @@ def initBuildingAnimations():
 	gcnstAnimation = GcnstAnimation()
 
 class Building(Unit):
-	def __init__(self,owner,animationset):
-		super(Building,self).__init__(owner,animationset)
+	def __init__(self,owner,animationset,animation=None):
+		super(Building,self).__init__(owner,animationset,animation)
 		self.rect = buildingRect
 		self.modifyx = 0
 		self.modifyy = 0
@@ -71,9 +71,9 @@ class Building(Unit):
 			screen.blit(pygame.transform.rotate(blood,rotate),(self.x-offsetx,self.y-offsety))
 
 class AirCmd(Building):
-	def __init__(self,owner):
+	def __init__(self,owner,animation=None):
 		animationset = aircmdAnimation
-		super(AirCmd,self).__init__(owner,animationset)
+		super(AirCmd,self).__init__(owner,animationset,animation)
 		self.size = sizeofunit["AirCmd"]
 		self.fullHP = 1000
 		self.HP = self.fullHP
@@ -82,9 +82,9 @@ class AirCmd(Building):
 classmap["AirCmd"] = AirCmd
 		
 class Gcnst(Building):
-	def __init__(self,owner):
+	def __init__(self,owner,animation=None):
 		animationset = gcnstAnimation
-		super(Gcnst,self).__init__(owner,animationset)
+		super(Gcnst,self).__init__(owner,animationset,animation)
 		self.size = sizeofunit["Gcnst"]
 		self.fullHP = 3000
 		self.HP = self.fullHP

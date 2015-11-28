@@ -29,8 +29,9 @@ class Game():
 			for unitdata in data["initials"]:
 				name = unitdata["name"]
 				x,y = unitdata["pos"]
+				animation = unitdata["animation"]
 				x,y = x+mcv.offsetx,y+mcv.offsety
-				self.addUnit(classmap[name](flag),x,y)
+				self.addUnit(classmap[name](flag,animation),x,y)
 		self.updatePosition()
 	
 	def addUnit(self,unit,x,y):
@@ -85,7 +86,11 @@ class Game():
 	
 	def draw(self,screen):
 		self.updatePosition()
+		units = []
 		for unit in self.unitSet:
+			units.append(unit)
+		units.sort(key=lambda unit: unit.offsety)
+		for unit in units:
 			if self.inarea(unit):
 				unit.draw(screen)
 	

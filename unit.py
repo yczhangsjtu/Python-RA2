@@ -12,10 +12,13 @@ def dist(x1,y1,x2,y2):
 	return abs(x1-x2)+abs(y1-y2)
 	
 class Unit(object):
-	def __init__(self,owner,animationset):
+	def __init__(self,owner,animationset,animation=None):
 		self.owner = owner
 		self.animationset = animationset
-		self.animation = "%s_%d"%(animationset.originalAnimation,owner)
+		if animation == None:
+			self.animation = "%s_%d"%(animationset.originalAnimation,owner)
+		else:
+			self.animation = "%s_%d"%(animation,owner)
 		self.index = 0
 		self.selected = False
 		self.target = None
