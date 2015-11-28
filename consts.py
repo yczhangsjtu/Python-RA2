@@ -32,6 +32,7 @@ barx = 50
 bary = 150
 occupyx = 8
 occupyy = 4
+maxsize = 25
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -40,6 +41,18 @@ BLUE = (0, 0, 255)
 RED = (255, 0, 0)
 
 colorofowner = [RED,BLUE]
+
+sizeofunit = {
+	"adog":1,
+	"E3":1,
+	"MCV":6,
+	"AirCmd":12,
+	"Gcnst":20,
+}
+modify = {
+	"AirCmd":[-50,0],
+	"Gcnst":[20,-20],
+}
 
 loadList = {
 	"loadimg":"./img/startimage.png",
@@ -71,20 +84,28 @@ defaultplayers = {
 		"flag":0,
 		"position":[5,5],
 		"initials":[
-			{"type":"infantry","name":"E3","pos":(-150,-150)},
-			{"type":"infantry","name":"E3","pos":(150,-150)},
-			{"type":"infantry","name":"E3","pos":(-150,150)},
-			{"type":"infantry","name":"E3","pos":(150,150)},
+			{"name":"E3","pos":(-150,-150)},
+			{"name":"E3","pos":(150,-150)},
+			{"name":"E3","pos":(-150,150)},
+			{"name":"E3","pos":(150,150)},
+			{"name":"Adog","pos":(-150,0)},
+			{"name":"Adog","pos":(150,0)},
+			{"name":"Adog","pos":(0,150)},
+			{"name":"Adog","pos":(0,-150)},
 		],
 	},
 	"player1":{
 		"flag":1,
 		"position":[15,15],
 		"initials":[
-			{"type":"infantry","name":"E3","pos":(-150,-150)},
-			{"type":"infantry","name":"E3","pos":(150,-150)},
-			{"type":"infantry","name":"E3","pos":(-150,150)},
-			{"type":"infantry","name":"E3","pos":(150,150)},
+			{"name":"E3","pos":(-150,-150)},
+			{"name":"E3","pos":(150,-150)},
+			{"name":"E3","pos":(-150,150)},
+			{"name":"E3","pos":(150,150)},
+			{"name":"Adog","pos":(-150,0)},
+			{"name":"Adog","pos":(150,0)},
+			{"name":"Adog","pos":(0,150)},
+			{"name":"Adog","pos":(0,-150)},
 		],
 	}
 }

@@ -12,6 +12,7 @@ def collide(data1,data2):
 
 class TreeContainerIter(object):
 	def __init__(self,container):
+		self.topcontainer = container
 		while not container.isLeaf():
 			container = container.lt
 		self.container = container
@@ -24,10 +25,10 @@ class TreeContainerIter(object):
 	def findNextData(self):
 		if self.container == None: return
 		while True:
-			father = self.container.father
-			if father == None:
+			if self.container == self.topcontainer:
 				self.container = None
 				return
+			father = self.container.father
 			current = -1
 			for i in range(4):
 				if father.children[i] == self.container:
@@ -87,6 +88,11 @@ class TreeContainer(object):
 			
 		return res
 	
+	def getTopContainer(self):
+		if self.father == None:
+			return self
+		return self.father.getTopContainer()
+	
 	def isLeaf(self):
 		return self.leaf
 	
@@ -99,6 +105,12 @@ class TreeContainer(object):
 			raise Exception('Two small to split!')
 			exit(1)
 		if not self.leaf: return
+		if self.data != None:
+			if not self.contains(self.data.offsetx,self.data.offsety):
+				print self
+				print self.data
+				print self.data.offsetx,self.data.offsety,self.data.size
+				raise Exception('Does not contain self.data.')
 		lw = self.width/2
 		rw = self.width - lw
 		uh = self.height/2
@@ -110,12 +122,23 @@ class TreeContainer(object):
 		self.children = [self.lt,self.rt,self.lb,self.rb]
 		self.leaf = False
 		if self.data != None:
+			# print "Going through all %d children."%len(self.children)
 			for child in self.children:
+				# print "For child: ",child
 				if child.contains(self.data.offsetx,self.data.offsety):
 					child.data = self.data
 					self.data.container = child
 					self.data = None
-					break
+					# print child
+					# print "contains self.data."
+					return
+				# else:
+					# print child
+					# print "does not contain self.data."
+					# print self.data.offsetx,self.data.offsety
+			print self
+			print self.data.offsetx,self.data.offsety
+			raise Exception('No child contains self.data.')
 		
 	def add(self,data):
 		if data == None:
@@ -127,14 +150,25 @@ class TreeContainer(object):
 			exit(1)
 		if self.leaf:
 			if self.data == None:
+				# print "Adding",data,data.offsetx,data.offsety,data.size,"to"
+				# print self
 				self.data = data
 				data.container = self
 				return True
+			if self.data == data:
+				print self
+				print data
+				print data.offsetx,data.offsety,data.size
+				print self.data
+				print self.data.offsetx,self.data.offsety,self.data.size
+				raise Exception('Adding already existed member.')
 			if collide(self.data,data):
 				print "Failing adding"
-				print data.offsetx,data.offsety,data.size
-				print self.data.offsetx,self.data.offsety,self.data.size
 				print self
+				print data
+				print data.offsetx,data.offsety,data.size
+				print self.data
+				print self.data.offsetx,self.data.offsety,self.data.size
 				return False
 			self.split()
 		for child in self.children:
@@ -154,10 +188,10 @@ class TreeContainer(object):
 		c = data.container
 		if c.data == None:
 			raise Exception('Removing none object.')
-			exit(1)
 		if not c.leaf:
 			raise Exception('Container is not leaf.')
-			exit(1)
+		# print c.data,"removed from"
+		# print c
 		c.data = None
 		if c.father != None:
 			c.father.cleanup()
@@ -174,7 +208,11 @@ class TreeContainer(object):
 				else:
 					return
 		if hasdata != None:
+			# print "Collecting data",hasdata.data,"from"
+			# print hasdata
 			self.data = hasdata.data
+			self.data.container = self
+			hasdata.data = None
 		self.leaf = True
 		self.lt = None
 		self.rt = None
@@ -196,27 +234,29 @@ class TreeContainer(object):
 	
 	def available(self,data,x,y):
 		if self.leaf:
-			print "[%d,%d,%d,%d]: Is leaf"%(self.x,self.y,self.width,self.height)
+			# print "[%d,%d,%d,%d]: Is leaf"%(self.x,self.y,self.width,self.height)
 			if self.data == data or self.data == None:
-				print "[%d,%d,%d,%d]: Available because empty."%(self.x,self.y,self.width,self.height)
+				# print "[%d,%d,%d,%d]: Available because empty."%(self.x,self.y,self.width,self.height)
 				return True
-			print "Testing available"
-			print x,y,data.size
-			print self.data.offsetx,self.data.offsety,self.data.size
+			# print "Testing available"
+			# print x,y,data.size
+			# print self.data.offsetx,self.data.offsety,self.data.size
 			return not collideDataPos(self.data,x,y,data.size)
-		print "[%d,%d,%d,%d]: Is not leaf"%(self.x,self.y,self.width,self.height)
+		# print "[%d,%d,%d,%d]: Is not leaf"%(self.x,self.y,self.width,self.height)
 		result = True
 		for child in self.children:
-			if child.collide(data.size,x,y):
+			if child.collide(data.size+maxsize,x,y):
 				result = result and child.available(data,x,y)
 			if not result: break
-		if result: print "[%d,%d,%d,%d]: All children available"%(self.x,self.y,self.width,self.height)
-		else: print "[%d,%d,%d,%d]: All children not available"%(self.x,self.y,self.width,self.height)
+		#if result: print "[%d,%d,%d,%d]: All children available"%(self.x,self.y,self.width,self.height)
+		#else: print "[%d,%d,%d,%d]: All children not available"%(self.x,self.y,self.width,self.height)
 		return result
 	
 	def move(self,data,x,y):
+		if data.size > maxsize:
+			raise Exception('Too big')
 		if self.available(data,x,y):
-			print x,y,data.size,"is available."
+			# print x,y,data.size,"is available."
 			self.remove(data)
 			data.offsetx = x
 			data.offsety = y
@@ -225,6 +265,6 @@ class TreeContainer(object):
 				exit(1)
 			else:
 				return True
-		else:
-			print x,y,data.size,"is not available."
+		# else:
+		# 	print x,y,data.size,"is not available."
 		return False

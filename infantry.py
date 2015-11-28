@@ -3,7 +3,8 @@ import pygame
 from unit import Unit
 from map import getAbsPos, getGridPos
 from animation import Animation, AnimationSet
-from data import images
+from data import images, classmap
+from consts import *
 
 
 e3Animation = None
@@ -42,11 +43,11 @@ class Infantry(Unit):
 		if self.target != None:
 			if isinstance(self.target,tuple):
 				x,y = self.target
-				self.moveTo(x,y)
+				self.moveTo(x,y,characters)
 			else:
 				x,y = self.target.offsetx,self.target.offsety
 				if dist(self.offsetx,self.offsety,x,y) > self.range:
-					self.moveTo(x,y)
+					self.moveTo(x,y,characters)
 		
 		
 class Adog(Infantry):
@@ -54,20 +55,22 @@ class Adog(Infantry):
 		animationset = adogAnimation
 		super(Adog,self).__init__(owner,animationset)
 		self.speed = 10
-		self.size = 1
+		self.size = sizeofunit["adog"]
 		self.range = 0
 		self.fullHP = 100
 		self.HP = self.fullHP
+classmap["Adog"] = Adog
 
 class E3(Infantry):
 	def __init__(self,owner):
 		animationset = e3Animation
 		super(E3,self).__init__(owner,animationset)
 		self.speed = 4
-		self.size = 1
+		self.size = sizeofunit["E3"]
 		self.range = 100
 		self.fullHP = 100
 		self.HP = self.fullHP
+classmap["E3"] = E3
 
 class E3Animation(AnimationSet):
 	def __init__(self):

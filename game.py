@@ -1,8 +1,7 @@
 import pygame
-import importlib
-
 from map import Map, getAbsPos, getGridCenter
 from treecontainer import collide, TreeContainer
+from data import classmap
 from unit import Unit
 from vehicle import *
 from infantry import *
@@ -29,10 +28,9 @@ class Game():
 			self.addUnitGrid(mcv,col,row)
 			for unitdata in data["initials"]:
 				name = unitdata["name"]
-				type = unitdata["type"]
 				x,y = unitdata["pos"]
 				x,y = x+mcv.offsetx,y+mcv.offsety
-				self.addUnit(getattr(importlib.import_module(type),name)(flag),x,y)
+				self.addUnit(classmap[name](flag),x,y)
 		self.updatePosition()
 	
 	def addUnit(self,unit,x,y):
@@ -54,17 +52,16 @@ class Game():
 		for unit in unitlist:
 			unit.step(self.map,self)
 			if hasattr(unit,"replace") and unit.replace != None:
-				type = unit.replace[0]
-				name = unit.replace[1]
-				newunit = getattr(importlib.import_module(type),name)(unit.owner)
+				name = unit.replace
+				newunit = classmap[name](unit.owner)
 				newunit.HP = unit.HP
 				newunit.fullHP = unit.fullHP
-				if type == "building":
-					unit.offsetx,unit.offsety = getGridCenter(unit.offsetx,unit.offsety)
-				newunit.offsetx = unit.offsetx + newunit.animationset.modifyx
-				newunit.offsety = unit.offsety + newunit.animationset.modifyy
+				if isinstance(newunit,Building):
+					offsetx,offsety = getGridCenter(unit.offsetx,unit.offsety)
+				offsetx += modify[name][0]
+				offsety += modify[name][1]
 				self.removeUnit(unit)
-				self.addUnit(newunit,newunit.offsetx,newunit.offsety)
+				self.addUnit(newunit,offsetx,offsety)
 	
 	def updatePosition(self):
 		self.x = self.map.x

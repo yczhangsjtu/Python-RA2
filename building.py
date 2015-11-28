@@ -3,7 +3,8 @@ import pygame
 from unit import Unit
 from map import getAbsPos, getGridPos
 from animation import Animation, AnimationSet
-from data import images
+from data import images, classmap
+from consts import *
 
 buildingRect = pygame.Rect(0,0,1,1)
 aircmdAnimation = None
@@ -73,21 +74,23 @@ class AirCmd(Building):
 	def __init__(self,owner):
 		animationset = aircmdAnimation
 		super(AirCmd,self).__init__(owner,animationset)
-		self.size = 12
+		self.size = sizeofunit["AirCmd"]
 		self.fullHP = 1000
 		self.HP = self.fullHP
 	def drawBloodBar(self,screen):
 		self.drawShortBloodBar(screen)
+classmap["AirCmd"] = AirCmd
 		
 class Gcnst(Building):
 	def __init__(self,owner):
 		animationset = gcnstAnimation
 		super(Gcnst,self).__init__(owner,animationset)
-		self.size = 20
+		self.size = sizeofunit["Gcnst"]
 		self.fullHP = 3000
 		self.HP = self.fullHP
 	def drawBloodBar(self,screen):
 		self.drawLongBloodBar(screen)
+classmap["Gcnst"] = Gcnst
 
 class AirCmdAnimation(AnimationSet):
 	def __init__(self):

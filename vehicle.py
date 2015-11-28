@@ -1,10 +1,10 @@
 import pygame
-import importlib
 
 from unit import Unit
-from map import getAbsPos, getGridPos
+from map import getAbsPos, getGridPos, getGridCenter
 from animation import Animation, AnimationSet
-from data import images
+from data import images, classmap
+from consts import *
 
 
 vehicleRect = pygame.Rect(0,0,100,50)
@@ -47,28 +47,44 @@ class Vehicle(Unit):
 		if self.target != None:
 			if isinstance(self.target,tuple):
 				x,y = self.target
-				self.moveTo(x,y)
+				self.moveTo(x,y,characters)
 			else:
 				x,y = self.target.offsetx,self.target.offsety
 				if dist(self.offsetx,self.offsety,x,y) > self.range:
-					self.moveTo(x,y)
+					self.moveTo(x,y,characters)
 		else:
 			if self.animation == "expand_%d"%(self.owner) and self.end:
-				self.replace = ("building",self.expandInto)
+				oldsize = self.size
+				self.size = sizeofunit[self.expandInto]
+				offsetx,offsety = getGridCenter(self.offsetx,self.offsety)
+				offsetx += modify[self.expandInto][0]
+				offsety += modify[self.expandInto][1]
+				if characters.unitSet.available(self,offsetx,offsety):
+					self.replace = self.expandInto
+				else:
+					self.size = oldsize
 	
 	def expand(self):
-		self.startAnimation("expand_%d"%(self.owner))
+		oldsize = self.size
+		self.size = sizeofunit[self.expandInto]
+		offsetx,offsety = getGridCenter(self.offsetx,self.offsety)
+		offsetx += modify[self.expandInto][0]
+		offsety += modify[self.expandInto][1]
+		container = self.container.getTopContainer()
+		if container.available(self,offsetx,offsety):
+			self.startAnimation("expand_%d"%(self.owner))
+		self.size = oldsize
 		
 class MCV(Vehicle):
 	def __init__(self,owner):
 		animationset = mcvAnimation
 		super(MCV,self).__init__(owner,animationset)
 		self.speed = 5
-		self.size = 6
+		self.size = sizeofunit["MCV"]
 		self.range = 0
 		self.fullHP = 3000
 		self.HP = self.fullHP
-		self.expandInto = "Gcnst"
+		self.expandInto = "AirCmd"
 	
 	def get_rect(self):
 		self.rect.center = (self.x,self.y-20)
@@ -76,6 +92,7 @@ class MCV(Vehicle):
 		
 	def onDoubleClick(self):
 		self.expand()
+classmap["MCV"] = MCV
 
 class MCVAnimation(AnimationSet):
 	def __init__(self):

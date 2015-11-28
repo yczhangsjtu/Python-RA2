@@ -90,9 +90,9 @@ class Unit(object):
 				return
 		self.animation,self.index = animation,0
 			
-	def moveTo(self,x,y):
+	def moveTo(self,x,y,characters):
 		if dist(self.offsetx,self.offsety,x,y) < 2*self.speed:
-			self.offsetx,self.offsety = x,y
+			characters.unitSet.move(self,x,y)
 			self.stop()
 		else:
 			corner = None
@@ -115,7 +115,7 @@ class Unit(object):
 				elif directx == self.moveRight:
 					corner = self.moveUpRight
 			if corner == None and directx == None and directy == None:
-				self.offsetx,self.offsety = x,y
+				characters.unitSet.move(self,x,y)
 				self.stop()
 			elif directx == None:
 				directy()
