@@ -40,7 +40,7 @@ class Unit(object):
 		pygame.draw.polygon(screen,WHITE,pointlist)
 	
 	def draw(self,screen):
-		self.drawArea(screen)
+		# self.drawArea(screen)
 		self.animationset.setState(self.animation,self.index)
 		self.animationset.setpos(self.x,self.y)
 		self.animationset.draw(screen)

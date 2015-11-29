@@ -6,7 +6,7 @@ from button import RA2Button, PalatteButton
 from map import Map, initMap, groundData
 from game import Game
 """
-from load import Loader
+from load import Loader, loadImages
 from consts import *
 from data import images
 from startmenu import StartMenu
@@ -22,6 +22,7 @@ def load():
 	global screen
 	loader = Loader()
 	
+	
 	def loadImages(progress):
 		N = len(loadList)+1
 		n = 0
@@ -34,7 +35,6 @@ def load():
 		initInfantryAnimations()
 		initVehicleAnimations()
 		progress[0] = 1
-	
 	loader.loadimg("loadimg")
 	loader.load(images["loadimg"],screen,loadImages)
 

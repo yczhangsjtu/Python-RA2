@@ -1,8 +1,22 @@
 import threading, time
 import pygame
+import shpfile
 
 from data import images
 from consts import *
+
+def loadImages(progress):
+	N = len(loadList)+1
+	n = 0
+	for imgname in loadList:
+		loader.loadimg(imgname)
+		n += 1
+		progress[0] = float(n)/N
+	initMap()
+	initBuildingAnimations()
+	initInfantryAnimations()
+	initVehicleAnimations()
+	progress[0] = 1
 
 class Loader():
 	def __init__(self):
