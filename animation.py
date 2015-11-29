@@ -18,7 +18,7 @@ class Animation(pygame.sprite.GroupSingle):
 	
 	def addImageSprite(self,image,offsetx,offsety):
 		self.addSprite(ImageSprite(image),offsetx,offsety)
-	
+
 	def addImageSpriteSheet(self,image,x,y,width,height,m,n,offsetx,offsety,skip=0):
 		count = 0
 		for j in range(n):

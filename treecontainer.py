@@ -253,6 +253,10 @@ class TreeContainer(object):
 		return result
 	
 	def move(self,data,x,y):
+		if y < self.y: y = self.y
+		if y >= self.y + self.height: y = self.y + self.height
+		if x < self.x: x = self.x
+		if x >= self.x + self.width: x = self.x + self.width
 		if data.size > maxsize:
 			raise Exception('Too big')
 		if self.available(data,x,y):

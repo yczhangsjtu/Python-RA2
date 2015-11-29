@@ -23,18 +23,6 @@ def load():
 	loader = Loader()
 	
 	
-	def loadImages(progress):
-		N = len(loadList)+1
-		n = 0
-		for imgname in loadList:
-			loader.loadimg(imgname)
-			n += 1
-			progress[0] = float(n)/N
-		initMap()
-		initBuildingAnimations()
-		initInfantryAnimations()
-		initVehicleAnimations()
-		progress[0] = 1
 	loader.loadimg("loadimg")
 	loader.load(images["loadimg"],screen,loadImages)
 
@@ -154,7 +142,6 @@ if __name__ == "__main__":
 	pygame.init()
 	size = (winwidth,winheight)
 	screen = pygame.display.set_mode(size)
-	screen.convert_alpha()
 	pygame.display.set_caption(APP_CAPTION)
 	pygame.display.toggle_fullscreen()
 	clock = pygame.time.Clock()

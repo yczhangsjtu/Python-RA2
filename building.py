@@ -133,11 +133,11 @@ class GcnstAnimation(AnimationSet):
 		offsetx,offsety = 213,263
 		self.originalAnimation = "build"
 		width,height = 426,339
-		owneroffset = 2034
+		owneroffset = 1356
 		self.modifyx = 20
 		self.modifyy = -20
 		
-		x,y,i0,j0,left,right,count = 0,1356,0,0,0,20,29
+		x,y,i0,j0,left,right,count = 0,678,0,0,0,20,29
 		for owner in range(2):
 			animation = Animation()
 			animation.addBrokenSpriteSheet(image,x,y,i0,j0,width,height,left,right,count,offsetx,offsety)
@@ -145,7 +145,7 @@ class GcnstAnimation(AnimationSet):
 			self.addAnimation("build_%d"%owner,animation)
 			y += owneroffset
 		
-		x,y,m,n = 0,0,20,2
+		x,y,m,n = 0,0,20,1
 		for owner in range(2):
 			animation = Animation()
 			animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
@@ -153,7 +153,7 @@ class GcnstAnimation(AnimationSet):
 			self.getAnimation("build_%d"%owner).next = animation
 			y += owneroffset
 		
-		x,y,m,n = 0,678,20,2
+		x,y,m,n = 0,339,20,1
 		for owner in range(2):
 			animation = Animation()
 			animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)

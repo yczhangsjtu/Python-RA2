@@ -29,8 +29,10 @@ class Unit(object):
 		self.HP = 0
 		self.selectable = True
 		self.regionselectable = True
+		self.nextAnimation = ""
 		self.x = 0
 		self.y = 0
+		self.end = False
 	
 	def drawArea(self,screen):
 		pointlist = [(self.x+self.size*8,self.y)]
@@ -55,9 +57,7 @@ class Unit(object):
 		self.rect.bottom = self.y
 		return self.rect
 	
-	def step(self,map,characters):
-		self.animation,self.index = self.animationset.step(self.animation,self.index)
-		self.end = self.animationset.end
+	def move(self,map,characters):
 		offsetx,offsety = self.offsetx,self.offsety
 		if self.animation == "rune_%d"%(self.owner):
 			offsetx += self.speed
@@ -79,19 +79,29 @@ class Unit(object):
 		if self.animation == "runsw_%d"%(self.owner):
 			offsetx -= self.speed*2/3
 			offsety += self.speed/3
-
 		if self.offsetx != offsetx or self.offsety != offsety:
-			success = False
-			if map.island(offsetx,offsety) and self.land or\
-			   map.iswater(offsetx,offsety) and self.water:
-				success = characters.unitSet.move(self,offsetx,offsety)
+			success = ((map.island(offsetx,offsety) and self.land) or\
+				(map.iswater(offsetx,offsety) and self.water)) and\
+				characters.unitSet.move(self,offsetx,offsety)
 			if not success:
-				self.setStopAnimation()
+				self.tempStop()
+				return False
+		return True
+	
+	def step(self,map,characters):
+
+		if self.end and self.nextAnimation != "":
+			self.animation,self.index = self.nextAnimation,0
+			self.nextAnimation = ""
+			self.animationset.setState(self.animation,self.index)
+			self.end = self.animationset.end
+		else:
+			self.animation,self.index = self.animationset.step(self.animation,self.index)
+			self.end = self.animationset.end
+		self.move(map,characters)
 	
 	def startAnimation(self,animation):
-		if not self.end: #self.animation == animation:
-				return
-		self.animation,self.index = animation,0
+		self.nextAnimation = animation
 			
 	def moveTo(self,x,y,characters):
 		if dist(self.offsetx,self.offsety,x,y) < 2*self.speed:
@@ -151,13 +161,20 @@ class Unit(object):
 	def moveUpLeft(self):
 		self.startAnimation("runnw_%d"%(self.owner))
 	
-	def setStopAnimation(self):
+	def getStopAnimation(self):
 		for direction in directions:
 			if self.animation == "run%s_%d"%(direction,self.owner) or\
 				self.animation == "crawl%s_%d"%(direction,self.owner):
-				self.startAnimation("stand%s_%d"%(direction,self.owner))
+				return "stand%s_%d"%(direction,self.owner)
+		return "stand%s_%d"%("e",self.owner)
+
+	def tempStop(self):
+		self.animation,self.index = self.getStopAnimation(),0
+		self.animationset.setState(self.animation,self.index)
+		self.end = self.animationset.end
+
 	def stop(self):
-		self.setStopAnimation()
+		self.tempStop()
 		if self.target != None and isinstance(self.target,tuple):
 			self.target = None
 		return

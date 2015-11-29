@@ -3,10 +3,15 @@ import pygame
 import shpfile
 
 from data import images
+from map import initMap
 from consts import *
+from building import initBuildingAnimations
+from infantry import initInfantryAnimations
+from vehicle import initVehicleAnimations
 
 def loadImages(progress):
-	N = len(loadList)+1
+	loader = Loader()
+	N = len(loadList)
 	n = 0
 	for imgname in loadList:
 		loader.loadimg(imgname)
@@ -50,3 +55,4 @@ class Loader():
 	def loadimg(self,name):
 		path = loadList[name]
 		images[name] = pygame.image.load(path)
+
