@@ -64,6 +64,10 @@ class Map(SpriteContainer):
 		self.groundbox.add(self.ground)
 		self.addSprite(self.ground)
 		self.minimap = pygame.Surface([self.width,self.height])
+		self.minimapw = self.width
+		self.minimaph = self.height
+		self.minimapvieww = battlewidth * self.minimapw / self.groundwidth
+		self.minimapviewh = battleheight * self.minimaph / self.groundheight
 		
 	def read(self,filename):
 		with open(filename) as f:
@@ -189,6 +193,16 @@ class Map(SpriteContainer):
 	def iswaterGrid(self,col,row):
 		if not self.validPos(col,row): return False
 		return self.map[col][row] == 0
+	
+	def transformMini(self,x,y):
+		x = x * self.minimapw / self.groundwidth + minimapx
+		y = y * self.minimaph / self.groundheight + minimapy
+		return x,y
+	
+	def transformFromMini(self,x,y):
+		x = (x-minimapx)*self.groundwidth/self.minimapw
+		y = (y-minimapy)*self.groundheight/self.minimaph
+		return x,y
 	
 	def draw(self,screen):
 		super(Map,self).draw(screen)

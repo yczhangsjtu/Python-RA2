@@ -17,7 +17,7 @@ class Game():
 		self.running = False
 	
 	def initNewGame(self,playerData):
-		self.unitSet = TreeContainer(0,0,self.map.groundwidth,self.map.groundheight)
+		self.unitSet = TreeContainer(10,10,self.map.groundwidth-20,self.map.groundheight-20)
 		self.running = False
 		
 		for player in playerData:

@@ -111,12 +111,12 @@ class MapEditor(SpriteContainer):
 		self.updateMinimapView(x,y)
 	
 	def updateMinimapView(self,x,y):
-		minimapw = self.minimap.get_rect().width
-		minimaph = self.minimap.get_rect().height
+		minimapw = self.map.minimapw
+		minimaph = self.map.minimaph
 		if x >= minimapx and x <= minimapx + minimapw and\
 			 y >= minimapy and y <= minimapy + minimaph:
-			self.map.x = -(x-minimapx)*self.map.groundwidth/minimapw
-			self.map.y = -(y-minimapy)*self.map.groundheight/minimaph
+			x,y = self.map.transformFromMini(x,y)
+			self.map.x,self.map.y = -x,-y
 			self.map.fitOffset()
 			self.mouseMinimapDown = True
 		
@@ -165,8 +165,6 @@ class GameController(SpriteContainer):
 	def draw(self,screen):
 		super(GameController,self).draw(screen)
 		self.buttons.draw(screen)
-		minimapw = self.minimap.get_rect().width
-		minimaph = self.minimap.get_rect().height
 		if self.mousedrag:
 			x = min(self.mousedownx,self.mousex)
 			y = min(self.mousedowny,self.mousey)
@@ -175,12 +173,16 @@ class GameController(SpriteContainer):
 			rect = pygame.Rect(x,y,w,h)
 			pygame.draw.rect(screen,WHITE,rect,1)
 		screen.blit(self.minimap,(minimapx,minimapy))
-		x = (-self.map.x) * minimapw / self.map.groundwidth + minimapx
-		y = (-self.map.y) * minimaph / self.map.groundheight + minimapy
-		w = battlewidth * self.minimap.get_rect().width / self.map.groundwidth
-		h = battleheight * self.minimap.get_rect().height / self.map.groundheight
-		view = pygame.Rect(x,y,w,h)
+		x,y = self.map.transformMini(-self.map.x,-self.map.y)
+		view = pygame.Rect(x,y,self.map.minimapvieww,self.map.minimapviewh)
 		pygame.draw.rect(screen,RED,view,1)
+
+		units = []
+		for unit in self.characters.unitSet:
+			units.append(unit)
+		for unit in units:
+			x,y = self.map.transformMini(unit.offsetx,unit.offsety)
+			pygame.draw.rect(screen,colorofowner[unit.owner],pygame.Rect(x,y,1,1),2)
 	
 	def onMouseMove(self,x,y,button1=None,button2=None,button3=None):
 		super(GameController,self).onMouseMove(x,y,button1,button2,button3)
@@ -206,12 +208,12 @@ class GameController(SpriteContainer):
 		self.updateMinimapView(x,y)
 	
 	def updateMinimapView(self,x,y):
-		minimapw = self.minimap.get_rect().width
-		minimaph = self.minimap.get_rect().height
+		minimapw = self.map.minimapw
+		minimaph = self.map.minimaph
 		if x >= minimapx and x <= minimapx + minimapw and\
 			 y >= minimapy and y <= minimapy + minimaph:
-			self.map.x = -(x-minimapx)*self.map.groundwidth/minimapw
-			self.map.y = -(y-minimapy)*self.map.groundheight/minimaph
+			x,y = self.map.transformFromMini(x,y)
+			self.map.x,self.map.y = -x,-y
 			self.map.fitOffset()
 			self.mouseMinimapDown = True
 		

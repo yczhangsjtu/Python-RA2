@@ -1,6 +1,5 @@
 import threading, time
 import pygame
-import shpfile
 
 from data import images
 from map import initMap
