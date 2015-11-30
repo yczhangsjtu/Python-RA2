@@ -1,8 +1,9 @@
 import pygame
+from sets import Set
 
 from listbox import ListBox
 from data import images
-from button import RA2Button, PalatteButton
+from button import RA2Button, PalatteButton, GameCtrlButton
 from imagesprite import ImageSprite
 from spritecontainer import SpriteContainer
 from consts import *
@@ -76,6 +77,7 @@ class MapEditor(SpriteContainer):
 		self.backButton.setMouseListener(back)
 		self.buttons.add(self.backButton)
 		self.addSprite(self.backButton,menubuttonx,self.saveButton.bottom())
+
 		self.minimap = images["allyflag"]
 	
 	def save(self):
@@ -155,14 +157,58 @@ class GameController(SpriteContainer):
 		self.mousedown = False
 		self.mouseMinimapDown = False
 		self.characters = None
-		
+
 		self.buttons = pygame.sprite.Group()
+		self.groupOneButton = GameCtrlButton(0)
+		self.groupOneButton.setMouseListener(self.setGroupOne)
+		self.groupOneButton.x
+		self.buttons.add(self.groupOneButton)
+		self.addSprite(self.groupOneButton,gamectrlbuttonx,gamectrlbuttony)
+		self.groupTwoButton = GameCtrlButton(1)
+		self.groupTwoButton.setMouseListener(self.setGroupTwo)
+		self.buttons.add(self.groupTwoButton)
+		self.addSprite(self.groupTwoButton,self.groupOneButton.right(),gamectrlbuttony)
+		self.groupThreeButton = GameCtrlButton(2)
+		self.groupThreeButton.setMouseListener(self.setGroupThree)
+		self.buttons.add(self.groupThreeButton)
+		self.addSprite(self.groupThreeButton,self.groupTwoButton.right(),gamectrlbuttony)
+		self.selectSameTypeButton = GameCtrlButton(3)
+		self.selectSameTypeButton.setMouseListener(self.selectSameType)
+		self.buttons.add(self.selectSameTypeButton)
+		self.addSprite(self.selectSameTypeButton,self.groupThreeButton.right(),gamectrlbuttony)
+		self.deployButton = GameCtrlButton(4)
+		self.deployButton.setMouseListener(self.deploy)
+		self.buttons.add(self.deployButton)
+		self.addSprite(self.deployButton,self.selectSameTypeButton.right(),gamectrlbuttony)
+		self.guardButton = GameCtrlButton(6)
+		self.guardButton.setMouseListener(self.guard)
+		self.buttons.add(self.guardButton)
+		self.addSprite(self.guardButton,self.deployButton.right(),gamectrlbuttony)
+		self.setpathButton = GameCtrlButton(9)
+		self.setpathButton.setMouseListener(self.setpath)
+		self.buttons.add(self.setpathButton)
+		self.addSprite(self.setpathButton,self.guardButton.right(),gamectrlbuttony)
+		
 		self.minimap = images["allyflag"]
+		self.groupOne = Set()
+		self.groupTwo = Set()
+		self.groupThree = Set()
+		self.selected = Set()
 	
 	def save(self):
 		pass
 	
 	def draw(self,screen):
+		for unit in self.groupOne:
+			if unit.selected:
+				unit.drawGroup(screen,1)
+		for unit in self.groupTwo:
+			if unit.selected:
+				unit.drawGroup(screen,2)
+		for unit in self.groupThree:
+			if unit.selected:
+				unit.drawGroup(screen,3)
+
 		super(GameController,self).draw(screen)
 		self.buttons.draw(screen)
 		if self.mousedrag:
@@ -177,12 +223,79 @@ class GameController(SpriteContainer):
 		view = pygame.Rect(x,y,self.map.minimapvieww,self.map.minimapviewh)
 		pygame.draw.rect(screen,RED,view,1)
 
-		units = []
 		for unit in self.characters.unitSet:
-			units.append(unit)
-		for unit in units:
 			x,y = self.map.transformMini(unit.offsetx,unit.offsety)
 			pygame.draw.rect(screen,colorofowner[unit.owner],pygame.Rect(x,y,1,1),2)
+	
+	def setGroupOne(self):
+		if len(self.groupOne) == 0:
+			self.groupOne = Set()
+			for unit in self.characters.unitSet:
+				if unit.selected:
+					self.groupOne.add(unit)
+					if unit in self.groupTwo:
+						self.groupTwo.remove(unit)
+					if unit in self.groupThree:
+						self.groupThree.remove(unit)
+		else:
+			for unit in self.characters.unitSet:
+				unit.selected = unit in self.groupOne
+	
+	def setGroupTwo(self):
+		if len(self.groupTwo) == 0:
+			self.groupTwo = Set()
+			for unit in self.characters.unitSet:
+				if unit.selected:
+					self.groupTwo.add(unit)
+					if unit in self.groupOne:
+						self.groupOne.remove(unit)
+					if unit in self.groupThree:
+						self.groupThree.remove(unit)
+		else:
+			for unit in self.characters.unitSet:
+				unit.selected = unit in self.groupTwo
+	
+	def setGroupThree(self):
+		if len(self.groupThree) == 0:
+			self.groupThree = Set()
+			for unit in self.characters.unitSet:
+				if unit.selected:
+					self.groupThree.add(unit)
+					if unit in self.groupOne:
+						self.groupOne.remove(unit)
+					if unit in self.groupTwo:
+						self.groupTwo.remove(unit)
+		else:
+			for unit in self.characters.unitSet:
+				unit.selected = unit in self.groupThree
+	
+	def selectSameType(self):
+		selectedTypes = Set()
+		for unit in self.characters.unitSet:
+			if unit.selected:
+				selectedTypes.add(unit.name)
+		for unit in self.characters.unitSet:
+			if unit.name in selectedTypes:
+				unit.selected = True
+	
+	def deploy(self):
+		pass
+	
+	def guard(self):
+		pass
+	
+	def setpath(self):
+		pass
+	
+	def updateMinimapView(self,x,y):
+		minimapw = self.map.minimapw
+		minimaph = self.map.minimaph
+		if x >= minimapx and x <= minimapx + minimapw and\
+			 y >= minimapy and y <= minimapy + minimaph:
+			x,y = self.map.transformFromMini(x,y)
+			self.map.x,self.map.y = -x,-y
+			self.map.fitOffset()
+			self.mouseMinimapDown = True
 	
 	def onMouseMove(self,x,y,button1=None,button2=None,button3=None):
 		super(GameController,self).onMouseMove(x,y,button1,button2,button3)
@@ -206,16 +319,6 @@ class GameController(SpriteContainer):
 		elif button == 3:
 			self.mousedrag = False
 		self.updateMinimapView(x,y)
-	
-	def updateMinimapView(self,x,y):
-		minimapw = self.map.minimapw
-		minimaph = self.map.minimaph
-		if x >= minimapx and x <= minimapx + minimapw and\
-			 y >= minimapy and y <= minimapy + minimaph:
-			x,y = self.map.transformFromMini(x,y)
-			self.map.x,self.map.y = -x,-y
-			self.map.fitOffset()
-			self.mouseMinimapDown = True
 		
 	def onMouseUp(self,x,y,button):
 		super(GameController,self).onMouseUp(x,y,button)

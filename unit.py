@@ -15,6 +15,7 @@ class Unit(object):
 	def __init__(self,owner,animationset,animation=None):
 		self.owner = owner
 		self.animationset = animationset
+		self.name = ""
 		if animation == None:
 			self.animation = "%s_%d"%(animationset.originalAnimation,owner)
 		else:
@@ -49,8 +50,20 @@ class Unit(object):
 		if self.selected:
 			self.drawBloodBar(screen)
 	
+	def drawGroup(self,screen,group):
+		rect = self.get_rect()
+		x,y = rect.topright
+		rect = pygame.Rect(x,y,groupw,grouph)
+		pygame.draw.rect(screen,BLACK,rect)
+		pygame.draw.rect(screen,colorofowner[self.owner],rect,2)
+		textimg = pygame.font.Font(None,15).render(str(group),False,colorofowner[self.owner])
+		textrect = textimg.get_rect()
+		textrect.center = rect.center
+		screen.blit(textimg,textrect)
+	
 	def drawBloodBar(self,screen):
-		pass
+		if self.group >= 0:
+			self.drawGroup(screen)
 	
 	def get_rect(self):
 		self.rect.centerx = self.x
@@ -181,17 +194,18 @@ class Unit(object):
 	
 	def onMouseDown(self,x,y,button):
 		rect = self.get_rect()
-		if button == 1:
-			if rect.contains(pygame.Rect(x,y,1,1)):
+		if pygame.Rect(0,0,battlewidth,battleheight).contains(pygame.Rect(x,y,1,1)):
+			if button == 1:
+				if rect.contains(pygame.Rect(x,y,1,1)):
+					if self.selected:
+						self.onDoubleClick()
+					if self.selectable:
+						self.selected = True
+				else:
+					self.selected = False
+			elif button == 3:
 				if self.selected:
-					self.onDoubleClick()
-				if self.selectable:
-					self.selected = True
-			else:
-				self.selected = False
-		elif button == 3:
-			if self.selected:
-				self.target = (self.offsetx+(x-self.x),self.offsety+(y-self.y))
+					self.target = (self.offsetx+(x-self.x),self.offsety+(y-self.y))
 		
 	def onMouseUp(self,x,y,button):
 		pass

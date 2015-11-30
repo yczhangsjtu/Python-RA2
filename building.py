@@ -77,6 +77,7 @@ class AirCmd(Building):
 		self.size = sizeofunit["AirCmd"]
 		self.fullHP = 1000
 		self.HP = self.fullHP
+		self.name = "AirCmd"
 	def drawBloodBar(self,screen):
 		self.drawShortBloodBar(screen)
 classmap["AirCmd"] = AirCmd
@@ -88,6 +89,7 @@ class Gcnst(Building):
 		self.size = sizeofunit["Gcnst"]
 		self.fullHP = 3000
 		self.HP = self.fullHP
+		self.name = "Gcnst"
 	def drawBloodBar(self,screen):
 		self.drawLongBloodBar(screen)
 classmap["Gcnst"] = Gcnst

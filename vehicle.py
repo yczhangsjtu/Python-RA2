@@ -85,6 +85,7 @@ class MCV(Vehicle):
 		self.fullHP = 3000
 		self.HP = self.fullHP
 		self.expandInto = "Gcnst"
+		self.name = "MCV"
 	
 	def get_rect(self):
 		self.rect.center = (self.x,self.y-20)

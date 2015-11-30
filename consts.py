@@ -15,9 +15,11 @@ menubuttonx = 634
 menubuttony = 270
 colorbuttonx = 600
 colorbuttony = 270
+gamectrlbuttonx = 50
+gamectrlbuttony = 568
 listboxx = 100
 listboxy = 50
-mousescrollwidth = 30
+mousescrollwidth = 10
 mapnamex = 684
 mapnamey = 100
 animationspeed = 1
@@ -30,6 +32,8 @@ barlength = 160
 barheight = 10
 barx = 50
 bary = 150
+groupw = 10
+grouph = 15
 occupyx = 8
 occupyy = 4
 maxsize = 25
@@ -61,6 +65,13 @@ loadList = {
 	"menu":"./img/menu.png",
 	"allyflag":"./img/icons/allyflag.png",
 	"ctrlpanel":"./img/ctrlpanel.png",
+	"button00":"./img/icons/button00.png",
+	"button01":"./img/icons/button01.png",
+	"button02":"./img/icons/button02.png",
+	"button03":"./img/icons/button03.png",
+	"button04":"./img/icons/button04.png",
+	"button06":"./img/icons/button06.png",
+	"button09":"./img/icons/button09.png",
 	"editorpanel":"./img/editorpanel.png",
 	"selectmap":"./img/selectmap.png",
 	"ground":"./img/ground.png",

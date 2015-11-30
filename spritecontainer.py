@@ -12,6 +12,12 @@ class ExtendSprite(pygame.sprite.Sprite):
 		
 	def bottom(self):
 		return self.rect.bottom
+	def right(self):
+		return self.rect.right
+	def left(self):
+		return self.rect.left
+	def top(self):
+		return self.rect.top
 	
 	def width(self):
 		return self.rect.width

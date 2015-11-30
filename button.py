@@ -79,3 +79,11 @@ class PalatteButton(Button):
 		over = images["lightground"].subsurface(col*gridwidth,row*gridheight,gridwidth,gridheight)
 		pressed = over
 		super(PalatteButton,self).__init__(normal,over,pressed)
+
+class GameCtrlButton(Button):
+	def __init__(self,index):
+		img = images["button%d%d"%(index/10,index%10)]
+		normal = img.subsurface(0,0,img.get_width()/2,img.get_height())
+		over = img.subsurface(img.get_width()/2,0,img.get_width()/2,img.get_height())
+		pressed = over
+		super(GameCtrlButton,self).__init__(normal,over,pressed)

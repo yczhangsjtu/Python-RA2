@@ -59,6 +59,7 @@ class Adog(Infantry):
 		self.range = 0
 		self.fullHP = 100
 		self.HP = self.fullHP
+		self.name = "Adog"
 classmap["Adog"] = Adog
 
 class E3(Infantry):
@@ -70,6 +71,7 @@ class E3(Infantry):
 		self.range = 100
 		self.fullHP = 100
 		self.HP = self.fullHP
+		self.name = "E3"
 classmap["E3"] = E3
 
 class E3Animation(AnimationSet):
