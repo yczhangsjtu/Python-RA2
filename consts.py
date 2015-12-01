@@ -22,12 +22,20 @@ listboxy = 50
 mousescrollwidth = 10
 mapnamex = 684
 mapnamey = 100
+creditx = 632
+credity = 0
+diplobtnx = 644
+diplobtny = 16
+radarx = 632
 animationspeed = 1
 defaultmapfile = "map0.txt"
 mapwidth = 200
 mapheight = 200
 minimapx = 595
 minimapy = 30
+powerx = 632
+powery = 568
+powern = 180
 barlength = 160
 barheight = 10
 barx = 50
@@ -44,7 +52,7 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 RED = (255, 0, 0)
 
-colorofowner = [RED,BLUE]
+colorofplayer = [RED,BLUE]
 
 sizeofunit = {
 	"adog":1,
@@ -72,6 +80,13 @@ loadList = {
 	"button04":"./img/icons/button04.png",
 	"button06":"./img/icons/button06.png",
 	"button09":"./img/icons/button09.png",
+	"lspacer":"./img/icons/lspacer.png",
+	"lendcap":"./img/icons/lendcap.png",
+	"credits":"./img/icons/credits.png",
+	"diplobtn":"./img/icons/diplobtn.png",
+	"optbtn":"./img/icons/optbtn.png",
+	"radar":"./img/icons/radar.png",
+	"powerp":"./img/icons/powerp.png",
 	"editorpanel":"./img/editorpanel.png",
 	"selectmap":"./img/selectmap.png",
 	"ground":"./img/ground.png",
@@ -107,7 +122,7 @@ defaultplayers = {
 	},
 	"player1":{
 		"flag":1,
-		"position":[15,15],
+		"position":[185,185],
 		"initials":[
 			{"name":"E3","pos":(-150,-150),"animation":"standne"},
 			{"name":"E3","pos":(150,-150),"animation":"standnw"},

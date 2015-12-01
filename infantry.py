@@ -23,8 +23,8 @@ def initInfantryAnimations():
 	adogAnimation = AdogAnimation()
 
 class Infantry(Unit):
-	def __init__(self,owner,animationset,animation=None):
-		super(Infantry,self).__init__(owner,animationset,animation)
+	def __init__(self,player,animationset,animation=None):
+		super(Infantry,self).__init__(player,animationset,animation)
 		self.rect = infantryRect
 	
 	def drawBloodBar(self,screen):
@@ -51,9 +51,9 @@ class Infantry(Unit):
 		
 		
 class Adog(Infantry):
-	def __init__(self,owner,animation=None):
+	def __init__(self,player,animation=None):
 		animationset = adogAnimation
-		super(Adog,self).__init__(owner,animationset,animation)
+		super(Adog,self).__init__(player,animationset,animation)
 		self.speed = 10
 		self.size = sizeofunit["adog"]
 		self.range = 0
@@ -63,9 +63,9 @@ class Adog(Infantry):
 classmap["Adog"] = Adog
 
 class E3(Infantry):
-	def __init__(self,owner,animation=None):
+	def __init__(self,player,animation=None):
 		animationset = e3Animation
-		super(E3,self).__init__(owner,animationset,animation)
+		super(E3,self).__init__(player,animationset,animation)
 		self.speed = 4
 		self.size = sizeofunit["E3"]
 		self.range = 100
@@ -81,99 +81,99 @@ class E3Animation(AnimationSet):
 		offsetx,offsety = 57,37
 		self.originalAnimation = "runsw"
 		width,height = 118,72
-		owneroffset = 504
+		playeroffset = 504
 		
 		y,m,n = 0,1,1
-		for owner in range(2):
+		for player in range(2):
 			x = 0
 			for direction in directions:
 				animation = Animation()
 				animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-				self.addAnimation("stand%s_%d"%(direction,owner),animation)
+				self.addAnimation("stand%s_%d"%(direction,player),animation)
 				x += width * m
-			y += owneroffset
+			y += playeroffset
 		
 		y,m,n = 216,6,1
-		for owner in range(2):
+		for player in range(2):
 			x = 0
 			for direction in directions:
 				animation = Animation()
 				animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
 				animation.loop = False
-				animation.next = self.getAnimation("stand%s_%d"%(direction,owner))
-				self.addAnimation("run%s_%d"%(direction,owner),animation)
+				animation.next = self.getAnimation("stand%s_%d"%(direction,player))
+				self.addAnimation("run%s_%d"%(direction,player),animation)
 				x += width * m
-			y += owneroffset
+			y += playeroffset
 			
 		y,m,n = 288,6,1
-		for owner in range(2):
+		for player in range(2):
 			x = 0
 			for direction in directions:
 				animation = Animation()
 				animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
 				animation.loop = False
-				animation.next = self.getAnimation("stand%s_%d"%(direction,owner))
-				self.addAnimation("crawl%s_%d"%(direction,owner),animation)
+				animation.next = self.getAnimation("stand%s_%d"%(direction,player))
+				self.addAnimation("crawl%s_%d"%(direction,player),animation)
 				x += width * m
-			y += owneroffset
+			y += playeroffset
 		
 		y,m,n = 360,6,1
-		for owner in range(2):
+		for player in range(2):
 			x = 0
 			for direction in directions:
 				animation = Animation()
 				animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
 				animation.loop = False
-				animation.next = self.getAnimation("stand%s_%d"%(direction,owner))
-				self.addAnimation("attack%s_%d"%(direction,owner),animation)
+				animation.next = self.getAnimation("stand%s_%d"%(direction,player))
+				self.addAnimation("attack%s_%d"%(direction,player),animation)
 				x += width * m
-			y += owneroffset
+			y += playeroffset
 			
 		y,m,n = 432,6,1
-		for owner in range(2):
+		for player in range(2):
 			x = 0
 			for direction in directions:
 				animation = Animation()
 				animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
 				animation.loop = False
-				animation.next = self.getAnimation("stand%s_%d"%(direction,owner))
-				self.addAnimation("crawlattack%s_%d"%(direction,owner),animation)
+				animation.next = self.getAnimation("stand%s_%d"%(direction,player))
+				self.addAnimation("crawlattack%s_%d"%(direction,player),animation)
 				x += width * m
-			y += owneroffset
+			y += playeroffset
 		
 		x,y,m,n = 1110,72,15,1
-		for owner in range(2):
+		for player in range(2):
 			animation = Animation()
 			animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
 			animation.loop = False
-			animation.next = self.getAnimation("standsw_%d"%(owner))
-			self.addAnimation("cheer_%d"%(owner),animation)
-			y += owneroffset
+			animation.next = self.getAnimation("standsw_%d"%(player))
+			self.addAnimation("cheer_%d"%(player),animation)
+			y += playeroffset
 			
 		x,y,m,n = 0,72,15,1
-		for owner in range(2):
+		for player in range(2):
 			animation = Animation()
 			animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
 			animation.loop = False
-			animation.next = self.getAnimation("standsw_%d"%(owner))
-			self.addAnimation("squeez_%d"%(owner),animation)
-			y += owneroffset
+			animation.next = self.getAnimation("standsw_%d"%(player))
+			self.addAnimation("squeez_%d"%(player),animation)
+			y += playeroffset
 		
 		x,y,m,n = 2220,144,15,1
-		for owner in range(2):
+		for player in range(2):
 			animation = Animation()
 			animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
 			animation.loop = False
-			self.addAnimation("die1_%d"%(owner),animation)
-			y += owneroffset
+			self.addAnimation("die1_%d"%(player),animation)
+			y += playeroffset
 			
 		x,y,m,n = 3330,144,15,1
-		for owner in range(2):
+		for player in range(2):
 			animation = Animation()
 			animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
 			animation.loop = False
-			self.addAnimation("die2_%d"%(owner),animation)
-			y += owneroffset
+			self.addAnimation("die2_%d"%(player),animation)
+			y += playeroffset
 			
 class AdogAnimation(AnimationSet):
 	def __init__(self):
@@ -182,73 +182,73 @@ class AdogAnimation(AnimationSet):
 		offsetx,offsety = 36,38
 		self.originalAnimation = "runsw"
 		width,height = 74,72
-		owneroffset = 288
+		playeroffset = 288
 		
 		y,m,n = 0,1,1
-		for owner in range(2):
+		for player in range(2):
 			x = 0
 			for direction in directions:
 				animation = Animation()
 				animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-				self.addAnimation("stand%s_%d"%(direction,owner),animation)
+				self.addAnimation("stand%s_%d"%(direction,player),animation)
 				x += width * m
-			y += owneroffset
+			y += playeroffset
 		
 		y,m,n = 72,6,1
-		for owner in range(2):
+		for player in range(2):
 			x = 0
 			for direction in directions:
 				animation = Animation()
 				animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
 				animation.loop = False
-				animation.next = self.getAnimation("stand%s_%d"%(direction,owner))
-				self.addAnimation("run%s_%d"%(direction,owner),animation)
+				animation.next = self.getAnimation("stand%s_%d"%(direction,player))
+				self.addAnimation("run%s_%d"%(direction,player),animation)
 				x += width * m
-			y += owneroffset
+			y += playeroffset
 		
 		y,m,n = 216,6,1
-		for owner in range(2):
+		for player in range(2):
 			x = 0
 			for direction in directions:
 				animation = Animation()
 				animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
 				animation.loop = False
-				animation.next = self.getAnimation("stand%s_%d"%(direction,owner))
-				self.addAnimation("attack%s_%d"%(direction,owner),animation)
+				animation.next = self.getAnimation("stand%s_%d"%(direction,player))
+				self.addAnimation("attack%s_%d"%(direction,player),animation)
 				x += width * m
-			y += owneroffset
+			y += playeroffset
 		
 		x,y,m,n = 0,144,15,1
-		for owner in range(2):
+		for player in range(2):
 			animation = Animation()
 			animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
 			animation.loop = False
-			animation.next = self.getAnimation("standsw_%d"%(owner))
-			self.addAnimation("tail_%d"%(owner),animation)
-			y += owneroffset
+			animation.next = self.getAnimation("standsw_%d"%(player))
+			self.addAnimation("tail_%d"%(player),animation)
+			y += playeroffset
 			
 		x,y,m,n = 1110,144,15,1
-		for owner in range(2):
+		for player in range(2):
 			animation = Animation()
 			animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
 			animation.loop = False
-			animation.next = self.getAnimation("standsw_%d"%(owner))
-			self.addAnimation("squeez_%d"%(owner),animation)
-			y += owneroffset
+			animation.next = self.getAnimation("standsw_%d"%(player))
+			self.addAnimation("squeez_%d"%(player),animation)
+			y += playeroffset
 		
 		x,y,m,n = 2220,144,15,1
-		for owner in range(2):
+		for player in range(2):
 			animation = Animation()
 			animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
 			animation.loop = False
-			self.addAnimation("die1_%d"%(owner),animation)
-			y += owneroffset
+			self.addAnimation("die1_%d"%(player),animation)
+			y += playeroffset
 			
 		x,y,m,n = 3330,144,15,1
-		for owner in range(2):
+		for player in range(2):
 			animation = Animation()
 			animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
 			animation.loop = False
-			self.addAnimation("die2_%d"%(owner),animation)
-			y += owneroffset
+			self.addAnimation("die2_%d"%(player),animation)
+			y += playeroffset
 			

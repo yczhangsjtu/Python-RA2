@@ -26,8 +26,8 @@ def initBuildingAnimations():
 	gcnstAnimation = GcnstAnimation()
 
 class Building(Unit):
-	def __init__(self,owner,animationset,animation=None):
-		super(Building,self).__init__(owner,animationset,animation)
+	def __init__(self,player,animationset,animation=None):
+		super(Building,self).__init__(player,animationset,animation)
 		self.rect = buildingRect
 		self.modifyx = 0
 		self.modifyy = 0
@@ -71,9 +71,9 @@ class Building(Unit):
 			screen.blit(pygame.transform.rotate(blood,rotate),(self.x-offsetx,self.y-offsety))
 
 class AirCmd(Building):
-	def __init__(self,owner,animation=None):
+	def __init__(self,player,animation=None):
 		animationset = aircmdAnimation
-		super(AirCmd,self).__init__(owner,animationset,animation)
+		super(AirCmd,self).__init__(player,animationset,animation)
 		self.size = sizeofunit["AirCmd"]
 		self.fullHP = 1000
 		self.HP = self.fullHP
@@ -83,9 +83,9 @@ class AirCmd(Building):
 classmap["AirCmd"] = AirCmd
 		
 class Gcnst(Building):
-	def __init__(self,owner,animation=None):
+	def __init__(self,player,animation=None):
 		animationset = gcnstAnimation
-		super(Gcnst,self).__init__(owner,animationset,animation)
+		super(Gcnst,self).__init__(player,animationset,animation)
 		self.size = sizeofunit["Gcnst"]
 		self.fullHP = 3000
 		self.HP = self.fullHP
@@ -103,30 +103,30 @@ class AirCmdAnimation(AnimationSet):
 		self.modifyx = -50
 		self.modifyy = 0
 		width,height = 282,243
-		owneroffset = 486
+		playeroffset = 486
 		
 		x,y,m,n = 0,243,25,1
-		for owner in range(2):
+		for player in range(2):
 			animation = Animation()
 			animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
 			animation.loop = False
-			self.addAnimation("build_%d"%owner,animation)
-			y += owneroffset
+			self.addAnimation("build_%d"%player,animation)
+			y += playeroffset
 		
 		x,y,m,n = 0,0,6,1
-		for owner in range(2):
+		for player in range(2):
 			animation = Animation()
 			animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-			self.addAnimation("normal_%d"%owner,animation)
-			self.getAnimation("build_%d"%owner).next = animation
-			y += owneroffset
+			self.addAnimation("normal_%d"%player,animation)
+			self.getAnimation("build_%d"%player).next = animation
+			y += playeroffset
 		
 		x,y,m,n = 1692,0,6,1
-		for owner in range(2):
+		for player in range(2):
 			animation = Animation()
 			animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-			self.addAnimation("destroy_%d"%owner,animation)
-			y += owneroffset
+			self.addAnimation("destroy_%d"%player,animation)
+			y += playeroffset
 			
 class GcnstAnimation(AnimationSet):
 	def __init__(self):
@@ -135,29 +135,29 @@ class GcnstAnimation(AnimationSet):
 		offsetx,offsety = 213,263
 		self.originalAnimation = "build"
 		width,height = 426,339
-		owneroffset = 1356
+		playeroffset = 1356
 		self.modifyx = 20
 		self.modifyy = -20
 		
 		x,y,i0,j0,left,right,count = 0,678,0,0,0,20,29
-		for owner in range(2):
+		for player in range(2):
 			animation = Animation()
 			animation.addBrokenSpriteSheet(image,x,y,i0,j0,width,height,left,right,count,offsetx,offsety)
 			animation.loop = False
-			self.addAnimation("build_%d"%owner,animation)
-			y += owneroffset
+			self.addAnimation("build_%d"%player,animation)
+			y += playeroffset
 		
 		x,y,m,n = 0,0,20,1
-		for owner in range(2):
+		for player in range(2):
 			animation = Animation()
 			animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-			self.addAnimation("normal_%d"%owner,animation)
-			self.getAnimation("build_%d"%owner).next = animation
-			y += owneroffset
+			self.addAnimation("normal_%d"%player,animation)
+			self.getAnimation("build_%d"%player).next = animation
+			y += playeroffset
 		
 		x,y,m,n = 0,339,20,1
-		for owner in range(2):
+		for player in range(2):
 			animation = Animation()
 			animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-			self.addAnimation("destroy_%d"%owner,animation)
-			y += owneroffset
+			self.addAnimation("destroy_%d"%player,animation)
+			y += playeroffset

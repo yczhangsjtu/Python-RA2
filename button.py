@@ -87,3 +87,11 @@ class GameCtrlButton(Button):
 		over = img.subsurface(img.get_width()/2,0,img.get_width()/2,img.get_height())
 		pressed = over
 		super(GameCtrlButton,self).__init__(normal,over,pressed)
+
+class GamePanelButton(Button):
+	def __init__(self,name):
+		img = images[name]
+		normal = img.subsurface(0,0,img.get_width()/2,img.get_height())
+		over = normal
+		pressed = img.subsurface(img.get_width()/2,0,img.get_width()/2,img.get_height())
+		super(GamePanelButton,self).__init__(normal,over,pressed)
