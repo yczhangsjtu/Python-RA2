@@ -120,9 +120,9 @@ class Player():
         self.index = index
         self.units = Set()
         self.money = 0
-        self.powergen = 200
-        self.powerload = 150
-        self.powerhigh = True
+        self.powergen = 0
+        self.powerload = 0
+        self.powerhigh = False
         self.powerlow = False
         self.nopower= True
 

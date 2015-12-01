@@ -30,23 +30,31 @@ mapnamex = 684
 mapnamey = 100
 creditx = 632
 credity = 0
+topx = 632
+topy = 16
 diplobtnx = 644
 diplobtny = 16
 repairbtnx = 652
 repairbtny = 146
 radarx = 632
 radary = 44
+tabbtnx = 659
+tabx = 632
+taby = 154
+createbtnboxx = 632
+createbtnboxy = 223
+createn = 7
 animationspeed = 1
 defaultmapfile = "map0.txt"
 mapwidth = 200
 mapheight = 200
-minimapx = 642
-minimapy = 44
-minimapw = 148
+minimapx = 644
+minimapy = 48
+minimapw = 142
 minimaph = 110
 powerx = 632
 powery = 568
-powern = 180
+powern = 172
 barlength = 160
 barheight = 10
 barx = 50
@@ -96,9 +104,18 @@ loadList = {
 	"rendcap":"./img/icons/rendcap.png",
 	"bttnbkgd":"./img/icons/bttnbkgd.png",
 	"credits":"./img/icons/credits.png",
+	"top":"./img/icons/top.png",
 	"diplobtn":"./img/icons/diplobtn.png",
 	"optbtn":"./img/icons/optbtn.png",
 	"repairbtn":"./img/icons/repair.png",
+	"sellbtn":"./img/icons/sell.png",
+	"tabtop":"./img/icons/side1.png",
+	"tabbtm":"./img/icons/side3.png",
+	"tabbtn0":"./img/icons/tab00.png",
+	"tabbtn1":"./img/icons/tab01.png",
+	"tabbtn2":"./img/icons/tab02.png",
+	"tabbtn3":"./img/icons/tab03.png",
+	"sideb":"./img/icons/side2b.png",
 	"radar":"./img/icons/radar.png",
 	"powerp":"./img/icons/powerp.png",
 	"editorpanel":"./img/editorpanel.png",

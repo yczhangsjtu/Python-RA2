@@ -4,7 +4,8 @@ from math import log,exp
 
 from listbox import ListBox
 from data import images
-from button import RA2Button, PalatteButton, GameCtrlButton, GamePanelButton
+from button import RA2Button, PalatteButton, GameCtrlButton,\
+        GamePanelButton, GamePanelPressedButton, TabButton
 from imagesprite import ImageSprite
 from spritecontainer import SpriteContainer
 from animation import SimpleAnimation
@@ -157,6 +158,9 @@ class GameController(SpriteContainer):
         self.credits = ImageSprite(images["credits"])
         self.credits.setpos(creditx,credity)
         self.add(self.credits)
+        self.paneltop = ImageSprite(images["top"])
+        self.paneltop.setpos(topx,self.credits.bottom())
+        self.add(self.paneltop)
         self.bttnbkgd = ImageSprite(images["bttnbkgd"])
         self.bttnbkgd.setpos(bttnbkgdx,bttnbkgdy)
         self.add(self.bttnbkgd)
@@ -223,13 +227,67 @@ class GameController(SpriteContainer):
         self.buttons.add(self.optbtn)
 
         self.radar = SimpleAnimation(\
-                images["radar"],0,0,168,110,33,1,radarx,self.optbtn.bottom()+10)
+                images["radar"],0,0,168,110,33,1,radarx,self.paneltop.bottom())
         self.radar.setIndex(0)
         self.animations.add(self.radar)
 
-        self.repairbtn = GamePanelButton("repairbtn")
-        self.addSprite(self.repairbtn,repairbtnx,self.radar.bottom()+10)
+        self.tabtop = ImageSprite(images["tabtop"])
+        self.tabtop.setpos(tabx,self.radar.bottom())
+        self.add(self.tabtop)
+        self.side0 = ImageSprite(images["sideb"])
+        self.side0.setpos(createbtnboxx,self.tabtop.bottom())
+        self.add(self.side0)
+        self.side1 = ImageSprite(images["sideb"])
+        self.side1.setpos(createbtnboxx,self.side0.bottom())
+        self.add(self.side1)
+        self.side2 = ImageSprite(images["sideb"])
+        self.side2.setpos(createbtnboxx,self.side1.bottom())
+        self.add(self.side2)
+        self.side3 = ImageSprite(images["sideb"])
+        self.side3.setpos(createbtnboxx,self.side2.bottom())
+        self.add(self.side3)
+        self.side4 = ImageSprite(images["sideb"])
+        self.side4.setpos(createbtnboxx,self.side3.bottom())
+        self.add(self.side4)
+        self.side5 = ImageSprite(images["sideb"])
+        self.side5.setpos(createbtnboxx,self.side4.bottom())
+        self.add(self.side5)
+        self.side6 = ImageSprite(images["sideb"])
+        self.side6.setpos(createbtnboxx,self.side5.bottom())
+        self.add(self.side6)
+        self.tabbtm = ImageSprite(images["tabbtm"])
+        self.tabbtm.setpos(tabx,self.side6.bottom())
+        self.add(self.tabbtm)
+
+        self.repairbtn = GamePanelPressedButton("repairbtn")
+        self.addSprite(self.repairbtn,repairbtnx,self.radar.bottom()+7)
         self.buttons.add(self.repairbtn)
+        self.sellbtn = GamePanelPressedButton("sellbtn")
+        self.addSprite(self.sellbtn,self.repairbtn.right(),self.repairbtn.top())
+        self.buttons.add(self.sellbtn)
+
+        self.tab = Set()
+        self.buildingButtons = Set()
+        self.tabbtn0 = TabButton(0,self.tab,self.buildingButtons)
+        self.addSprite(self.tabbtn0,tabbtnx,self.repairbtn.bottom())
+        self.buttons.add(self.tabbtn0)
+        self.tab.add(self.tabbtn0)
+        self.defenceButtons = Set()
+        self.tabbtn1 = TabButton(1,self.tab,self.defenceButtons)
+        self.addSprite(self.tabbtn1,self.tabbtn0.right(),self.repairbtn.bottom())
+        self.buttons.add(self.tabbtn1)
+        self.tab.add(self.tabbtn1)
+        self.infantryButtons = Set()
+        self.tabbtn2 = TabButton(2,self.tab,self.infantryButtons)
+        self.addSprite(self.tabbtn2,self.tabbtn1.right(),self.repairbtn.bottom())
+        self.buttons.add(self.tabbtn2)
+        self.tab.add(self.tabbtn2)
+        self.vehicleButtons = Set()
+        self.tabbtn3 = TabButton(3,self.tab,self.vehicleButtons)
+        self.addSprite(self.tabbtn3,self.tabbtn2.right(),self.repairbtn.bottom())
+        self.buttons.add(self.tabbtn3)
+        self.tab.add(self.tabbtn3)
+        self.tabbtn0.under()
         
         self.minimap = images["allyflag"]
         self.groupOne = Set()
