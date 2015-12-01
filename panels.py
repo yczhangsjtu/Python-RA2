@@ -115,11 +115,10 @@ class MapEditor(SpriteContainer):
         self.updateMinimapView(x,y)
     
     def updateMinimapView(self,x,y):
-        minimapw = self.map.minimapw
-        minimaph = self.map.minimaph
         if x >= minimapx and x <= minimapx + minimapw and\
             y >= minimapy and y <= minimapy + minimaph:
-            x,y = self.map.transformFromMini(x,y)
+            x,y = self.map.transformFromMini(\
+                    x-self.map.minimapvieww/2,y-self.map.minimapviewh/2)
             self.map.x,self.map.y = -x,-y
             self.map.fitOffset()
             self.mouseMinimapDown = True
@@ -158,6 +157,10 @@ class GameController(SpriteContainer):
         self.credits = ImageSprite(images["credits"])
         self.credits.setpos(creditx,credity)
         self.add(self.credits)
+        self.bttnbkgd = ImageSprite(images["bttnbkgd"])
+        self.bttnbkgd.setpos(bttnbkgdx,bttnbkgdy)
+        self.add(self.bttnbkgd)
+
         self.player = None
 
         self.powere = ImageSprite(images["powerp"],5,1,0)
@@ -174,9 +177,13 @@ class GameController(SpriteContainer):
 
         self.animations = pygame.sprite.Group()
         self.lendcap = SimpleAnimation(\
-                images["lendcap"],0,0,28,32,3,1,20,gamectrlbuttony)
+                images["lendcap"],0,0,28,32,3,1,lendcapx,lendcapy)
         self.lendcap.setIndex(0)
         self.animations.add(self.lendcap)
+        self.rendcap = SimpleAnimation(\
+                images["rendcap"],0,0,28,32,1,1,rendcapx,rendcapy)
+        self.rendcap.setIndex(0)
+        self.animations.add(self.rendcap)
 
         self.buttons = pygame.sprite.Group()
         self.groupOneButton = GameCtrlButton(0)
@@ -219,6 +226,10 @@ class GameController(SpriteContainer):
                 images["radar"],0,0,168,110,33,1,radarx,self.optbtn.bottom()+10)
         self.radar.setIndex(0)
         self.animations.add(self.radar)
+
+        self.repairbtn = GamePanelButton("repairbtn")
+        self.addSprite(self.repairbtn,repairbtnx,self.radar.bottom()+10)
+        self.buttons.add(self.repairbtn)
         
         self.minimap = images["allyflag"]
         self.groupOne = Set()
@@ -254,9 +265,17 @@ class GameController(SpriteContainer):
         moneyrect.center = self.credits.rect.center
         screen.blit(moneyimg,moneyrect)
 
-        #self.drawMinimap(screen)
+        if self.mousedrag:
+            x = min(self.mousedownx,self.mousex)
+            y = min(self.mousedowny,self.mousey)
+            w = abs(self.mousedownx-self.mousex)
+            h = abs(self.mousedowny-self.mousey)
+            rect = pygame.Rect(x,y,w,h)
+            pygame.draw.rect(screen,WHITE,rect,1)
+
         self.buttons.draw(screen)
         self.animations.draw(screen)
+        self.drawMinimap(screen)
 
         ppowern = int((1-exp(-max(self.player.powergen,self.player.powerload)*log(2)/200)) * powern)
         if self.player.powergen > self.player.powerload:
@@ -280,13 +299,6 @@ class GameController(SpriteContainer):
             screen.blit(self.powern.image,(powerx,powery-i*2))
 
     def drawMinimap(self,screen):
-        if self.mousedrag:
-            x = min(self.mousedownx,self.mousex)
-            y = min(self.mousedowny,self.mousey)
-            w = abs(self.mousedownx-self.mousex)
-            h = abs(self.mousedowny-self.mousey)
-            rect = pygame.Rect(x,y,w,h)
-            pygame.draw.rect(screen,WHITE,rect,1)
         screen.blit(self.minimap,(minimapx,minimapy))
         x,y = self.map.transformMini(-self.map.x,-self.map.y)
         view = pygame.Rect(x,y,self.map.minimapvieww,self.map.minimapviewh)
@@ -352,11 +364,10 @@ class GameController(SpriteContainer):
         pass
     
     def updateMinimapView(self,x,y):
-        minimapw = self.map.minimapw
-        minimaph = self.map.minimaph
         if x >= minimapx and x <= minimapx + minimapw and\
              y >= minimapy and y <= minimapy + minimaph:
-            x,y = self.map.transformFromMini(x,y)
+            x,y = self.map.transformFromMini(\
+                    x-self.map.minimapvieww/2,y-self.map.minimapviewh/2)
             self.map.x,self.map.y = -x,-y
             self.map.fitOffset()
             self.mouseMinimapDown = True

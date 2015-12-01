@@ -63,11 +63,9 @@ class Map(SpriteContainer):
 		self.groundbox = pygame.sprite.Group()
 		self.groundbox.add(self.ground)
 		self.addSprite(self.ground)
-		self.minimap = pygame.Surface([self.width,self.height])
-		self.minimapw = self.width
-		self.minimaph = self.height
-		self.minimapvieww = battlewidth * self.minimapw / self.groundwidth
-		self.minimapviewh = battleheight * self.minimaph / self.groundheight
+		self.minimap = pygame.Surface([minimapw,minimaph])
+		self.minimapvieww = battlewidth * minimapw / self.groundwidth
+		self.minimapviewh = battleheight * minimaph / self.groundheight
 		
 	def read(self,filename):
 		with open(filename) as f:
@@ -104,7 +102,8 @@ class Map(SpriteContainer):
 		x,y = getAbsPos(col,row)
 		if k == 1:
 			self.groundimg.blit(images["grass"],(x,y))
-			pygame.draw.rect(self.minimap,GREEN,pygame.Rect(col,row,1,1),1)
+			pygame.draw.rect(self.minimap,GREEN,\
+                    pygame.Rect(col*minimapw/self.width,row*minimaph/self.height,1,1),1)
 			if self.northeastv(col,row) == 0:
 				self.groundimg.blit(images["northeast"],(x,y))
 			if self.northwestv(col,row) == 0:
@@ -123,7 +122,8 @@ class Map(SpriteContainer):
 				self.groundimg.blit(images["south"],(x,y))
 		elif k == 0:
 			self.groundimg.blit(images["water"],(x,y))
-			pygame.draw.rect(self.minimap,BLUE,pygame.Rect(col,row,1,1),1)
+			pygame.draw.rect(self.minimap,BLUE,\
+                    pygame.Rect(col*minimapw/self.width,row*minimaph/self.height,1,1),1)
 	
 	def setNeighborBitmap(self,col,row):
 		for col,row in self.neighbors(col,row):
@@ -195,13 +195,13 @@ class Map(SpriteContainer):
 		return self.map[col][row] == 0
 	
 	def transformMini(self,x,y):
-		x = x * self.minimapw / self.groundwidth + minimapx
-		y = y * self.minimaph / self.groundheight + minimapy
+		x = x * minimapw / self.groundwidth + minimapx
+		y = y * minimaph / self.groundheight + minimapy
 		return x,y
 	
 	def transformFromMini(self,x,y):
-		x = (x-minimapx)*self.groundwidth/self.minimapw
-		y = (y-minimapy)*self.groundheight/self.minimaph
+		x = (x-minimapx)*self.groundwidth/minimapw
+		y = (y-minimapy)*self.groundheight/minimaph
 		return x,y
 	
 	def draw(self,screen):

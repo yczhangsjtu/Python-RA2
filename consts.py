@@ -4,7 +4,7 @@ winwidth = 800
 winheight = 600
 gridwidth = 96
 gridheight = 47
-battlewidth = 600
+battlewidth = 640
 battleheight = 570
 scrollspeed = 15
 optionheight = 20
@@ -17,6 +17,12 @@ colorbuttonx = 600
 colorbuttony = 270
 gamectrlbuttonx = 50
 gamectrlbuttony = 568
+lendcapx = 20
+lendcapy = 568
+rendcapx = 604
+rendcapy = 568
+bttnbkgdx = 50
+bttnbkgdy = 568
 listboxx = 100
 listboxy = 50
 mousescrollwidth = 10
@@ -26,13 +32,18 @@ creditx = 632
 credity = 0
 diplobtnx = 644
 diplobtny = 16
+repairbtnx = 652
+repairbtny = 146
 radarx = 632
+radary = 44
 animationspeed = 1
 defaultmapfile = "map0.txt"
 mapwidth = 200
 mapheight = 200
-minimapx = 595
-minimapy = 30
+minimapx = 642
+minimapy = 44
+minimapw = 148
+minimaph = 110
 powerx = 632
 powery = 568
 powern = 180
@@ -82,9 +93,12 @@ loadList = {
 	"button09":"./img/icons/button09.png",
 	"lspacer":"./img/icons/lspacer.png",
 	"lendcap":"./img/icons/lendcap.png",
+	"rendcap":"./img/icons/rendcap.png",
+	"bttnbkgd":"./img/icons/bttnbkgd.png",
 	"credits":"./img/icons/credits.png",
 	"diplobtn":"./img/icons/diplobtn.png",
 	"optbtn":"./img/icons/optbtn.png",
+	"repairbtn":"./img/icons/repair.png",
 	"radar":"./img/icons/radar.png",
 	"powerp":"./img/icons/powerp.png",
 	"editorpanel":"./img/editorpanel.png",
