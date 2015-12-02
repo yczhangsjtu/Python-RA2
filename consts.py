@@ -83,12 +83,12 @@ sizeofunit = {
 	"Adog":1,
 	"E3":1,
 	"MCV":6,
-	"Power":12,
+	"Power":10,
 	"AirCmd":12,
 	"Gcnst":20,
 }
 modify = {
-	"Power":[0,0],
+	"Power":[0,24],
 	"AirCmd":[-50,0],
 	"Gcnst":[20,-20],
 }
@@ -125,7 +125,7 @@ canwater = {
 	"Gcnst":False,
 }
 pointerset = {
-	"Power":[(-1,1),(0,0),(1,1),(0,1)],
+	"Power":[(0,0),(-1,1),(1,1),(0,1)],
 }
 
 loadList = {

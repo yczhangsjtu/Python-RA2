@@ -3,13 +3,13 @@ from sets import Set
 from math import log,exp
 
 from listbox import ListBox
-from data import images
+from data import images,classmap
 from button import RA2Button, CreateButton, GameCtrlButton,\
         GamePanelButton, GamePanelPressedButton, TabButton, ButtonSet
 from imagesprite import ImageSprite
 from spritecontainer import SpriteContainer
 from animation import SimpleAnimation
-from map import getGridPos,addPos
+from map import getGridPos,addPos,getAbsPos
 from consts import *
 
 class SelectMapPanel(SpriteContainer):
@@ -159,24 +159,6 @@ class BattleFieldController(SpriteContainer):
         self.buttons.add(self.tabbtn3)
         self.tab.add(self.tabbtn3)
         self.tabbtn0.under()
-
-        self.createButtons = {}
-        for unitname in requisite:
-            self.createButtons[unitname] = CreateButton(unitname)
-            self.createButtons[unitname].setMouseListener(self.addToCreateList)
-
-    def addToCreateList(self,name):
-        if typeofunit[name] == "building":
-            builded = self.player.getBuildingInFactory()
-            if builded != None:
-                if builded[2] == name:
-                    self.selectBuildingPosition = name
-                else:
-                    self.cannotApply()
-            else:
-                self.player.addToCreateList(name)
-        else:
-            self.player.addToCreateList(name)
 
     def save(self):
         pass
@@ -336,8 +318,26 @@ class GameController(BattleFieldController):
         self.powern = ImageSprite(images["powerp"],5,1,3)
         self.moneyfont = pygame.font.Font(None,15)
 
+        self.createButtons = {}
+        for unitname in requisite:
+            self.createButtons[unitname] = CreateButton(unitname)
+            self.createButtons[unitname].setMouseListener(self.addToCreateList)
+
         self.selectBuildingPosition = ""
         self.pointerset = None
+
+    def addToCreateList(self,name):
+        if typeofunit[name] == "building":
+            builded = self.player.getBuildingInFactory()
+            if builded != None:
+                if builded[0] == 0 and builded[2] == name:
+                    self.selectBuildingPosition = name
+                else:
+                    self.cannotApply()
+            else:
+                self.player.addToCreateList(name)
+        else:
+            self.player.addToCreateList(name)
 
     def takeOverGame(self,game,player):
         self.characters = game
@@ -470,6 +470,13 @@ class GameController(BattleFieldController):
         self.updateDefenceButtons()
         self.updateInfantryButtons()
         self.updateVehicleButtons()
+        self.cleanupRemovedUnits()
+
+    def cleanupRemovedUnits(self):
+        self.groupOne.intersection_update(self.player.units)
+        self.groupTwo.intersection_update(self.player.units)
+        self.groupThree.intersection_update(self.player.units)
+        self.selected.intersection_update(self.player.units)
 
     def updateBuildingButtons(self):
         builded = self.player.getBuildingInFactory()
@@ -529,6 +536,7 @@ class GameController(BattleFieldController):
                 pointerx,pointery = self.map.getGridPos(x,y)
                 self.pointerset = [(addPos(pointerx,pointery,col,row))\
                         for col,row in pointerset[self.selectBuildingPosition]]
+            return
         if button1 != None and button1 and self.mousedown:
             self.mousex = min(x,battlewidth)
             self.mousey = min(y,battleheight)
@@ -537,12 +545,29 @@ class GameController(BattleFieldController):
     def onMouseDown(self,x,y,button):
         super(GameController,self).onMouseDown(x,y,button)
         if button == 1:
+            if self.pointerset != None:
+                for col,row in self.pointerset:
+                    if not self.goodToPutBuilding(self.selectBuildingPosition,col,row):
+                        return
+                name = self.selectBuildingPosition
+                building = classmap[name](self.player.index)
+                col,row = self.pointerset[0]
+                offsetx,offsety = getAbsPos(col,row,True)
+                offsetx += modify[name][0]
+                offsety += modify[name][1]
+                self.characters.addUnit(building,offsetx,offsety)
+                self.pointerset = None
+                self.selectBuildingPosition = ""
+                self.player.popBuildingList()
+                return
             if x >= 0 and x <= battlewidth and\
                y >= 0 and y <= battleheight:
                 self.mousedownx = x
                 self.mousedowny = y
                 self.mousedown = True
         elif button == 3:
+            self.selectBuildingPosition = ""
+            self.pointerset = None
             self.mousedrag = False
             if self.get_battle_rect().contains(pygame.Rect(x,y,1,1)):
                 for unit in self.selected:

@@ -15,7 +15,7 @@ def initBuildingAnimations():
 	global longBuildingHealthBlood, longBuildingHurtBlood,\
            longBuildingDangerBlood, shortBuildingHealthBlood,\
            shortBuildingHurtBlood, shortBuildingDangerBlood
-	global aircmdAnimation, gcnstAnimation
+	global aircmdAnimation, gcnstAnimation, powerAnimation
 	bloodbarimg = images["buildingbloodbar"]
 	longBuildingHealthBlood  = bloodbarimg.subsurface(0,0,300,10)
 	longBuildingHurtBlood    = bloodbarimg.subsurface(0,10,300,10)
@@ -94,7 +94,7 @@ class Power(Building):
 		self.name = "Power"
 	def drawBloodBar(self,screen):
 		self.drawShortBloodBar(screen)
-classmap["AirCmd"] = AirCmd
+classmap["Power"] = Power
 		
 class Gcnst(Building):
 	def __init__(self,player,animation=None):
@@ -112,12 +112,12 @@ class PowerAnimation(AnimationSet):
 	def __init__(self):
 		super(PowerAnimation,self).__init__()
 		image = images["power"]
-		offsetx,offsety = 66,88
+		offsetx,offsety = 99,132
 		self.originalAnimation = "build"
-		width,height = 142,110
-		playeroffset = 220
+		width,height = 213,165
+		playeroffset = 330
 		
-		x,y,m,n = 0,110,25,1
+		x,y,m,n = 0,165,25,1
 		for player in range(numofplayer):
 			animation = Animation()
 			animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
@@ -133,7 +133,7 @@ class PowerAnimation(AnimationSet):
 			self.getAnimation("build_%d"%player).next = animation
 			y += playeroffset
 		
-		x,y,m,n = 1136,0,8,1
+		x,y,m,n = 1704,0,8,1
 		for player in range(numofplayer):
 			animation = Animation()
 			animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)

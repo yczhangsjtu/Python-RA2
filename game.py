@@ -175,6 +175,18 @@ class Player():
         self.updateVehicleList()
         self.updateVehicleCreateList()
 
+    def popBuildingList(self):
+        if len(self.buildingCreateList) > 0:
+            self.buildingCreateList.pop(0)
+    def popDefenceList(self):
+        if len(self.defenceCreateList) > 0:
+            self.defenceCreateList.pop(0)
+    def popInfantryList(self):
+        if len(self.infantryCreateList) > 0:
+            self.infantryCreateList.pop(0)
+    def popVehicleList(self):
+        if len(self.vehicleCreateList) > 0:
+            self.vehicleCreateList.pop(0)
     def updateBuildingCreateList(self):
         if len(self.buildingCreateList) > 0:
             if self.buildingCreateList[0][0] > 0:
