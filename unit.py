@@ -23,8 +23,6 @@ class Unit(object):
         self.index = 0
         self.target = None
         self.rect = pygame.Rect(0,0,1,1)
-        self.land = True
-        self.water = False
         self.air = False
         self.HP = 0
         self.selectable = True
@@ -92,8 +90,8 @@ class Unit(object):
             offsetx -= self.speed*2/3
             offsety += self.speed/3
         if self.offsetx != offsetx or self.offsety != offsety:
-            success = ((map.island(offsetx,offsety) and self.land) or\
-                (map.iswater(offsetx,offsety) and self.water)) and\
+            success = ((map.island(offsetx,offsety) and canland[self.name]) or\
+                (map.iswater(offsetx,offsety) and canwater[self.name])) and\
                 characters.unitSet.move(self,offsetx,offsety)
             if not success:
                 self.tempStop()

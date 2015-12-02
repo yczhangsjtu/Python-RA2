@@ -232,24 +232,28 @@ class TreeContainer(object):
 		c2 = abs(w*X)+abs(l*Y) < abs(l*self.height+w*self.width+2*l*w)
 		return c1 and c2
 	
+	def availableSize(self,size,x,y):
+		if self.leaf:
+			if self.data == None:
+				return True
+			return not collideDataPos(self.data,x,y,size)
+		result = True
+		for child in self.children:
+			if child.collide(size+maxsize,x,y):
+				result = result and child.availableSize(size,x,y)
+			if not result: break
+		return result
+
 	def available(self,data,x,y):
 		if self.leaf:
-			# print "[%d,%d,%d,%d]: Is leaf"%(self.x,self.y,self.width,self.height)
 			if self.data == data or self.data == None:
-				# print "[%d,%d,%d,%d]: Available because empty."%(self.x,self.y,self.width,self.height)
 				return True
-			# print "Testing available"
-			# print x,y,data.size
-			# print self.data.offsetx,self.data.offsety,self.data.size
 			return not collideDataPos(self.data,x,y,data.size)
-		# print "[%d,%d,%d,%d]: Is not leaf"%(self.x,self.y,self.width,self.height)
 		result = True
 		for child in self.children:
 			if child.collide(data.size+maxsize,x,y):
 				result = result and child.available(data,x,y)
 			if not result: break
-		#if result: print "[%d,%d,%d,%d]: All children available"%(self.x,self.y,self.width,self.height)
-		#else: print "[%d,%d,%d,%d]: All children not available"%(self.x,self.y,self.width,self.height)
 		return result
 	
 	def move(self,data,x,y):
@@ -260,7 +264,6 @@ class TreeContainer(object):
 		if data.size > maxsize:
 			raise Exception('Too big')
 		if self.available(data,x,y):
-			# print x,y,data.size,"is available."
 			self.remove(data)
 			data.offsetx = x
 			data.offsety = y

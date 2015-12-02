@@ -1,5 +1,6 @@
 APP_CAPTION = "Red Alert"
 
+numofplayer = 2
 winwidth = 800
 winheight = 600
 gridwidth = 96
@@ -68,6 +69,7 @@ grouph = 15
 occupyx = 8
 occupyy = 4
 maxsize = 25
+createspeed = 10
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -78,15 +80,52 @@ RED = (255, 0, 0)
 colorofplayer = [RED,BLUE]
 
 sizeofunit = {
-	"adog":1,
+	"Adog":1,
 	"E3":1,
 	"MCV":6,
+	"Power":12,
 	"AirCmd":12,
 	"Gcnst":20,
 }
 modify = {
+	"Power":[0,0],
 	"AirCmd":[-50,0],
 	"Gcnst":[20,-20],
+}
+typeofunit = {
+	"Adog":"infantry",
+	"E3":"infantry",
+	"MCV":"vehicle",
+	"Power":"building",
+	"AirCmd":"building",
+	"Gcnst":"building",
+}
+costofunit = {
+	"Adog":200,
+	"E3":100,
+	"MCV":3000,
+	"Power":800,
+	"AirCmd":1000,
+	"Gcnst":3000,
+}
+canland = {
+	"Adog":True,
+	"E3":True,
+	"MCV":True,
+	"Power":True,
+	"AirCmd":True,
+	"Gcnst":True,
+}
+canwater = {
+	"Adog":False,
+	"E3":False,
+	"MCV":False,
+	"Power":False,
+	"AirCmd":False,
+	"Gcnst":False,
+}
+pointerset = {
+	"Power":[(-1,1),(0,0),(1,1),(0,1)],
 }
 
 loadList = {
@@ -128,6 +167,7 @@ loadList = {
 	"lightground":"./img/lightground.png",
 	"red":"./img/red.png",
 	"green":"./img/green.png",
+	"black":"./img/creat/black.png",
 	"bar":"./img/bar.png",
 	"bloodbar":"./img/bloodbar.png",
 	"buildingbloodbar":"./img/buildingbloodbar.png",
@@ -135,6 +175,7 @@ loadList = {
 	"listboxbar":"./img/listboxbar.png",
 	"aircmd":"./img/Building/aircmd.png",
 	"gcnst":"./img/Building/gcnst.png",
+	"power":"./img/Building/ggpowr.png",
 	"E3":"./img/Infantry/E3.png",
 	"adog":"./img/Infantry/adog.png",
 	"mcv":"./img/Vehicle/mcv.png",

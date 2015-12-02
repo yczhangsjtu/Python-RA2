@@ -9,6 +9,7 @@ from button import RA2Button, CreateButton, GameCtrlButton,\
 from imagesprite import ImageSprite
 from spritecontainer import SpriteContainer
 from animation import SimpleAnimation
+from map import getGridPos,addPos
 from consts import *
 
 class SelectMapPanel(SpriteContainer):
@@ -53,9 +54,9 @@ class SelectMapPanel(SpriteContainer):
         self.listBox.draw(screen)
         self.buttons.draw(screen)
 
-class GameController(SpriteContainer):
+class BattleFieldController(SpriteContainer):
     def __init__(self,gotoBackController):
-        super(GameController,self).__init__()
+        super(BattleFieldController,self).__init__()
         self.lspacer = ImageSprite(images["lspacer"])
         self.lspacer.setpos(0,gamectrlbuttony)
         self.add(self.lspacer)
@@ -68,20 +69,10 @@ class GameController(SpriteContainer):
         self.bttnbkgd = ImageSprite(images["bttnbkgd"])
         self.bttnbkgd.setpos(bttnbkgdx,bttnbkgdy)
         self.add(self.bttnbkgd)
-
-        self.player = None
-
-        self.powere = ImageSprite(images["powerp"],5,1,0)
-        self.powerh = ImageSprite(images["powerp"],5,1,1)
-        self.powerl = ImageSprite(images["powerp"],5,1,2)
-        self.powern = ImageSprite(images["powerp"],5,1,3)
-        self.moneyfont = pygame.font.Font(None,15)
-
         self.map = None
         self.mousedrag = False
         self.mousedown = False
         self.mouseMinimapDown = False
-        self.characters = None
 
         self.animations = pygame.sprite.Group()
         self.lendcap = SimpleAnimation(\
@@ -172,27 +163,27 @@ class GameController(SpriteContainer):
         self.buttons.add(self.sellbtn)
 
         self.tab = Set()
-        self.buildingButtons = ButtonSet()
-        self.buildingButtons.scroll = 0
-        self.tabbtn0 = TabButton(0,self.tab,self.buildingButtons)
+        self.tabbtn0 = TabButton(0,self.tab,ButtonSet())
+        self.tabbtn0.children.group = pygame.sprite.Group()
+        self.tabbtn0.children.scroll = 0
         self.addSprite(self.tabbtn0,tabbtnx,self.repairbtn.bottom())
         self.buttons.add(self.tabbtn0)
         self.tab.add(self.tabbtn0)
-        self.defenceButtons = ButtonSet()
-        self.defenceButtons.scroll = 0
-        self.tabbtn1 = TabButton(1,self.tab,self.defenceButtons)
+        self.tabbtn1 = TabButton(1,self.tab,ButtonSet())
+        self.tabbtn1.children.scroll = 0
+        self.tabbtn1.children.group = pygame.sprite.Group()
         self.addSprite(self.tabbtn1,self.tabbtn0.right(),self.repairbtn.bottom())
         self.buttons.add(self.tabbtn1)
         self.tab.add(self.tabbtn1)
-        self.infantryButtons = ButtonSet()
-        self.infantryButtons.scroll = 0
-        self.tabbtn2 = TabButton(2,self.tab,self.infantryButtons)
+        self.tabbtn2 = TabButton(2,self.tab,ButtonSet())
+        self.tabbtn2.children.scroll = 0
+        self.tabbtn2.children.group = pygame.sprite.Group()
         self.addSprite(self.tabbtn2,self.tabbtn1.right(),self.repairbtn.bottom())
         self.buttons.add(self.tabbtn2)
         self.tab.add(self.tabbtn2)
-        self.vehicleButtons = ButtonSet()
-        self.vehicleButtons.scroll = 0
-        self.tabbtn3 = TabButton(3,self.tab,self.vehicleButtons)
+        self.tabbtn3 = TabButton(3,self.tab,ButtonSet())
+        self.tabbtn3.children.scroll = 0
+        self.tabbtn3.children.group = pygame.sprite.Group()
         self.addSprite(self.tabbtn3,self.tabbtn2.right(),self.repairbtn.bottom())
         self.buttons.add(self.tabbtn3)
         self.tab.add(self.tabbtn3)
@@ -202,42 +193,161 @@ class GameController(SpriteContainer):
         for unitname in requisite:
             self.createButtons[unitname] = CreateButton(unitname)
             self.createButtons[unitname].setMouseListener(self.addToCreateList)
+
+    def addToCreateList(self,name):
+        if typeofunit[name] == "building":
+            builded = self.player.getBuildingInFactory()
+            if builded != None:
+                if builded[2] == name:
+                    self.selectBuildingPosition = name
+                else:
+                    self.cannotApply()
+            else:
+                self.player.addToCreateList(name)
+        else:
+            self.player.addToCreateList(name)
+
+    def cannotApply(self):
+        pass
+
+    def save(self):
+        pass
+    
+    def get_battle_rect(self):
+        return pygame.Rect(0,0,battlewidth,battleheight)
+
+    def goodToPutBuilding(self,name,col,row):
+        return self.characters.isEmpty(col,row) and\
+            ((self.map.islandGrid(col,row) and canland[name])
+          or (self.map.iswaterGrid(col,row) and canwater[name]))
+    
+    def draw(self,screen):
+        super(BattleFieldController,self).draw(screen)
+
+        self.buttons.draw(screen)
+        self.animations.draw(screen)
+        self.drawMinimap(screen)
+        self.drawCreateButtons(screen)
+
+    def drawCreateButtons(self,screen):
+        if self.tabbtn0.children.visible:
+            self.drawCreateButtonSet(self.tabbtn0.children,screen)
+        if self.tabbtn1.children.visible:
+            self.drawCreateButtonSet(self.tabbtn1.children,screen)
+        if self.tabbtn2.children.visible:
+            self.drawCreateButtonSet(self.tabbtn2.children,screen)
+        if self.tabbtn3.children.visible:
+            self.drawCreateButtonSet(self.tabbtn3.children,screen)
+
+    def drawCreateButtonSet(self,buttonSet,screen):
+        if not buttonSet.visible: return
+        for button in buttonSet:
+            ix = button.index % 2
+            iy = button.index / 2 + buttonSet.scroll
+            button.setpos(ix*createbtnw+createbtnx,iy*createbtny+self.side0.top())
+        buttonSet.group.draw(screen)
+
+    def drawMinimap(self,screen):
+        screen.blit(self.minimap,(minimapx,minimapy))
+        x,y = self.map.transformMini(-self.map.x,-self.map.y)
+        view = pygame.Rect(x,y,self.map.minimapvieww,self.map.minimapviewh)
+        pygame.draw.rect(screen,RED,view,1)
+    
+    def updateMinimapView(self,x,y):
+        if x >= minimapx and x <= minimapx + minimapw and\
+             y >= minimapy and y <= minimapy + minimaph:
+            x,y = self.map.transformFromMini(\
+                    x-self.map.minimapvieww/2,y-self.map.minimapviewh/2)
+            self.map.x,self.map.y = -x,-y
+            self.map.fitOffset()
+            self.mouseMinimapDown = True
+
+    def clickButtonSet(self,buttonSet,x,y,button):
+        for b in buttonSet:
+            if button == 1:
+                ix = b.index % 2
+                iy = b.index / 2 + buttonSet.scroll
+                b.setpos(ix*createbtnw+createbtnx,iy*createbtny+self.side0.top())
+                if not b.disabled and b.contains(x,y):
+                    b.mouseListener(b.name)
+    
+    def onMouseMove(self,x,y,button1=None,button2=None,button3=None):
+        super(BattleFieldController,self).onMouseMove(x,y,button1,button2,button3)
+        if self.map != None:
+            self.map.updateScrollV(x,y,button3==True)
+        if self.mouseMinimapDown:
+            self.updateMinimapView(x,y)
+        
+    def onMouseDown(self,x,y,button):
+        super(BattleFieldController,self).onMouseDown(x,y,button)
+        if self.tabbtn0.children.visible:
+            self.clickButtonSet(self.tabbtn0.children,x,y,button)
+        if self.tabbtn1.children.visible:
+            self.clickButtonSet(self.tabbtn1.children,x,y,button)
+        if self.tabbtn2.children.visible:
+            self.clickButtonSet(self.tabbtn2.children,x,y,button)
+        if self.tabbtn3.children.visible:
+            self.clickButtonSet(self.tabbtn3.children,x,y,button)
+        self.updateMinimapView(x,y)
+        
+    def onMouseUp(self,x,y,button):
+        super(BattleFieldController,self).onMouseUp(x,y,button)
+        self.mouseMinimapDown = False
+    
+    def onKeyDown(self,keyCode,mod):
+        if keyCode == pygame.K_LEFT:
+            self.map.scrollv[0] = 1
+        elif keyCode == pygame.K_RIGHT:
+            self.map.scrollv[1] = 1
+        elif keyCode == pygame.K_UP:
+            self.map.scrollv[2] = 1
+        elif keyCode == pygame.K_DOWN:
+            self.map.scrollv[3] = 1
+        
+    def onKeyUp(self,keyCode,mod):
+        if keyCode == pygame.K_LEFT:
+            self.map.scrollv[0] = 0
+        elif keyCode == pygame.K_RIGHT:
+            self.map.scrollv[1] = 0
+        elif keyCode == pygame.K_UP:
+            self.map.scrollv[2] = 0
+        elif keyCode == pygame.K_DOWN:
+            self.map.scrollv[3] = 0
+
+class GameController(BattleFieldController):
+    def __init__(self,gotoBackController):
+        super(GameController,self).__init__(gotoBackController)
         
         self.minimap = images["allyflag"]
         self.groupOne = Set()
         self.groupTwo = Set()
         self.groupThree = Set()
         self.selected = Set()
-    
-    def addToCreateList(self,name):
-        pass
 
-    def update(self):
-        self.player.update()
-        self.updateBuildingButtons()
+        self.player = None
+        self.characters = None
 
-    def updateBuildingButtons(self):
-        visible = self.buildingButtons.visible
-        self.buildingButtons = ButtonSet()
-        self.buildingButtons.visible = visible
-        self.buildingButtons.scroll = 0
-        self.buildingButtons.group = pygame.sprite.Group()
-        for i,building in enumerate(self.player.buildingList):
-            self.buildingButtons.add(self.createButtons[building])
-            self.createButtons[building].index = i
-            self.buildingButtons.group.add(self.createButtons[building])
+        self.powere = ImageSprite(images["powerp"],5,1,0)
+        self.powerh = ImageSprite(images["powerp"],5,1,1)
+        self.powerl = ImageSprite(images["powerp"],5,1,2)
+        self.powern = ImageSprite(images["powerp"],5,1,3)
+        self.moneyfont = pygame.font.Font(None,15)
+
+
+        self.selectBuildingPosition = ""
+        self.pointerset = None
 
     def takeOverGame(self,game,player):
         self.characters = game
         self.player = player
-    
-    def save(self):
-        pass
-    
-    def get_battle_rect(self):
-        return pygame.Rect(0,0,battlewidth,battleheight)
-    
+
     def draw(self,screen):
+        if self.pointerset != None:
+            for col,row in self.pointerset:
+                if self.goodToPutBuilding(self.selectBuildingPosition,col,row):
+                    self.map.drawGreenPointer(screen,col,row)
+                else:
+                    self.map.drawRedPointer(screen,col,row)
         for unit in self.selected:
             if unit.inarea(self.characters):
                 unit.drawBloodBar(screen)
@@ -263,28 +373,14 @@ class GameController(SpriteContainer):
             rect = pygame.Rect(x,y,w,h)
             pygame.draw.rect(screen,WHITE,rect,1)
 
-        self.buttons.draw(screen)
-        self.animations.draw(screen)
-        self.drawMinimap(screen)
         self.drawPower(screen)
-        self.drawCreateButtons(screen)
 
-    def drawCreateButtons(self,screen):
-        if self.buildingButtons.visible:
-            self.drawCreateButtonSet(self.buildingButtons,screen)
-        if self.defenceButtons.visible:
-            self.drawCreateButtonSet(self.defenceButtons,screen)
-        if self.infantryButtons.visible:
-            self.drawCreateButtonSet(self.infantryButtons,screen)
-        if self.vehicleButtons.visible:
-            self.drawCreateButtonSet(self.vehicleButtons,screen)
+    def drawMinimap(self,screen):
+        super(GameController,self).drawMinimap(screen)
 
-    def drawCreateButtonSet(self,buttonSet,screen):
-        for button in buttonSet:
-            ix = button.index % 2
-            iy = button.index / 2 + buttonSet.scroll
-            button.setpos(ix*createbtnw+createbtnx,iy*createbtny+self.side0.top())
-        buttonSet.group.draw(screen)
+        for unit in self.characters.unitSet:
+            x,y = self.map.transformMini(unit.offsetx,unit.offsety)
+            pygame.draw.rect(screen,colorofplayer[unit.player],pygame.Rect(x,y,1,1),2)
 
     def drawPower(self,screen):
         ppowern = int((1-exp(-max(self.player.powergen,self.player.powerload)*log(2)/200)) * powern)
@@ -308,16 +404,6 @@ class GameController(SpriteContainer):
         for i in range(powerloadn):
             screen.blit(self.powern.image,(powerx,powery-i*2))
 
-    def drawMinimap(self,screen):
-        screen.blit(self.minimap,(minimapx,minimapy))
-        x,y = self.map.transformMini(-self.map.x,-self.map.y)
-        view = pygame.Rect(x,y,self.map.minimapvieww,self.map.minimapviewh)
-        pygame.draw.rect(screen,RED,view,1)
-
-        for unit in self.characters.unitSet:
-            x,y = self.map.transformMini(unit.offsetx,unit.offsety)
-            pygame.draw.rect(screen,colorofplayer[unit.player],pygame.Rect(x,y,1,1),2)
-    
     def setGroupOne(self):
         if len(self.groupOne) == 0:
             self.groupOne = self.selected.copy()
@@ -372,36 +458,77 @@ class GameController(SpriteContainer):
     
     def setpath(self):
         pass
-    
-    def updateMinimapView(self,x,y):
-        if x >= minimapx and x <= minimapx + minimapw and\
-             y >= minimapy and y <= minimapy + minimaph:
-            x,y = self.map.transformFromMini(\
-                    x-self.map.minimapvieww/2,y-self.map.minimapviewh/2)
-            self.map.x,self.map.y = -x,-y
-            self.map.fitOffset()
-            self.mouseMinimapDown = True
 
-    def clickButtonSet(self,buttonSet,x,y,button):
-        for b in buttonSet:
-            if button == 1:
-                ix = b.index % 2
-                iy = b.index / 2 + buttonSet.scroll
-                b.setpos(ix*createbtnw+createbtnx,iy*createbtny+self.side0.top())
-                if b.contains(x,y):
-                    b.mouseListener(b.name)
+    def update(self):
+        self.player.update()
+        self.updateBuildingButtons()
+        self.updateDefenceButtons()
+        self.updateInfantryButtons()
+        self.updateVehicleButtons()
+
+    def updateBuildingButtons(self):
+        builded = self.player.getBuildingInFactory()
+        visible = self.tabbtn0.children.visible
+        self.tabbtn0.children = ButtonSet()
+        self.tabbtn0.children.visible = visible
+        self.tabbtn0.children.scroll = 0
+        self.tabbtn0.children.group = pygame.sprite.Group()
+        for i,building in enumerate(self.player.buildingList):
+            self.tabbtn0.children.add(self.createButtons[building])
+            self.createButtons[building].index = i
+            self.tabbtn0.children.group.add(self.createButtons[building])
+            if builded != None and builded[2] != building:
+                self.createButtons[building].disable()
+
+    def updateDefenceButtons(self):
+        builded = self.player.getDefenceInFactory()
+        visible = self.tabbtn1.children.visible
+        self.tabbtn1.children = ButtonSet()
+        self.tabbtn1.children.visible = visible
+        self.tabbtn1.children.scroll = 0
+        self.tabbtn1.children.group = pygame.sprite.Group()
+        for i,defence in enumerate(self.player.defenceList):
+            self.tabbtn1.children.add(self.createButtons[defence])
+            self.createButtons[defence].index = i
+            self.tabbtn1.children.group.add(self.createButtons[defence])
+            if builded != None and builded[2] != defence:
+                self.createButtons[defence].disable()
+
+    def updateInfantryButtons(self):
+        visible = self.tabbtn2.children.visible
+        self.tabbtn2.children = ButtonSet()
+        self.tabbtn2.children.visible = visible
+        self.tabbtn2.children.scroll = 0
+        self.tabbtn2.children.group = pygame.sprite.Group()
+        for i,infantry in enumerate(self.player.infantryList):
+            self.tabbtn2.children.add(self.createButtons[infantry])
+            self.createButtons[infantry].index = i
+            self.tabbtn2.children.group.add(self.createButtons[infantry])
+
+    def updateVehicleButtons(self):
+        visible = self.tabbtn3.children.visible
+        self.tabbtn3.children = ButtonSet()
+        self.tabbtn3.children.visible = visible
+        self.tabbtn3.children.scroll = 0
+        self.tabbtn3.children.group = pygame.sprite.Group()
+        for i,vehicle in enumerate(self.player.infantryList):
+            self.tabbtn3.children.add(self.createButtons[vehicle])
+            self.createButtons[vehicle].index = i
+            self.tabbtn3.children.group.add(self.createButtons[vehicle])
     
     def onMouseMove(self,x,y,button1=None,button2=None,button3=None):
         super(GameController,self).onMouseMove(x,y,button1,button2,button3)
-        if self.map != None:
-            self.map.updateScrollV(x,y,button3==True)
+        if self.selectBuildingPosition != "":
+            if self.get_battle_rect().contains(pygame.Rect(x,y,1,1)) and\
+                    not button1 and not button2:
+                pointerx,pointery = self.map.getGridPos(x,y)
+                self.pointerset = [(addPos(pointerx,pointery,col,row))\
+                        for col,row in pointerset[self.selectBuildingPosition]]
         if button1 != None and button1 and self.mousedown:
             self.mousex = min(x,battlewidth)
             self.mousey = min(y,battleheight)
             self.mousedrag = True
-        if self.mouseMinimapDown:
-            self.updateMinimapView(x,y)
-        
+
     def onMouseDown(self,x,y,button):
         super(GameController,self).onMouseDown(x,y,button)
         if button == 1:
@@ -415,16 +542,7 @@ class GameController(SpriteContainer):
             if self.get_battle_rect().contains(pygame.Rect(x,y,1,1)):
                 for unit in self.selected:
                     unit.target = (unit.offsetx+(x-unit.x),unit.offsety+(y-unit.y))
-        if self.buildingButtons.visible:
-            self.clickButtonSet(self.buildingButtons,x,y,button)
-        if self.defenceButtons.visible:
-            self.clickButtonSet(self.defenceButtons,x,y,button)
-        if self.infantryButtons.visible:
-            self.clickButtonSet(self.infantryButtons,x,y,button)
-        if self.vehicleButtons.visible:
-            self.clickButtonSet(self.vehicleButtons,x,y,button)
-        self.updateMinimapView(x,y)
-        
+
     def onMouseUp(self,x,y,button):
         super(GameController,self).onMouseUp(x,y,button)
         if button == 1:
@@ -441,39 +559,24 @@ class GameController(SpriteContainer):
                             self.selected.add(unit)
             else:
                 if self.get_battle_rect().contains(pygame.Rect(x,y,1,1)):
+                    nounit = True
                     for unit in self.selected:
                         if unit.get_rect().contains(pygame.Rect(x,y,1,1)):
+                            nounit = False
                             unit.onDoubleClick()
-                    self.selected = Set()
-                    for unit in self.player.units:
-                        if unit.get_rect().contains(pygame.Rect(x,y,1,1)):
-                            self.selected = Set([unit])
                             break
+                    self.selected = Set()
+                    if nounit:
+                        for unit in self.player.units:
+                            if unit.get_rect().contains(pygame.Rect(x,y,1,1)):
+                                self.selected = Set([unit])
+                                break
             self.mousedrag = False
             self.mousedown = False
-        self.mouseMinimapDown = False
-    
-    def onKeyDown(self,keyCode,mod):
-        if keyCode == pygame.K_LEFT:
-            self.map.scrollv[0] = 1
-        elif keyCode == pygame.K_RIGHT:
-            self.map.scrollv[1] = 1
-        elif keyCode == pygame.K_UP:
-            self.map.scrollv[2] = 1
-        elif keyCode == pygame.K_DOWN:
-            self.map.scrollv[3] = 1
-        
-    def onKeyUp(self,keyCode,mod):
-        if keyCode == pygame.K_LEFT:
-            self.map.scrollv[0] = 0
-        elif keyCode == pygame.K_RIGHT:
-            self.map.scrollv[1] = 0
-        elif keyCode == pygame.K_UP:
-            self.map.scrollv[2] = 0
-        elif keyCode == pygame.K_DOWN:
-            self.map.scrollv[3] = 0
 
-class MapEditor(GameController):
+    
+
+class MapEditor(BattleFieldController):
     def __init__(self,gotoBackController):
         super(MapEditor,self).__init__(gotoBackController)
         # self.background = ImageSprite(images["ctrlpanel"])
@@ -501,7 +604,7 @@ class MapEditor(GameController):
             self.paint = 0
     
     def draw(self,screen):
-        super(GameController,self).draw(screen)
+        super(MapEditor,self).draw(screen)
         self.buttons.draw(screen)
         screen.blit(self.minimap,(minimapx,minimapy))
         x = (-self.map.x) * self.minimap.get_rect().width / self.map.groundwidth + minimapx
@@ -512,7 +615,7 @@ class MapEditor(GameController):
         pygame.draw.rect(screen,RED,view,1)
     
     def onMouseMove(self,x,y,button1=None,button2=None,button3=None):
-        super(GameController,self).onMouseMove(x,y,button1,button2,button3)
+        super(MapEditor,self).onMouseMove(x,y,button1,button2,button3)
         if self.map != None:
             self.map.updateScrollV(x,y,button3==True)
             if button1 != None and button1:
@@ -521,11 +624,11 @@ class MapEditor(GameController):
             self.updateMinimapView(x,y)
         
     def onMouseDown(self,x,y,button):
-        super(GameController,self).onMouseDown(x,y,button)
+        super(MapEditor,self).onMouseDown(x,y,button)
         self.updateMinimapView(x,y)
         
     def onMouseUp(self,x,y,button):
-        super(GameController,self).onMouseUp(x,y,button)
+        super(MapEditor,self).onMouseUp(x,y,button)
         self.mouseMinimapDown = False
         self.mousedown = False
     
@@ -572,7 +675,7 @@ class MapEditor(GameController):
     
     def setpath(self):
         pass
-    
+
 class GameBackController(SpriteContainer):
     def __init__(self,gotoSave,goBack,exitGame):
         super(GameBackController,self).__init__()

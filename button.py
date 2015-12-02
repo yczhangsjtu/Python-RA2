@@ -100,17 +100,22 @@ class RA2Button(TextButton):
 class CreateButton(Button):
     def __init__(self,name):
         normal = images["create%s"%name]
+        if "disable%s"%name not in images:
+            images["disable%s"%name] = images["create%s"%name].copy()
+            images["disable%s"%name].blit(images["black"],(0,0))
         over = normal
         pressed = normal
         super(CreateButton,self).__init__(normal,over,pressed)
-        self.visible = True
+        self.disableimg = images["disable%s"%name]
+        self.disabled = False
         self.name = name
-    
-    def show():
-        self.visible = True
-    
-    def hide():
-        self.visible = False
+
+    def disable(self):
+        self.disabled = True
+        self.setimage(self.disable)
+    def recover(self):
+        self.disabled = False
+        self.setimage(self.normal)
     
     def onMouseDown(self,x,y,button):
         if button == 1:
@@ -164,9 +169,6 @@ class TabButton(Button):
         for tabb in self.tab:
             tabb.recover()
         self.under()
-        if self.contains(x,y):
-            if self.mouseListener != None:
-                self.mouseListener()
 
     def onMouseUp(self,x,y,button):
         pass

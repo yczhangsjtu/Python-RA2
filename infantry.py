@@ -55,7 +55,7 @@ class Adog(Infantry):
 		animationset = adogAnimation
 		super(Adog,self).__init__(player,animationset,animation)
 		self.speed = 10
-		self.size = sizeofunit["adog"]
+		self.size = sizeofunit["Adog"]
 		self.range = 0
 		self.fullHP = 100
 		self.HP = self.fullHP

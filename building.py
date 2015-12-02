@@ -9,6 +9,7 @@ from consts import *
 buildingRect = pygame.Rect(0,0,1,1)
 aircmdAnimation = None
 gcnstAnimation = None
+powerAnimation = None
 
 def initBuildingAnimations():
 	global longBuildingHealthBlood, longBuildingHurtBlood,\
@@ -24,6 +25,7 @@ def initBuildingAnimations():
 	shortBuildingDangerBlood = bloodbarimg.subsurface(0,20,150,10)
 	aircmdAnimation = AirCmdAnimation()
 	gcnstAnimation = GcnstAnimation()
+	powerAnimation = PowerAnimation()
 
 class Building(Unit):
 	def __init__(self,player,animationset,animation=None):
@@ -81,6 +83,18 @@ class AirCmd(Building):
 	def drawBloodBar(self,screen):
 		self.drawShortBloodBar(screen)
 classmap["AirCmd"] = AirCmd
+
+class Power(Building):
+	def __init__(self,player,animation=None):
+		animationset = powerAnimation
+		super(Power,self).__init__(player,animationset,animation)
+		self.size = sizeofunit["Power"]
+		self.fullHP = 1000
+		self.HP = self.fullHP
+		self.name = "Power"
+	def drawBloodBar(self,screen):
+		self.drawShortBloodBar(screen)
+classmap["AirCmd"] = AirCmd
 		
 class Gcnst(Building):
 	def __init__(self,player,animation=None):
@@ -94,19 +108,49 @@ class Gcnst(Building):
 		self.drawLongBloodBar(screen)
 classmap["Gcnst"] = Gcnst
 
+class PowerAnimation(AnimationSet):
+	def __init__(self):
+		super(PowerAnimation,self).__init__()
+		image = images["power"]
+		offsetx,offsety = 66,88
+		self.originalAnimation = "build"
+		width,height = 142,110
+		playeroffset = 220
+		
+		x,y,m,n = 0,110,25,1
+		for player in range(numofplayer):
+			animation = Animation()
+			animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
+			animation.loop = False
+			self.addAnimation("build_%d"%player,animation)
+			y += playeroffset
+		
+		x,y,m,n = 0,0,8,1
+		for player in range(numofplayer):
+			animation = Animation()
+			animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
+			self.addAnimation("normal_%d"%player,animation)
+			self.getAnimation("build_%d"%player).next = animation
+			y += playeroffset
+		
+		x,y,m,n = 1136,0,8,1
+		for player in range(numofplayer):
+			animation = Animation()
+			animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
+			self.addAnimation("destroy_%d"%player,animation)
+			y += playeroffset
+
 class AirCmdAnimation(AnimationSet):
 	def __init__(self):
 		super(AirCmdAnimation,self).__init__()
 		image = images["aircmd"]
 		offsetx,offsety = 140,170
 		self.originalAnimation = "build"
-		self.modifyx = -50
-		self.modifyy = 0
 		width,height = 282,243
 		playeroffset = 486
 		
 		x,y,m,n = 0,243,25,1
-		for player in range(2):
+		for player in range(numofplayer):
 			animation = Animation()
 			animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
 			animation.loop = False
@@ -114,7 +158,7 @@ class AirCmdAnimation(AnimationSet):
 			y += playeroffset
 		
 		x,y,m,n = 0,0,6,1
-		for player in range(2):
+		for player in range(numofplayer):
 			animation = Animation()
 			animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
 			self.addAnimation("normal_%d"%player,animation)
@@ -122,7 +166,7 @@ class AirCmdAnimation(AnimationSet):
 			y += playeroffset
 		
 		x,y,m,n = 1692,0,6,1
-		for player in range(2):
+		for player in range(numofplayer):
 			animation = Animation()
 			animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
 			self.addAnimation("destroy_%d"%player,animation)
@@ -136,11 +180,9 @@ class GcnstAnimation(AnimationSet):
 		self.originalAnimation = "build"
 		width,height = 426,339
 		playeroffset = 1356
-		self.modifyx = 20
-		self.modifyy = -20
 		
 		x,y,i0,j0,left,right,count = 0,678,0,0,0,20,29
-		for player in range(2):
+		for player in range(numofplayer):
 			animation = Animation()
 			animation.addBrokenSpriteSheet(image,x,y,i0,j0,width,height,left,right,count,offsetx,offsety)
 			animation.loop = False
@@ -148,7 +190,7 @@ class GcnstAnimation(AnimationSet):
 			y += playeroffset
 		
 		x,y,m,n = 0,0,20,1
-		for player in range(2):
+		for player in range(numofplayer):
 			animation = Animation()
 			animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
 			self.addAnimation("normal_%d"%player,animation)
@@ -156,7 +198,7 @@ class GcnstAnimation(AnimationSet):
 			y += playeroffset
 		
 		x,y,m,n = 0,339,20,1
-		for player in range(2):
+		for player in range(numofplayer):
 			animation = Animation()
 			animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
 			self.addAnimation("destroy_%d"%player,animation)
