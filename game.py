@@ -127,9 +127,29 @@ class Player():
         self.powerlow = False
         self.nopower= True
 
+        self.numOfUnit = {}
+
+        self.buildingList = []
+
     def addUnit(self,unit):
         unit.player = self.index
         self.units.add(unit)
 
+        if unit.name in self.numOfUnit:
+            self.numOfUnit[unit.name] += 1
+        else:
+            self.numOfUnit[unit.name] = 1
+
     def removeUnit(self,unit):
         self.units.remove(unit)
+        self.numOfUnit[unit.name] -= 1
+
+    def update(self):
+        self.updateBuildingList()
+
+    def updateBuildingList(self):
+        self.buildingList = []
+        for building in requisite:
+            for req in requisite[building]:
+                if req in self.numOfUnit and self.numOfUnit[req] > 0:
+                    self.buildingList.append(building)

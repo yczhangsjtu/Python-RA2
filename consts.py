@@ -45,6 +45,8 @@ createbtnboxx = 632
 createbtnboxy = 223
 createbtnx = 656
 createbtny = 223
+createbtnw = 60
+createbtnh = 48
 createn = 7
 animationspeed = 1
 defaultmapfile = "map0.txt"
@@ -138,6 +140,11 @@ loadList = {
 	"mcv":"./img/Vehicle/mcv.png",
 	"createGrass":"./img/creat/grass.png",
 	"createWater":"./img/creat/water.png",
+	"createPower":"./img/creat/ggpowricon.png",
+}
+
+requisite = {
+	"Power":["Gcnst"],
 }
 
 defaultplayers = {

@@ -1,5 +1,6 @@
 import pygame
 
+from sets import Set
 from data import images
 from imagesprite import ImageSprite
 from spritecontainer import ExtendSprite
@@ -98,10 +99,29 @@ class RA2Button(TextButton):
 
 class CreateButton(Button):
     def __init__(self,name):
-        normal = images[name]
+        normal = images["create%s"%name]
         over = normal
         pressed = normal
         super(CreateButton,self).__init__(normal,over,pressed)
+        self.visible = True
+        self.name = name
+    
+    def show():
+        self.visible = True
+    
+    def hide():
+        self.visible = False
+    
+    def onMouseDown(self,x,y,button):
+        if button == 1:
+            if self.contains(x,y):
+                if self.mouseListener != None:
+                    self.mouseListener(self.name)
+
+    def onMouseUp(self,x,y,button):
+        pass
+    def onMouseMove(self,x,y,button1=None,button2=None,button3=None):
+        pass
 
 class GameCtrlButton(Button):
     def __init__(self,index):
@@ -147,16 +167,23 @@ class TabButton(Button):
         if self.contains(x,y):
             if self.mouseListener != None:
                 self.mouseListener()
-        for child in self.children:
-            child.show()
 
     def onMouseUp(self,x,y,button):
         pass
 
+    def under(self):
+        self.setimage(self.pressed)
+        self.children.visible = True
+
     def recover(self):
         self.setimage(self.normal)
-        for child in self.children:
-            child.hide()
+        self.children.visible = False
 
     def onMouseMove(self,x,y):
         pass
+
+class ButtonSet(Set):
+    def __init__(self):
+        super(ButtonSet,self).__init__()
+        self.visible = False
+        self.group = None

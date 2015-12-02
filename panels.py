@@ -5,7 +5,7 @@ from math import log,exp
 from listbox import ListBox
 from data import images
 from button import RA2Button, CreateButton, GameCtrlButton,\
-        GamePanelButton, GamePanelPressedButton, TabButton
+        GamePanelButton, GamePanelPressedButton, TabButton, ButtonSet
 from imagesprite import ImageSprite
 from spritecontainer import SpriteContainer
 from animation import SimpleAnimation
@@ -172,33 +172,60 @@ class GameController(SpriteContainer):
         self.buttons.add(self.sellbtn)
 
         self.tab = Set()
-        self.buildingButtons = Set()
+        self.buildingButtons = ButtonSet()
+        self.buildingButtons.scroll = 0
         self.tabbtn0 = TabButton(0,self.tab,self.buildingButtons)
         self.addSprite(self.tabbtn0,tabbtnx,self.repairbtn.bottom())
         self.buttons.add(self.tabbtn0)
         self.tab.add(self.tabbtn0)
-        self.defenceButtons = Set()
+        self.defenceButtons = ButtonSet()
+        self.defenceButtons.scroll = 0
         self.tabbtn1 = TabButton(1,self.tab,self.defenceButtons)
         self.addSprite(self.tabbtn1,self.tabbtn0.right(),self.repairbtn.bottom())
         self.buttons.add(self.tabbtn1)
         self.tab.add(self.tabbtn1)
-        self.infantryButtons = Set()
+        self.infantryButtons = ButtonSet()
+        self.infantryButtons.scroll = 0
         self.tabbtn2 = TabButton(2,self.tab,self.infantryButtons)
         self.addSprite(self.tabbtn2,self.tabbtn1.right(),self.repairbtn.bottom())
         self.buttons.add(self.tabbtn2)
         self.tab.add(self.tabbtn2)
-        self.vehicleButtons = Set()
+        self.vehicleButtons = ButtonSet()
+        self.vehicleButtons.scroll = 0
         self.tabbtn3 = TabButton(3,self.tab,self.vehicleButtons)
         self.addSprite(self.tabbtn3,self.tabbtn2.right(),self.repairbtn.bottom())
         self.buttons.add(self.tabbtn3)
         self.tab.add(self.tabbtn3)
         self.tabbtn0.under()
+
+        self.createButtons = {}
+        for unitname in requisite:
+            self.createButtons[unitname] = CreateButton(unitname)
+            self.createButtons[unitname].setMouseListener(self.addToCreateList)
         
         self.minimap = images["allyflag"]
         self.groupOne = Set()
         self.groupTwo = Set()
         self.groupThree = Set()
         self.selected = Set()
+    
+    def addToCreateList(self,name):
+        pass
+
+    def update(self):
+        self.player.update()
+        self.updateBuildingButtons()
+
+    def updateBuildingButtons(self):
+        visible = self.buildingButtons.visible
+        self.buildingButtons = ButtonSet()
+        self.buildingButtons.visible = visible
+        self.buildingButtons.scroll = 0
+        self.buildingButtons.group = pygame.sprite.Group()
+        for i,building in enumerate(self.player.buildingList):
+            self.buildingButtons.add(self.createButtons[building])
+            self.createButtons[building].index = i
+            self.buildingButtons.group.add(self.createButtons[building])
 
     def takeOverGame(self,game,player):
         self.characters = game
@@ -239,7 +266,27 @@ class GameController(SpriteContainer):
         self.buttons.draw(screen)
         self.animations.draw(screen)
         self.drawMinimap(screen)
+        self.drawPower(screen)
+        self.drawCreateButtons(screen)
 
+    def drawCreateButtons(self,screen):
+        if self.buildingButtons.visible:
+            self.drawCreateButtonSet(self.buildingButtons,screen)
+        if self.defenceButtons.visible:
+            self.drawCreateButtonSet(self.defenceButtons,screen)
+        if self.infantryButtons.visible:
+            self.drawCreateButtonSet(self.infantryButtons,screen)
+        if self.vehicleButtons.visible:
+            self.drawCreateButtonSet(self.vehicleButtons,screen)
+
+    def drawCreateButtonSet(self,buttonSet,screen):
+        for button in buttonSet:
+            ix = button.index % 2
+            iy = button.index / 2 + buttonSet.scroll
+            button.setpos(ix*createbtnw+createbtnx,iy*createbtny+self.side0.top())
+        buttonSet.group.draw(screen)
+
+    def drawPower(self,screen):
         ppowern = int((1-exp(-max(self.player.powergen,self.player.powerload)*log(2)/200)) * powern)
         if self.player.powergen > self.player.powerload:
             powergenn = ppowern
@@ -334,6 +381,15 @@ class GameController(SpriteContainer):
             self.map.x,self.map.y = -x,-y
             self.map.fitOffset()
             self.mouseMinimapDown = True
+
+    def clickButtonSet(self,buttonSet,x,y,button):
+        for b in buttonSet:
+            if button == 1:
+                ix = b.index % 2
+                iy = b.index / 2 + buttonSet.scroll
+                b.setpos(ix*createbtnw+createbtnx,iy*createbtny+self.side0.top())
+                if b.contains(x,y):
+                    b.mouseListener(b.name)
     
     def onMouseMove(self,x,y,button1=None,button2=None,button3=None):
         super(GameController,self).onMouseMove(x,y,button1,button2,button3)
@@ -359,6 +415,14 @@ class GameController(SpriteContainer):
             if self.get_battle_rect().contains(pygame.Rect(x,y,1,1)):
                 for unit in self.selected:
                     unit.target = (unit.offsetx+(x-unit.x),unit.offsety+(y-unit.y))
+        if self.buildingButtons.visible:
+            self.clickButtonSet(self.buildingButtons,x,y,button)
+        if self.defenceButtons.visible:
+            self.clickButtonSet(self.defenceButtons,x,y,button)
+        if self.infantryButtons.visible:
+            self.clickButtonSet(self.infantryButtons,x,y,button)
+        if self.vehicleButtons.visible:
+            self.clickButtonSet(self.vehicleButtons,x,y,button)
         self.updateMinimapView(x,y)
         
     def onMouseUp(self,x,y,button):
@@ -418,22 +482,23 @@ class MapEditor(GameController):
         self.mapfile = ""
         self.paint = 1
         
-        self.grassButton = CreateButton("createGrass")
-        self.grassButton.setMouseListener(self.setGrassPaint)
+        self.grassButton = CreateButton("Grass")
+        self.grassButton.setMouseListener(self.setPaint)
         self.buttons.add(self.grassButton)
         self.addSprite(self.grassButton,createbtnx,self.side0.top())
-        self.waterButton = CreateButton("createWater")
-        self.waterButton.setMouseListener(self.setWaterPaint)
+        self.waterButton = CreateButton("Water")
+        self.waterButton.setMouseListener(self.setPaint)
         self.buttons.add(self.waterButton)
         self.addSprite(self.waterButton,self.grassButton.right(),self.side0.top())
     
     def save(self):
         self.map.write(self.mapfile)
         
-    def setGrassPaint(self):
-        self.paint = 1
-    def setWaterPaint(self):
-        self.paint = 0
+    def setPaint(self,name):
+        if name == "Grass":
+            self.paint = 1
+        elif name == "Water":
+            self.paint = 0
     
     def draw(self,screen):
         super(GameController,self).draw(screen)
