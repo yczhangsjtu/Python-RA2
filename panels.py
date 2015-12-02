@@ -71,7 +71,6 @@ class BattleFieldController(SpriteContainer):
         self.add(self.bttnbkgd)
         self.map = None
         self.mousedrag = False
-        self.mousedown = False
         self.mouseMinimapDown = False
 
         self.animations = pygame.sprite.Group()
@@ -85,38 +84,10 @@ class BattleFieldController(SpriteContainer):
         self.animations.add(self.rendcap)
 
         self.buttons = pygame.sprite.Group()
-        self.groupOneButton = GameCtrlButton(0)
-        self.groupOneButton.setMouseListener(self.setGroupOne)
-        self.groupOneButton.x
-        self.buttons.add(self.groupOneButton)
-        self.addSprite(self.groupOneButton,self.lendcap.right(),gamectrlbuttony)
-        self.groupTwoButton = GameCtrlButton(1)
-        self.groupTwoButton.setMouseListener(self.setGroupTwo)
-        self.buttons.add(self.groupTwoButton)
-        self.addSprite(self.groupTwoButton,self.groupOneButton.right(),gamectrlbuttony)
-        self.groupThreeButton = GameCtrlButton(2)
-        self.groupThreeButton.setMouseListener(self.setGroupThree)
-        self.buttons.add(self.groupThreeButton)
-        self.addSprite(self.groupThreeButton,self.groupTwoButton.right(),gamectrlbuttony)
-        self.selectSameTypeButton = GameCtrlButton(3)
-        self.selectSameTypeButton.setMouseListener(self.selectSameType)
-        self.buttons.add(self.selectSameTypeButton)
-        self.addSprite(self.selectSameTypeButton,self.groupThreeButton.right(),gamectrlbuttony)
-        self.deployButton = GameCtrlButton(4)
-        self.deployButton.setMouseListener(self.deploy)
-        self.buttons.add(self.deployButton)
-        self.addSprite(self.deployButton,self.selectSameTypeButton.right(),gamectrlbuttony)
-        self.guardButton = GameCtrlButton(6)
-        self.guardButton.setMouseListener(self.guard)
-        self.buttons.add(self.guardButton)
-        self.addSprite(self.guardButton,self.deployButton.right(),gamectrlbuttony)
-        self.setpathButton = GameCtrlButton(9)
-        self.setpathButton.setMouseListener(self.setpath)
-        self.buttons.add(self.setpathButton)
-        self.addSprite(self.setpathButton,self.guardButton.right(),gamectrlbuttony)
         self.diplobtn = GamePanelButton("diplobtn")
         self.addSprite(self.diplobtn,diplobtnx,diplobtny)
         self.buttons.add(self.diplobtn)
+
         self.optbtn = GamePanelButton("optbtn")
         self.optbtn.setMouseListener(gotoBackController)
         self.addSprite(self.optbtn,self.diplobtn.right(),diplobtny)
@@ -206,9 +177,6 @@ class BattleFieldController(SpriteContainer):
                 self.player.addToCreateList(name)
         else:
             self.player.addToCreateList(name)
-
-    def cannotApply(self):
-        pass
 
     def save(self):
         pass
@@ -318,11 +286,46 @@ class GameController(BattleFieldController):
     def __init__(self,gotoBackController):
         super(GameController,self).__init__(gotoBackController)
         
-        self.minimap = images["allyflag"]
+        self.minimap = None
         self.groupOne = Set()
         self.groupTwo = Set()
         self.groupThree = Set()
         self.selected = Set()
+
+        self.groupOneButton = GameCtrlButton(0)
+        self.groupOneButton.setMouseListener(self.setGroupOne)
+        self.buttons.add(self.groupOneButton)
+        self.addSprite(self.groupOneButton,self.lendcap.right(),gamectrlbuttony)
+
+        self.groupTwoButton = GameCtrlButton(1)
+        self.groupTwoButton.setMouseListener(self.setGroupTwo)
+        self.buttons.add(self.groupTwoButton)
+        self.addSprite(self.groupTwoButton,self.groupOneButton.right(),gamectrlbuttony)
+
+        self.groupThreeButton = GameCtrlButton(2)
+        self.groupThreeButton.setMouseListener(self.setGroupThree)
+        self.buttons.add(self.groupThreeButton)
+        self.addSprite(self.groupThreeButton,self.groupTwoButton.right(),gamectrlbuttony)
+
+        self.selectSameTypeButton = GameCtrlButton(3)
+        self.selectSameTypeButton.setMouseListener(self.selectSameType)
+        self.buttons.add(self.selectSameTypeButton)
+        self.addSprite(self.selectSameTypeButton,self.groupThreeButton.right(),gamectrlbuttony)
+
+        self.deployButton = GameCtrlButton(4)
+        self.deployButton.setMouseListener(self.deploy)
+        self.buttons.add(self.deployButton)
+        self.addSprite(self.deployButton,self.selectSameTypeButton.right(),gamectrlbuttony)
+
+        self.guardButton = GameCtrlButton(6)
+        self.guardButton.setMouseListener(self.guard)
+        self.buttons.add(self.guardButton)
+        self.addSprite(self.guardButton,self.deployButton.right(),gamectrlbuttony)
+
+        self.setpathButton = GameCtrlButton(9)
+        self.setpathButton.setMouseListener(self.setpath)
+        self.buttons.add(self.setpathButton)
+        self.addSprite(self.setpathButton,self.guardButton.right(),gamectrlbuttony)
 
         self.player = None
         self.characters = None
@@ -332,7 +335,6 @@ class GameController(BattleFieldController):
         self.powerl = ImageSprite(images["powerp"],5,1,2)
         self.powern = ImageSprite(images["powerp"],5,1,3)
         self.moneyfont = pygame.font.Font(None,15)
-
 
         self.selectBuildingPosition = ""
         self.pointerset = None
@@ -459,6 +461,9 @@ class GameController(BattleFieldController):
     def setpath(self):
         pass
 
+    def cannotApply(self):
+        pass
+
     def update(self):
         self.player.update()
         self.updateBuildingButtons()
@@ -574,13 +579,9 @@ class GameController(BattleFieldController):
             self.mousedrag = False
             self.mousedown = False
 
-    
-
 class MapEditor(BattleFieldController):
     def __init__(self,gotoBackController):
         super(MapEditor,self).__init__(gotoBackController)
-        # self.background = ImageSprite(images["ctrlpanel"])
-        # self.add(self.background)
         self.map = None
         self.mapfile = ""
         self.paint = 1
@@ -603,79 +604,12 @@ class MapEditor(BattleFieldController):
         elif name == "Water":
             self.paint = 0
     
-    def draw(self,screen):
-        super(MapEditor,self).draw(screen)
-        self.buttons.draw(screen)
-        screen.blit(self.minimap,(minimapx,minimapy))
-        x = (-self.map.x) * self.minimap.get_rect().width / self.map.groundwidth + minimapx
-        y = (-self.map.y) * self.minimap.get_rect().height / self.map.groundheight + minimapy
-        w = battlewidth * self.minimap.get_rect().width / self.map.groundwidth
-        h = battleheight * self.minimap.get_rect().height / self.map.groundheight
-        view = pygame.Rect(x,y,w,h)
-        pygame.draw.rect(screen,RED,view,1)
-    
     def onMouseMove(self,x,y,button1=None,button2=None,button3=None):
         super(MapEditor,self).onMouseMove(x,y,button1,button2,button3)
         if self.map != None:
-            self.map.updateScrollV(x,y,button3==True)
             if button1 != None and button1:
                 self.map.paint(x,y,self.paint)
-        if self.mouseMinimapDown:
-            self.updateMinimapView(x,y)
-        
-    def onMouseDown(self,x,y,button):
-        super(MapEditor,self).onMouseDown(x,y,button)
-        self.updateMinimapView(x,y)
-        
-    def onMouseUp(self,x,y,button):
-        super(MapEditor,self).onMouseUp(x,y,button)
-        self.mouseMinimapDown = False
-        self.mousedown = False
-    
-    def onKeyDown(self,keyCode,mod):
-        if keyCode == pygame.K_LEFT:
-            self.map.scrollv[0] = 1
-        elif keyCode == pygame.K_RIGHT:
-            self.map.scrollv[1] = 1
-        elif keyCode == pygame.K_UP:
-            self.map.scrollv[2] = 1
-        elif keyCode == pygame.K_DOWN:
-            self.map.scrollv[3] = 1
-        
-    def onKeyUp(self,keyCode,mod):
-        if keyCode == pygame.K_LEFT:
-            self.map.scrollv[0] = 0
-        elif keyCode == pygame.K_RIGHT:
-            self.map.scrollv[1] = 0
-        elif keyCode == pygame.K_UP:
-            self.map.scrollv[2] = 0
-        elif keyCode == pygame.K_DOWN:
-            self.map.scrollv[3] = 0
             
-    def takeOverGame(self,game,player):
-        pass
-
-    def setGroupOne(self):
-        pass
-    
-    def setGroupTwo(self):
-        pass
-    
-    def setGroupThree(self):
-        pass
-    
-    def selectSameType(self):
-        pass
-
-    def deploy(self):
-        pass
-    
-    def guard(self):
-        pass
-    
-    def setpath(self):
-        pass
-
 class GameBackController(SpriteContainer):
     def __init__(self,gotoSave,goBack,exitGame):
         super(GameBackController,self).__init__()
