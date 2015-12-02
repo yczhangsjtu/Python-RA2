@@ -4,7 +4,7 @@ from math import log,exp
 
 from listbox import ListBox
 from data import images
-from button import RA2Button, PalatteButton, GameCtrlButton,\
+from button import RA2Button, CreateButton, GameCtrlButton,\
         GamePanelButton, GamePanelPressedButton, TabButton
 from imagesprite import ImageSprite
 from spritecontainer import SpriteContainer
@@ -53,104 +53,8 @@ class SelectMapPanel(SpriteContainer):
         self.listBox.draw(screen)
         self.buttons.draw(screen)
 
-class MapEditor(SpriteContainer):
-    def __init__(self,back):
-        super(MapEditor,self).__init__()
-        self.background = ImageSprite(images["ctrlpanel"])
-        self.add(self.background)
-        self.map = None
-        self.mapfile = ""
-        self.paint = 1
-        self.mouseMinimapDown = False
-        
-        self.buttons = pygame.sprite.Group()
-        self.grassButton = PalatteButton(0,0)
-        self.grassButton.setMouseListener(self.setGrassPaint)
-        self.buttons.add(self.grassButton)
-        self.addSprite(self.grassButton,colorbuttonx,colorbuttony)
-        self.waterButton = PalatteButton(0,1)
-        self.waterButton.setMouseListener(self.setWaterPaint)
-        self.buttons.add(self.waterButton)
-        self.addSprite(self.waterButton,colorbuttonx+gridwidth,colorbuttony)
-        self.saveButton = RA2Button("Save")
-        self.saveButton.setMouseListener(self.save)
-        self.buttons.add(self.saveButton)
-        self.addSprite(self.saveButton,menubuttonx,self.waterButton.bottom())
-        self.backButton = RA2Button("Back")
-        self.backButton.setMouseListener(back)
-        self.buttons.add(self.backButton)
-        self.addSprite(self.backButton,menubuttonx,self.saveButton.bottom())
-
-        self.minimap = images["allyflag"]
-    
-    def save(self):
-        self.map.write(self.mapfile)
-        
-    def setGrassPaint(self):
-        self.paint = 1
-    def setWaterPaint(self):
-        self.paint = 0
-    
-    def draw(self,screen):
-        super(MapEditor,self).draw(screen)
-        self.buttons.draw(screen)
-        screen.blit(self.minimap,(minimapx,minimapy))
-        x = (-self.map.x) * self.minimap.get_rect().width / self.map.groundwidth + minimapx
-        y = (-self.map.y) * self.minimap.get_rect().height / self.map.groundheight + minimapy
-        w = battlewidth * self.minimap.get_rect().width / self.map.groundwidth
-        h = battleheight * self.minimap.get_rect().height / self.map.groundheight
-        view = pygame.Rect(x,y,w,h)
-        pygame.draw.rect(screen,RED,view,1)
-    
-    def onMouseMove(self,x,y,button1=None,button2=None,button3=None):
-        super(MapEditor,self).onMouseMove(x,y,button1,button2,button3)
-        if self.map != None:
-            self.map.updateScrollV(x,y,button3==True)
-            if button1 != None and button1:
-                self.map.paint(x,y,self.paint)
-        if self.mouseMinimapDown:
-            self.updateMinimapView(x,y)
-        
-    def onMouseDown(self,x,y,button):
-        super(MapEditor,self).onMouseDown(x,y,button)
-        self.updateMinimapView(x,y)
-    
-    def updateMinimapView(self,x,y):
-        if x >= minimapx and x <= minimapx + minimapw and\
-            y >= minimapy and y <= minimapy + minimaph:
-            x,y = self.map.transformFromMini(\
-                    x-self.map.minimapvieww/2,y-self.map.minimapviewh/2)
-            self.map.x,self.map.y = -x,-y
-            self.map.fitOffset()
-            self.mouseMinimapDown = True
-        
-    def onMouseUp(self,x,y,button):
-        super(MapEditor,self).onMouseUp(x,y,button)
-        self.mouseMinimapDown = False
-        self.mousedown = False
-    
-    def onKeyDown(self,keyCode,mod):
-        if keyCode == pygame.K_LEFT:
-            self.map.scrollv[0] = 1
-        elif keyCode == pygame.K_RIGHT:
-            self.map.scrollv[1] = 1
-        elif keyCode == pygame.K_UP:
-            self.map.scrollv[2] = 1
-        elif keyCode == pygame.K_DOWN:
-            self.map.scrollv[3] = 1
-        
-    def onKeyUp(self,keyCode,mod):
-        if keyCode == pygame.K_LEFT:
-            self.map.scrollv[0] = 0
-        elif keyCode == pygame.K_RIGHT:
-            self.map.scrollv[1] = 0
-        elif keyCode == pygame.K_UP:
-            self.map.scrollv[2] = 0
-        elif keyCode == pygame.K_DOWN:
-            self.map.scrollv[3] = 0
-            
 class GameController(SpriteContainer):
-    def __init__(self):
+    def __init__(self,gotoBackController):
         super(GameController,self).__init__()
         self.lspacer = ImageSprite(images["lspacer"])
         self.lspacer.setpos(0,gamectrlbuttony)
@@ -223,6 +127,7 @@ class GameController(SpriteContainer):
         self.addSprite(self.diplobtn,diplobtnx,diplobtny)
         self.buttons.add(self.diplobtn)
         self.optbtn = GamePanelButton("optbtn")
+        self.optbtn.setMouseListener(gotoBackController)
         self.addSprite(self.optbtn,self.diplobtn.right(),diplobtny)
         self.buttons.add(self.optbtn)
 
@@ -503,3 +408,149 @@ class GameController(SpriteContainer):
             self.map.scrollv[2] = 0
         elif keyCode == pygame.K_DOWN:
             self.map.scrollv[3] = 0
+
+class MapEditor(GameController):
+    def __init__(self,gotoBackController):
+        super(MapEditor,self).__init__(gotoBackController)
+        # self.background = ImageSprite(images["ctrlpanel"])
+        # self.add(self.background)
+        self.map = None
+        self.mapfile = ""
+        self.paint = 1
+        
+        self.grassButton = CreateButton("createGrass")
+        self.grassButton.setMouseListener(self.setGrassPaint)
+        self.buttons.add(self.grassButton)
+        self.addSprite(self.grassButton,createbtnx,self.side0.top())
+        self.waterButton = CreateButton("createWater")
+        self.waterButton.setMouseListener(self.setWaterPaint)
+        self.buttons.add(self.waterButton)
+        self.addSprite(self.waterButton,self.grassButton.right(),self.side0.top())
+    
+    def save(self):
+        self.map.write(self.mapfile)
+        
+    def setGrassPaint(self):
+        self.paint = 1
+    def setWaterPaint(self):
+        self.paint = 0
+    
+    def draw(self,screen):
+        super(GameController,self).draw(screen)
+        self.buttons.draw(screen)
+        screen.blit(self.minimap,(minimapx,minimapy))
+        x = (-self.map.x) * self.minimap.get_rect().width / self.map.groundwidth + minimapx
+        y = (-self.map.y) * self.minimap.get_rect().height / self.map.groundheight + minimapy
+        w = battlewidth * self.minimap.get_rect().width / self.map.groundwidth
+        h = battleheight * self.minimap.get_rect().height / self.map.groundheight
+        view = pygame.Rect(x,y,w,h)
+        pygame.draw.rect(screen,RED,view,1)
+    
+    def onMouseMove(self,x,y,button1=None,button2=None,button3=None):
+        super(GameController,self).onMouseMove(x,y,button1,button2,button3)
+        if self.map != None:
+            self.map.updateScrollV(x,y,button3==True)
+            if button1 != None and button1:
+                self.map.paint(x,y,self.paint)
+        if self.mouseMinimapDown:
+            self.updateMinimapView(x,y)
+        
+    def onMouseDown(self,x,y,button):
+        super(GameController,self).onMouseDown(x,y,button)
+        self.updateMinimapView(x,y)
+        
+    def onMouseUp(self,x,y,button):
+        super(GameController,self).onMouseUp(x,y,button)
+        self.mouseMinimapDown = False
+        self.mousedown = False
+    
+    def onKeyDown(self,keyCode,mod):
+        if keyCode == pygame.K_LEFT:
+            self.map.scrollv[0] = 1
+        elif keyCode == pygame.K_RIGHT:
+            self.map.scrollv[1] = 1
+        elif keyCode == pygame.K_UP:
+            self.map.scrollv[2] = 1
+        elif keyCode == pygame.K_DOWN:
+            self.map.scrollv[3] = 1
+        
+    def onKeyUp(self,keyCode,mod):
+        if keyCode == pygame.K_LEFT:
+            self.map.scrollv[0] = 0
+        elif keyCode == pygame.K_RIGHT:
+            self.map.scrollv[1] = 0
+        elif keyCode == pygame.K_UP:
+            self.map.scrollv[2] = 0
+        elif keyCode == pygame.K_DOWN:
+            self.map.scrollv[3] = 0
+            
+    def takeOverGame(self,game,player):
+        pass
+
+    def setGroupOne(self):
+        pass
+    
+    def setGroupTwo(self):
+        pass
+    
+    def setGroupThree(self):
+        pass
+    
+    def selectSameType(self):
+        pass
+
+    def deploy(self):
+        pass
+    
+    def guard(self):
+        pass
+    
+    def setpath(self):
+        pass
+    
+class GameBackController(SpriteContainer):
+    def __init__(self,gotoSave,goBack,exitGame):
+        super(GameBackController,self).__init__()
+        self.background = ImageSprite(images["selectmap"])
+        self.add(self.background)
+
+        self.buttons = pygame.sprite.Group()
+        self.saveButton = RA2Button("Save")
+        self.saveButton.setMouseListener(gotoSave)
+        self.addSprite(self.saveButton,menubuttonx,menubuttony)
+        self.buttons.add(self.saveButton)
+        self.backButton = RA2Button("Back")
+        self.backButton.setMouseListener(goBack)
+        self.addSprite(self.backButton,menubuttonx,self.saveButton.bottom())
+        self.buttons.add(self.backButton)
+        self.exitButton = RA2Button("Exit")
+        self.exitButton.setMouseListener(exitGame)
+        self.addSprite(self.exitButton,menubuttonx,self.backButton.bottom())
+        self.buttons.add(self.exitButton)
+
+    def draw(self,screen):
+        super(GameBackController,self).draw(screen)
+        self.buttons.draw(screen)
+
+    def onMouseDown(self,x,y,button):
+        super(GameBackController,self).onMouseDown(x,y,button)
+        
+    def onMouseUp(self,x,y,button):
+        super(GameBackController,self).onMouseUp(x,y,button)
+        
+    def onMouseMove(self,x,y,button1=None,button2=None,button3=None):
+        super(GameBackController,self).onMouseMove(x,y,button1,button2,button3)
+
+class MapBackController(GameBackController):
+    def __init__(self,gotoSave,goBack,exitMap):
+        super(MapBackController,self).__init__(gotoSave,goBack,exitMap)
+        self.game = None
+
+    def onMouseDown(self,x,y,button):
+        super(MapBackController,self).onMouseDown(x,y,button)
+        
+    def onMouseUp(self,x,y,button):
+        super(MapBackController,self).onMouseUp(x,y,button)
+        
+    def onMouseMove(self,x,y,button1=None,button2=None,button3=None):
+        super(MapBackController,self).onMouseMove(x,y,button1,button2,button3)

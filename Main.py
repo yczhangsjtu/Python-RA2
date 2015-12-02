@@ -11,7 +11,8 @@ from consts import *
 from data import images
 from startmenu import StartMenu
 from listbox import ListBox
-from panels import SelectMapPanel, MapEditor, GameController
+from panels import SelectMapPanel, MapEditor, GameController, GameBackController,\
+        MapBackController
 from map import Map, initMap
 from game import Game
 from building import initBuildingAnimations
@@ -28,15 +29,18 @@ def load():
 
 def gameInit():
     global ctrlLayer, characterLayer, mapLayer, startMenu, selectMapPanel, editMapPanel, mapfile,\
-        mapEditor, gameController
+        mapEditor, gameController, gameBackController, mapBackController, saveMapPanel
     
     mapfile = "map0.txt"
 
     startMenu = StartMenu(startNewGame, selectMap, startMapEditor, quit)
     selectMapPanel = SelectMapPanel(selectMapBack,backToStartMenu)
     editMapPanel = SelectMapPanel(editMap,backToStartMenu)
-    mapEditor = MapEditor(backToStartMenu)
-    gameController = GameController()
+    mapEditor = MapEditor(gotoMapBackController)
+    gameController = GameController(gotoGameBackController)
+    gameBackController = GameBackController(gotoSaveGame,goBackToGame,exitGame)
+    mapBackController = MapBackController(gotoSaveMap,goBackToMap,exitMap)
+    saveMapPanel = SelectMapPanel(saveMapBack,backToMapBackController)
     
     ctrlLayer = startMenu
     characterLayer = pygame.sprite.Group()
@@ -61,6 +65,17 @@ def startNewGame():
 def selectMap():
     global ctrlLayer
     ctrlLayer = selectMapPanel
+
+def exitMap():
+    global ctrlLayer,mapLayer
+    ctrlLayer = startMenu
+    mapLayer = pygame.sprite.Group()
+
+def exitGame():
+    global ctrlLayer,mapLayer,characterLayer
+    ctrlLayer = startMenu
+    mapLayer = pygame.sprite.Group()
+    characterLayer = pygame.sprite.Group()
     
 def selectMapBack():
     global ctrlLayer
@@ -76,10 +91,41 @@ def quit():
     pygame.quit()
     exit(0)
 
+def gotoSaveMap():
+    global ctrlLayer
+    ctrlLayer = saveMapPanel
+
+def gotoSaveGame():
+    pass
+
+def goBackToMap():
+    global ctrlLayer
+    ctrlLayer = mapEditor
+
+def goBackToGame():
+    global ctrlLayer
+    ctrlLayer = gameController
+
+def saveMapBack():
+    global ctrlLayer
+    mapLayer.write("./map/%s"%ctrlLayer.listBox.selectedtext())
+    ctrlLayer = mapBackController
+
+def gotoMapBackController():
+    global ctrlLayer
+    ctrlLayer = mapBackController
+
+def gotoGameBackController():
+    global ctrlLayer
+    ctrlLayer = gameBackController
+
+def backToMapBackController():
+    global ctrlLayer
+    ctrlLayer = mapBackController
+
 def backToStartMenu():
     global ctrlLayer, mapLayer
     ctrlLayer = startMenu
-    mapLayer = pygame.sprite.Group()
     
 def editMap():
     global mapEditor, ctrlLayer, mapLayer, mapfile

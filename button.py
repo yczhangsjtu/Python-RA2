@@ -96,12 +96,12 @@ class RA2Button(TextButton):
         pressedimg = images["menubttn"].subsurface(btnwidth*2,0,btnwidth,btnheight)
         super(RA2Button,self).__init__(text,font,normalimg,overimg,pressedimg)
 
-class PalatteButton(Button):
-    def __init__(self,col,row):
-        normal = images["ground"].subsurface(col*gridwidth,row*gridheight,gridwidth,gridheight)
-        over = images["lightground"].subsurface(col*gridwidth,row*gridheight,gridwidth,gridheight)
-        pressed = over
-        super(PalatteButton,self).__init__(normal,over,pressed)
+class CreateButton(Button):
+    def __init__(self,name):
+        normal = images[name]
+        over = normal
+        pressed = normal
+        super(CreateButton,self).__init__(normal,over,pressed)
 
 class GameCtrlButton(Button):
     def __init__(self,index):

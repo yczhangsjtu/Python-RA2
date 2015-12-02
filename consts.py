@@ -43,6 +43,8 @@ tabx = 632
 taby = 154
 createbtnboxx = 632
 createbtnboxy = 223
+createbtnx = 656
+createbtny = 223
 createn = 7
 animationspeed = 1
 defaultmapfile = "map0.txt"
@@ -134,6 +136,8 @@ loadList = {
 	"E3":"./img/Infantry/E3.png",
 	"adog":"./img/Infantry/adog.png",
 	"mcv":"./img/Vehicle/mcv.png",
+	"createGrass":"./img/creat/grass.png",
+	"createWater":"./img/creat/water.png",
 }
 
 defaultplayers = {

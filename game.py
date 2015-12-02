@@ -50,6 +50,7 @@ class Game():
     
     def removeUnit(self,unit):
         self.unitSet.remove(unit)
+        self.players[unit.player].removeUnit(unit)
     
     def available(self,unit,x,y):
         return self.unitSet.available(unit,x,y)
@@ -129,3 +130,6 @@ class Player():
     def addUnit(self,unit):
         unit.player = self.index
         self.units.add(unit)
+
+    def removeUnit(self,unit):
+        self.units.remove(unit)
