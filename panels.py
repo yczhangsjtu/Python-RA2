@@ -511,8 +511,8 @@ class GameController(BattleFieldController):
                 else:
                     x,y = self.createButtons[building].getpos()
                     buttonset.createProgress = self.createProgress0
-                    self.createProgress0.setpos(x,y)
                     self.createProgress0.setIndex(54*(builded[1]-builded[0])/builded[1])
+                    self.createProgress0.setpos(x,y)
                     buttonset.overgroup.add(self.createProgress0)
 
     def updateDefenceButtons(self):
@@ -534,8 +534,8 @@ class GameController(BattleFieldController):
                 else:
                     x,y = self.createButtons[defence].getpos()
                     buttonset.createProgress = self.createProgress1
-                    self.createProgress1.setpos(x,y)
                     self.createProgress.setIndex(55*(builded[1]-builded[0])/builded[1])
+                    self.createProgress1.setpos(x,y)
                     buttonset.overgroup.add(self.createProgress1)
 
     def updateInfantryButtons(self):
