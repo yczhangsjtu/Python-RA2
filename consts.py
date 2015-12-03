@@ -84,11 +84,13 @@ sizeofunit = {
 	"E3":1,
 	"MCV":6,
 	"Power":10,
+	"Gpile":10,
 	"AirCmd":12,
 	"Gcnst":20,
 }
 modify = {
 	"Power":[0,24],
+	"Gpile":[0,24],
 	"AirCmd":[-50,0],
 	"Gcnst":[20,-20],
 }
@@ -97,6 +99,7 @@ typeofunit = {
 	"E3":"infantry",
 	"MCV":"vehicle",
 	"Power":"building",
+	"Gpile":"building",
 	"AirCmd":"building",
 	"Gcnst":"building",
 }
@@ -105,6 +108,7 @@ costofunit = {
 	"E3":100,
 	"MCV":3000,
 	"Power":800,
+	"Gpile":1000,
 	"AirCmd":1000,
 	"Gcnst":3000,
 }
@@ -113,6 +117,7 @@ canland = {
 	"E3":True,
 	"MCV":True,
 	"Power":True,
+	"Gpile":True,
 	"AirCmd":True,
 	"Gcnst":True,
 }
@@ -121,11 +126,13 @@ canwater = {
 	"E3":False,
 	"MCV":False,
 	"Power":False,
+	"Gpile":False,
 	"AirCmd":False,
 	"Gcnst":False,
 }
 pointerset = {
 	"Power":[(0,0),(-1,1),(1,1),(0,1)],
+	"Gpile":[(0,0),(-1,1),(1,1),(0,1)],
 }
 
 loadList = {
@@ -177,16 +184,36 @@ loadList = {
 	"aircmd":"./img/Building/aircmd.png",
 	"gcnst":"./img/Building/gcnst.png",
 	"power":"./img/Building/ggpowr.png",
+	"gpile":"./img/Building/ggpile.png",
 	"E3":"./img/Infantry/E3.png",
 	"adog":"./img/Infantry/adog.png",
 	"mcv":"./img/Vehicle/mcv.png",
 	"createGrass":"./img/creat/grass.png",
 	"createWater":"./img/creat/water.png",
 	"createPower":"./img/creat/ggpowricon.png",
+	"createGpile":"./img/creat/brrkicon.png",
+	"createE3":"./img/creat/e3icon.png",
+	"createAdog":"./img/creat/adogicon.png",
+	"createMCV":"./img/creat/mcvicon.png",
 }
 
+allbuildings = [
+	"Power","Gpile",
+]
+alldefences= [
+]
+allinfantries = [
+	"E3","Adog",
+]
+allvehicles = [
+	"MCV",
+]
 requisite = {
 	"Power":["Gcnst"],
+	"Gpile":["Gcnst","Power"],
+	"E3":["Gpile"],
+	"Adog":["Gpile"],
+	"MCV":["Gweap"],
 }
 
 defaultplayers = {

@@ -214,12 +214,15 @@ class BattleFieldController(SpriteContainer):
 
     def clickButtonSet(self,buttonSet,x,y,button):
         for b in buttonSet:
-            if button == 1:
+            if button == 1 or button == 3:
                 ix = b.index % 2
                 iy = b.index / 2 + buttonSet.scroll
                 b.setpos(ix*createbtnw+createbtnx,iy*createbtny+self.side0.top())
                 if not b.disabled and b.contains(x,y):
-                    b.mouseListener(b.name)
+                    if button == 1:
+                        b.mouseListener(b.name)
+                    elif button == 3:
+                        b.rightMouseListener(b.name)
     
     def onMouseMove(self,x,y,button1=None,button2=None,button3=None):
         super(BattleFieldController,self).onMouseMove(x,y,button1,button2,button3)
@@ -331,6 +334,7 @@ class GameController(BattleFieldController):
         for unitname in requisite:
             self.createButtons[unitname] = CreateButton(unitname)
             self.createButtons[unitname].setMouseListener(self.addToCreateList)
+            self.createButtons[unitname].setRightMouseListener(self.cancelCreateList)
 
         self.selectBuildingPosition = ""
         self.pointerset = None
@@ -339,14 +343,26 @@ class GameController(BattleFieldController):
         if typeofunit[name] == "building":
             builded = self.player.getBuildingInFactory()
             if builded != None:
-                if builded[0] == 0 and builded[2] == name:
-                    self.selectBuildingPosition = name
+                if builded[2] == name:
+                    if builded[0] == 0:
+                        self.selectBuildingPosition = name
+                    elif self.player.buildingStop:
+                        self.player.buildingStop = False
+                    else:
+                        self.cannotApply()
                 else:
                     self.cannotApply()
             else:
                 self.player.addToCreateList(name)
         else:
             self.player.addToCreateList(name)
+
+    def cancelCreateList(self,name):
+        if typeofunit[name] == "building":
+            builded = self.player.getBuildingInFactory()
+            if builded != None:
+                if builded[2] == name:
+                    self.player.cancelBuildingList()
 
     def takeOverGame(self,game,player):
         self.characters = game
@@ -514,6 +530,8 @@ class GameController(BattleFieldController):
                     self.createProgress0.setIndex(54*(builded[1]-builded[0])/builded[1])
                     self.createProgress0.setpos(x,y)
                     buttonset.overgroup.add(self.createProgress0)
+            else:
+                self.createButtons[building].recover()
 
     def updateDefenceButtons(self):
         builded = self.player.getDefenceInFactory()
@@ -557,7 +575,7 @@ class GameController(BattleFieldController):
         buttonset.visible = visible
         buttonset.scroll = 0
         buttonset.group = pygame.sprite.Group()
-        for i,vehicle in enumerate(self.player.infantryList):
+        for i,vehicle in enumerate(self.player.vehicleList):
             buttonset.add(self.createButtons[vehicle])
             self.createButtons[vehicle].index = i
             buttonset.group.add(self.createButtons[vehicle])

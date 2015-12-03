@@ -109,19 +109,26 @@ class CreateButton(Button):
         self.disableimg = images["disable%s"%name]
         self.disabled = False
         self.name = name
+        self.rightMouseListener = None
 
     def disable(self):
         self.disabled = True
-        self.setimage(self.disable)
+        self.setimage(self.disableimg)
     def recover(self):
         self.disabled = False
         self.setimage(self.normal)
+    def setRightMouseListener(self,callback):
+        self.rightMouseListener = callback
     
     def onMouseDown(self,x,y,button):
         if button == 1:
             if self.contains(x,y):
                 if self.mouseListener != None:
                     self.mouseListener(self.name)
+        elif button == 3:
+            if self.contains(x,y):
+                if self.rightMouseListener != None:
+                    self.rightMouseLisener(self.name)
 
     def onMouseUp(self,x,y,button):
         pass
