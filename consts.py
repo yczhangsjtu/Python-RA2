@@ -60,6 +60,7 @@ minimaph = 110
 powerx = 632
 powery = 568
 powern = 172
+powerthresh = 20
 barlength = 160
 barheight = 10
 barx = 50
@@ -85,11 +86,13 @@ sizeofunit = {
 	"MCV":6,
 	"Power":10,
 	"Gpile":10,
+	"Grefn":12,
 	"AirCmd":12,
 	"Gcnst":20,
 }
 modify = {
 	"Power":[0,24],
+	"Grefn":[0,54],
 	"Gpile":[0,24],
 	"AirCmd":[-50,0],
 	"Gcnst":[20,-20],
@@ -100,6 +103,7 @@ typeofunit = {
 	"MCV":"vehicle",
 	"Power":"building",
 	"Gpile":"building",
+	"Grefn":"building",
 	"AirCmd":"building",
 	"Gcnst":"building",
 }
@@ -108,6 +112,7 @@ costofunit = {
 	"E3":100,
 	"MCV":3000,
 	"Power":800,
+	"Grefn":2000,
 	"Gpile":1000,
 	"AirCmd":1000,
 	"Gcnst":3000,
@@ -117,6 +122,7 @@ canland = {
 	"E3":True,
 	"MCV":True,
 	"Power":True,
+	"Grefn":True,
 	"Gpile":True,
 	"AirCmd":True,
 	"Gcnst":True,
@@ -126,14 +132,43 @@ canwater = {
 	"E3":False,
 	"MCV":False,
 	"Power":False,
+	"Grefn":False,
 	"Gpile":False,
 	"AirCmd":False,
 	"Gcnst":False,
 }
+requisite = {
+	"Power":["Gcnst"],
+	"Grefn":["Gcnst","Power"],
+	"Gpile":["Gcnst","Power"],
+	"E3":["Gpile"],
+	"Adog":["Gpile"],
+	"MCV":["Gweap"],
+}
+createPosition = {
+    "Gpile":(-50,50),
+}
+createAnimation = {
+	"E3":"runsw",
+	"Adog":"runsw",
+	"MCV":"runse",
+}
 pointerset = {
 	"Power":[(0,0),(-1,1),(1,1),(0,1)],
+	"Grefn":[(0,0),(-1,1),(1,1),(0,1),(-2,1),(-1,2),(0,2),(1,2),(2,1)],
 	"Gpile":[(0,0),(-1,1),(1,1),(0,1)],
 }
+allbuildings = [
+	"Power","Grefn","Gpile",
+]
+alldefences= [
+]
+allinfantries = [
+	"E3","Adog",
+]
+allvehicles = [
+	"MCV",
+]
 
 loadList = {
 	"loadimg":"./img/startimage.png",
@@ -184,6 +219,7 @@ loadList = {
 	"aircmd":"./img/Building/aircmd.png",
 	"gcnst":"./img/Building/gcnst.png",
 	"power":"./img/Building/ggpowr.png",
+	"grefn":"./img/Building/ggrefn.png",
 	"gpile":"./img/Building/ggpile.png",
 	"E3":"./img/Infantry/E3.png",
 	"adog":"./img/Infantry/adog.png",
@@ -191,37 +227,11 @@ loadList = {
 	"createGrass":"./img/creat/grass.png",
 	"createWater":"./img/creat/water.png",
 	"createPower":"./img/creat/ggpowricon.png",
+	"createGrefn":"./img/creat/reficon.png",
 	"createGpile":"./img/creat/brrkicon.png",
 	"createE3":"./img/creat/e3icon.png",
 	"createAdog":"./img/creat/adogicon.png",
 	"createMCV":"./img/creat/mcvicon.png",
-}
-
-allbuildings = [
-	"Power","Gpile",
-]
-alldefences= [
-]
-allinfantries = [
-	"E3","Adog",
-]
-allvehicles = [
-	"MCV",
-]
-requisite = {
-	"Power":["Gcnst"],
-	"Gpile":["Gcnst","Power"],
-	"E3":["Gpile"],
-	"Adog":["Gpile"],
-	"MCV":["Gweap"],
-}
-createPosition = {
-    "Gpile":(-50,50),
-}
-createAnimation = {
-	"E3":"runsw",
-	"Adog":"runsw",
-	"MCV":"runse",
 }
 
 defaultplayers = {

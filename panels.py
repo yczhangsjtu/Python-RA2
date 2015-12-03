@@ -194,7 +194,7 @@ class BattleFieldController(SpriteContainer):
         for button in buttonSet:
             ix = button.index % 2
             iy = button.index / 2 + buttonSet.scroll
-            button.setpos(ix*createbtnw+createbtnx,iy*createbtny+self.side0.top())
+            button.setpos(ix*createbtnw+createbtnx,iy*createbtnh+self.side0.top())
         buttonSet.group.draw(screen)
 
     def drawMinimap(self,screen):
@@ -215,9 +215,9 @@ class BattleFieldController(SpriteContainer):
     def clickButtonSet(self,buttonSet,x,y,button):
         for b in buttonSet:
             if button == 1 or button == 3:
-                ix = b.index % 2
-                iy = b.index / 2 + buttonSet.scroll
-                b.setpos(ix*createbtnw+createbtnx,iy*createbtny+self.side0.top())
+                # ix = b.index % 2
+                # iy = b.index / 2 + buttonSet.scroll
+                # b.setpos(ix*createbtnw+createbtnx,iy*createbtnh+self.side0.top())
                 if not b.disabled and b.contains(x,y):
                     if button == 1:
                         b.mouseListener(b.name)

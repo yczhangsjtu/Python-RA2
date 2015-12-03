@@ -236,6 +236,20 @@ class Player():
         self.__updateVehicleList()
         self.__updateVehicleCreateList()
         self.__resetMainFactories()
+        self.__updatePower()
+
+    def __updatePower(self):
+        self.powergen = 0
+        self.powerload = 0
+        for unit in self.units:
+            if hasattr(unit,"power"):
+                if unit.power > 0:
+                    self.powergen += unit.power
+                elif unit.power < 0:
+                    self.powerload -= unit.power
+        self.powerhigh = self.powergen >= self.powerload - powerthresh
+        self.powerlow = not self.powerhigh and self.powergen >= self.powerload
+        self.nopower = not self.powerhigh and not self.powerlow
 
     def __resetMainFactories(self):
         if self.mainGpile == None or not self.mainGpile in self.units:
