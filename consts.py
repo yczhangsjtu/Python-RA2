@@ -215,6 +215,14 @@ requisite = {
 	"Adog":["Gpile"],
 	"MCV":["Gweap"],
 }
+createPosition = {
+    "Gpile":(-50,50),
+}
+createAnimation = {
+	"E3":"runsw",
+	"Adog":"runsw",
+	"MCV":"runse",
+}
 
 defaultplayers = {
 	"player0":{

@@ -163,12 +163,6 @@ class TreeContainer(object):
 				print self.data.offsetx,self.data.offsety,self.data.size
 				raise Exception('Adding already existed member.')
 			if collide(self.data,data):
-				print "Failing adding"
-				print self
-				print data
-				print data.offsetx,data.offsety,data.size
-				print self.data
-				print self.data.offsetx,self.data.offsety,self.data.size
 				return False
 			self.split()
 		for child in self.children:

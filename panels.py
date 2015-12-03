@@ -526,7 +526,6 @@ class GameController(BattleFieldController):
         pass
 
     def update(self):
-        self.player.update()
         self.updateBuildingButtons()
         self.updateDefenceButtons()
         self.updateInfantryButtons()
