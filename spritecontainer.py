@@ -39,6 +39,8 @@ class ExtendSprite(pygame.sprite.Sprite):
 	def setpos(self,x,y):
 		self.x, self.y = x, y
 		self.rect.topleft = (self.x, self.y)
+	def getpos(self):
+		return self.rect.topleft
 	
 	def onMouseDown(self,x,y,button):
 		pass

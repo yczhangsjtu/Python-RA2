@@ -189,3 +189,5 @@ class ButtonSet(Set):
         super(ButtonSet,self).__init__()
         self.visible = False
         self.group = None
+        self.overgroup = None
+        self.createProgress = None

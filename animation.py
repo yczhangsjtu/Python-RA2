@@ -128,6 +128,7 @@ class SimpleAnimation(Animation):
         for sprite in self.spriteset:
             sprite.setpos(offsetx,offsety)
         self.setIndex(0)
+        self.started = False
     def onMouseDown(self,x,y,button):
         pass
     def onMouseMove(self,x,y,button1=None,button2=None,button3=None):

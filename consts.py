@@ -161,6 +161,7 @@ loadList = {
 	"sideb":"./img/icons/side2b.png",
 	"radar":"./img/icons/radar.png",
 	"powerp":"./img/icons/powerp.png",
+	"progress":"./img/icons/ambttn.png",
 	"editorpanel":"./img/editorpanel.png",
 	"selectmap":"./img/selectmap.png",
 	"ground":"./img/ground.png",
