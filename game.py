@@ -41,12 +41,16 @@ class Game():
         self.updatePosition()
     
     def addUnit(self,unit,x,y):
-        self.unitSet.addPos(unit,x,y)
-        self.players[unit.player].addUnit(unit)
+        if self.unitSet.addPos(unit,x,y):
+            self.players[unit.player].addUnit(unit)
+            return True
+        return False
         
     def addUnitGrid(self,unit,col,row):
-        self.unitSet.addGrid(unit,col,row)
-        self.players[unit.player].addUnit(unit)
+        if self.unitSet.addGrid(unit,col,row):
+            self.players[unit.player].addUnit(unit)
+            return True
+        return False
     
     def removeUnit(self,unit):
         self.unitSet.remove(unit)
@@ -71,7 +75,8 @@ class Game():
                 offsetx += modify[name][0]
                 offsety += modify[name][1]
                 self.removeUnit(unit)
-                self.addUnit(newunit,offsetx,offsety)
+                if not self.addUnit(newunit,offsetx,offsety):
+                    self.addUnit(unit)
     
     def updatePosition(self):
         self.x = self.map.x
@@ -156,6 +161,17 @@ class Player():
         self.vehicleMoneyCost = 0
         self.vehicleIsReady = False
         self.vehicleStop = False
+    
+    def createBuilding(self,col,row,characters):
+        builded = self.getBuildingInFactory()
+        if builded != None and self.buildingIsReady:
+            name = builded[2]
+            offsetx,offsety = getAbsPos(col,row,True)
+            offsetx += modify[name][0]
+            offsety += modify[name][1]
+            building = classmap[name](self.index)
+            if characters.addUnit(building,offsetx,offsety):
+                self.popBuildingList()
 
     def addUnit(self,unit):
         unit.player = self.index

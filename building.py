@@ -98,6 +98,18 @@ class Power(Building):
 		self.drawShortBloodBar(screen)
 classmap["Power"] = Power
 		
+class Gpile(Building):
+	def __init__(self,player,animation=None):
+		animationset = gpileAnimation
+		super(Gpile,self).__init__(player,animationset,animation)
+		self.size = sizeofunit["Gpile"]
+		self.fullHP = 1000
+		self.HP = self.fullHP
+		self.name = "Gpile"
+	def drawBloodBar(self,screen):
+		self.drawShortBloodBar(screen)
+classmap["Gpile"] = Gpile
+		
 class Gcnst(Building):
 	def __init__(self,player,animation=None):
 		animationset = gcnstAnimation
@@ -109,18 +121,6 @@ class Gcnst(Building):
 	def drawBloodBar(self,screen):
 		self.drawLongBloodBar(screen)
 classmap["Gcnst"] = Gcnst
-		
-class Gpile(Building):
-	def __init__(self,player,animation=None):
-		animationset = gpileAnimation
-		super(Gpile,self).__init__(player,animationset,animation)
-		self.size = sizeofunit["Gpile"]
-		self.fullHP = 1000
-		self.HP = self.fullHP
-		self.name = "Gpile"
-	def drawBloodBar(self,screen):
-		self.drawLongBloodBar(screen)
-classmap["Gpile"] = Gpile
 
 class PowerAnimation(AnimationSet):
 	def __init__(self):
