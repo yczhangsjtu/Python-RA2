@@ -90,6 +90,7 @@ sizeofunit = {
 	"Grefn":12,
 	"AirCmd":12,
 	"Gcnst":20,
+	"Gyard":20,
 }
 modify = {
 	"Power":[0,24],
@@ -97,6 +98,7 @@ modify = {
 	"Gpile":[0,24],
 	"AirCmd":[-50,0],
 	"Gcnst":[20,-20],
+	"Gyard":[0,0],
 }
 typeofunit = {
 	"Adog":"infantry",
@@ -107,6 +109,7 @@ typeofunit = {
 	"Gpile":"building",
 	"Grefn":"building",
 	"AirCmd":"building",
+	"Gyard":"building",
 	"Gcnst":"building",
 }
 costofunit = {
@@ -118,6 +121,7 @@ costofunit = {
 	"Grefn":2000,
 	"Gpile":500,
 	"AirCmd":1000,
+	"Gyard":1000,
 	"Gcnst":3000,
 }
 canland = {
@@ -129,6 +133,7 @@ canland = {
 	"Grefn":True,
 	"Gpile":True,
 	"AirCmd":True,
+	"Gyard":False,
 	"Gcnst":True,
 }
 canwater = {
@@ -140,13 +145,15 @@ canwater = {
 	"Grefn":False,
 	"Gpile":False,
 	"AirCmd":False,
+	"Gyard":True,
 	"Gcnst":False,
 }
 requisite = {
 	"Power":["Gcnst"],
 	"Grefn":["Gcnst","Power"],
 	"Gpile":["Gcnst","Power"],
-	"AirCmd":["Gcnst","Grefn"],
+	"AirCmd":["Gpile","Gcnst","Grefn"],
+	"Gyard":["Gpile","Gcnst","Grefn"],
 	"E3":["Gpile"],
 	"Adog":["Gpile"],
 	"Engineer":["Gpile","Grefn"],
@@ -165,10 +172,12 @@ pointerset = {
 	"Power":[(0,0),(-1,1),(1,1),(0,1)],
 	"Grefn":[(0,0),(-1,1),(1,1),(0,1),(-2,1),(-1,2),(0,2),(1,2),(2,1)],
 	"Gpile":[(0,0),(-1,1),(1,1),(0,1)],
-    "AirCmd":[(0,0),(-1,1),(1,1),(0,1),(-1,0),(-2,0)]
+    "AirCmd":[(0,0),(-1,1),(1,1),(0,1),(-1,0),(-2,0)],
+    "Gyard":[(0,0),(0,-1),(-1,0),(1,0),(-2,0),(2,0),(-3,1),(-1,1),(1,1),(3,1),
+		(-2,1),(0,1),(2,1),(-1,2),(1,2),(0,2)],
 }
 allbuildings = [
-	"Power","Grefn","Gpile","AirCmd",
+	"Power","Grefn","Gpile","AirCmd","Gyard",
 ]
 alldefences= [
 ]
@@ -230,6 +239,7 @@ loadList = {
 	"power":"./img/Building/ggpowr.png",
 	"grefn":"./img/Building/ggrefn.png",
 	"gpile":"./img/Building/ggpile.png",
+	"gyard":"./img/Building/ggyard.png",
 	"E3":"./img/Infantry/E3.png",
 	"adog":"./img/Infantry/adog.png",
 	"engineer":"./img/Infantry/engineer.png",
@@ -244,6 +254,7 @@ loadList = {
 	"createEngineer":"./img/creat/engnicon.png",
 	"createMCV":"./img/creat/mcvicon.png",
 	"createAirCmd":"./img/creat/heliicon.png",
+	"createGyard":"./img/creat/ayaricon.png",
 }
 
 defaultplayers = {

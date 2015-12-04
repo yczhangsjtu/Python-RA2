@@ -12,13 +12,14 @@ gcnstAnimation = None
 powerAnimation = None
 gpileAnimation = None
 grefnAnimation = None
+gyardAnimation = None
 
 def initBuildingAnimations():
     global longBuildingHealthBlood, longBuildingHurtBlood,\
            longBuildingDangerBlood, shortBuildingHealthBlood,\
            shortBuildingHurtBlood, shortBuildingDangerBlood
     global aircmdAnimation, gcnstAnimation, powerAnimation, gpileAnimation,\
-           grefnAnimation
+           grefnAnimation, gyardAnimation
     bloodbarimg = images["buildingbloodbar"]
     longBuildingHealthBlood  = bloodbarimg.subsurface(0,0,300,10)
     longBuildingHurtBlood    = bloodbarimg.subsurface(0,10,300,10)
@@ -31,6 +32,7 @@ def initBuildingAnimations():
     powerAnimation = PowerAnimation()
     grefnAnimation = GrefnAnimation()
     gpileAnimation = GpileAnimation()
+    gyardAnimation = GyardAnimation()
 
 class Building(Unit):
     def __init__(self,player,animationset,animation=None):
@@ -128,6 +130,19 @@ class Gpile(Building):
     def drawBloodBar(self,screen):
         self.drawShortBloodBar(screen)
 classmap["Gpile"] = Gpile
+        
+class Gyard(Building):
+    def __init__(self,player,animation=None):
+        animationset = gyardAnimation
+        super(Gyard,self).__init__(player,animationset,animation)
+        self.size = sizeofunit["Gyard"]
+        self.fullHP = 1500
+        self.HP = self.fullHP
+        self.name = "Gyard"
+        self.power = -25
+    def drawBloodBar(self,screen):
+        self.drawLongBloodBar(screen)
+classmap["Gyard"] = Gyard
         
 class Gcnst(Building):
     def __init__(self,player,animation=None):
@@ -267,6 +282,66 @@ class AirCmdAnimation(AnimationSet):
             animation = Animation()
             animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
             self.addAnimation("destroy_%d"%player,animation)
+            y += playeroffset
+
+class GyardAnimation(AnimationSet):
+    def __init__(self):
+        super(GyardAnimation,self).__init__()
+        image = images["gyard"]
+        offsetx,offsety = 118,282
+        self.originalAnimation = "build"
+        width,height = 324,345
+        playeroffset = 3105
+        
+        x,y,m,n = 0,2760,25,1
+        for player in range(numofplayer):
+            animation = Animation()
+            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
+            animation.loop = False
+            self.addAnimation("build_%d"%player,animation)
+            y += playeroffset
+        
+        x,y,m,n = 0,0,15,1
+        for player in range(numofplayer):
+            animation = Animation()
+            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
+            self.addAnimation("normal_%d"%player,animation)
+            self.getAnimation("build_%d"%player).next = animation
+            y += playeroffset
+        
+        x,y,m,n = 0,345,15,1
+        for player in range(numofplayer):
+            animation = Animation()
+            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
+            self.addAnimation("destroy_%d"%player,animation)
+            y += playeroffset
+
+        x,y,m,n = 0,690,21,2
+        for player in range(numofplayer):
+            animation = Animation()
+            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
+            self.addAnimation("normalbigrepair_%d"%player,animation)
+            y += playeroffset
+
+        x,y,m,n = 0,1380,21,2
+        for player in range(numofplayer):
+            animation = Animation()
+            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
+            self.addAnimation("destroybigrepair_%d"%player,animation)
+            y += playeroffset
+
+        x,y,m,n = 0,2070,18,1
+        for player in range(numofplayer):
+            animation = Animation()
+            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
+            self.addAnimation("normalsmallrepair_%d"%player,animation)
+            y += playeroffset
+
+        x,y,m,n = 0,2415,18,1
+        for player in range(numofplayer):
+            animation = Animation()
+            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
+            self.addAnimation("destroysmallrepair_%d"%player,animation)
             y += playeroffset
             
 class GcnstAnimation(AnimationSet):
