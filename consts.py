@@ -116,7 +116,7 @@ costofunit = {
 	"MCV":3000,
 	"Power":800,
 	"Grefn":2000,
-	"Gpile":1000,
+	"Gpile":500,
 	"AirCmd":1000,
 	"Gcnst":3000,
 }
@@ -146,6 +146,7 @@ requisite = {
 	"Power":["Gcnst"],
 	"Grefn":["Gcnst","Power"],
 	"Gpile":["Gcnst","Power"],
+	"AirCmd":["Gcnst","Grefn"],
 	"E3":["Gpile"],
 	"Adog":["Gpile"],
 	"Engineer":["Gpile","Grefn"],
@@ -164,9 +165,10 @@ pointerset = {
 	"Power":[(0,0),(-1,1),(1,1),(0,1)],
 	"Grefn":[(0,0),(-1,1),(1,1),(0,1),(-2,1),(-1,2),(0,2),(1,2),(2,1)],
 	"Gpile":[(0,0),(-1,1),(1,1),(0,1)],
+    "AirCmd":[(0,0),(-1,1),(1,1),(0,1),(-1,0),(-2,0)]
 }
 allbuildings = [
-	"Power","Grefn","Gpile",
+	"Power","Grefn","Gpile","AirCmd",
 ]
 alldefences= [
 ]
@@ -241,6 +243,7 @@ loadList = {
 	"createAdog":"./img/creat/adogicon.png",
 	"createEngineer":"./img/creat/engnicon.png",
 	"createMCV":"./img/creat/mcvicon.png",
+	"createAirCmd":"./img/creat/heliicon.png",
 }
 
 defaultplayers = {
