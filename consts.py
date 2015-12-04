@@ -283,7 +283,7 @@ loadList = {
 defaultplayers = {
 	"player0":{
 		"flag":0,
-		"position":[5,5],
+		"position":[10,10],
 		"initials":[
 			{"name":"E3","pos":(-150,-150),"animation":"standne"},
 			{"name":"E3","pos":(150,-150),"animation":"standnw"},
