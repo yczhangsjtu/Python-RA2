@@ -82,6 +82,7 @@ colorofplayer = [RED,BLUE]
 
 sizeofunit = {
 	"Adog":1,
+	"Engineer":1,
 	"E3":1,
 	"MCV":6,
 	"Power":10,
@@ -99,6 +100,7 @@ modify = {
 }
 typeofunit = {
 	"Adog":"infantry",
+	"Engineer":"infantry",
 	"E3":"infantry",
 	"MCV":"vehicle",
 	"Power":"building",
@@ -109,6 +111,7 @@ typeofunit = {
 }
 costofunit = {
 	"Adog":200,
+	"Engineer":500,
 	"E3":100,
 	"MCV":3000,
 	"Power":800,
@@ -119,6 +122,7 @@ costofunit = {
 }
 canland = {
 	"Adog":True,
+	"Engineer":True,
 	"E3":True,
 	"MCV":True,
 	"Power":True,
@@ -129,6 +133,7 @@ canland = {
 }
 canwater = {
 	"Adog":False,
+	"Engineer":False,
 	"E3":False,
 	"MCV":False,
 	"Power":False,
@@ -143,6 +148,7 @@ requisite = {
 	"Gpile":["Gcnst","Power"],
 	"E3":["Gpile"],
 	"Adog":["Gpile"],
+	"Engineer":["Gpile","Grefn"],
 	"MCV":["Gweap"],
 }
 createPosition = {
@@ -151,6 +157,7 @@ createPosition = {
 createAnimation = {
 	"E3":"runsw",
 	"Adog":"runsw",
+	"Engineer":"runsw",
 	"MCV":"runse",
 }
 pointerset = {
@@ -164,7 +171,7 @@ allbuildings = [
 alldefences= [
 ]
 allinfantries = [
-	"E3","Adog",
+	"E3","Adog","Engineer",
 ]
 allvehicles = [
 	"MCV",
@@ -223,6 +230,7 @@ loadList = {
 	"gpile":"./img/Building/ggpile.png",
 	"E3":"./img/Infantry/E3.png",
 	"adog":"./img/Infantry/adog.png",
+	"engineer":"./img/Infantry/engineer.png",
 	"mcv":"./img/Vehicle/mcv.png",
 	"createGrass":"./img/creat/grass.png",
 	"createWater":"./img/creat/water.png",
@@ -231,6 +239,7 @@ loadList = {
 	"createGpile":"./img/creat/brrkicon.png",
 	"createE3":"./img/creat/e3icon.png",
 	"createAdog":"./img/creat/adogicon.png",
+	"createEngineer":"./img/creat/engnicon.png",
 	"createMCV":"./img/creat/mcvicon.png",
 }
 
