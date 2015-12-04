@@ -170,7 +170,7 @@ class Player():
 
         self.mainGpile = None
         self.mainGweap = None
-    
+	
     def createBuilding(self,col,row,characters):
         builded = self.getBuildingInFactory()
         if builded != None and self.buildingIsReady:

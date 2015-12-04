@@ -215,9 +215,6 @@ class BattleFieldController(SpriteContainer):
     def clickButtonSet(self,buttonSet,x,y,button):
         for b in buttonSet:
             if button == 1 or button == 3:
-                # ix = b.index % 2
-                # iy = b.index / 2 + buttonSet.scroll
-                # b.setpos(ix*createbtnw+createbtnx,iy*createbtnh+self.side0.top())
                 if not b.disabled and b.contains(x,y):
                     if button == 1:
                         b.mouseListener(b.name)
@@ -650,7 +647,10 @@ class GameController(BattleFieldController):
                     if not self.goodToPutBuilding(self.selectBuildingPosition,col,row):
                         return
                 col,row = self.pointerset[0]
-                self.player.createBuilding(col,row,self.characters)
+                if typeofunit[self.selectBuildingPosition] == "building":
+                    self.player.createBuilding(col,row,self.characters)
+                elif  typeofunit[self.selectBuildingPosition] == "defence":
+                    self.player.createDefence(col,row,self.characters)
                 self.pointerset = None
                 self.selectBuildingPosition = ""
                 return

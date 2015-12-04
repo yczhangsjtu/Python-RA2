@@ -92,6 +92,7 @@ sizeofunit = {
 	"Gcnst":20,
 	"Gyard":20,
 	"Gweap":12,
+	"Gpill":6,
 }
 modify = {
 	"Power":[0,24],
@@ -100,6 +101,7 @@ modify = {
 	"AirCmd":[-50,0],
 	"Gcnst":[20,-20],
 	"Gyard":[0,0],
+	"Gpill":[0,0],
 	"Gweap":[0,-10],
 }
 typeofunit = {
@@ -114,6 +116,7 @@ typeofunit = {
 	"Gyard":"building",
 	"Gweap":"building",
 	"Gcnst":"building",
+	"Gpill":"defence",
 }
 costofunit = {
 	"Adog":200,
@@ -126,6 +129,7 @@ costofunit = {
 	"AirCmd":1000,
 	"Gyard":1000,
 	"Gweap":2000,
+	"Gpill":500,
 	"Gcnst":3000,
 }
 canland = {
@@ -139,6 +143,7 @@ canland = {
 	"AirCmd":True,
 	"Gyard":False,
 	"Gweap":True,
+	"Gpill":True,
 	"Gcnst":True,
 }
 canwater = {
@@ -152,6 +157,7 @@ canwater = {
 	"AirCmd":False,
 	"Gyard":True,
 	"Gweap":False,
+	"Gpill":False,
 	"Gcnst":False,
 }
 requisite = {
@@ -161,6 +167,7 @@ requisite = {
 	"AirCmd":["Gpile","Gcnst","Grefn"],
 	"Gyard":["Gpile","Gcnst","Grefn"],
 	"Gweap":["Gpile","Gcnst","Grefn"],
+	"Gpill":["Gpile","Gcnst"],
 	"E3":["Gpile"],
 	"Adog":["Gpile"],
 	"Engineer":["Gpile","Grefn"],
@@ -185,11 +192,13 @@ pointerset = {
 		(-2,1),(0,1),(2,1),(-1,2),(1,2),(0,2)],
     "Gweap":[(0,0),(0,-1),(-1,0),(1,0),(-2,0),(2,0),(-1,1),(1,1),(3,1),(0,1),
         (2,1),(1,2)],
+    "Gpill":[(0,0)],
 }
 allbuildings = [
 	"Power","Grefn","Gpile","AirCmd","Gweap","Gyard",
 ]
 alldefences= [
+    "Gpill",
 ]
 allinfantries = [
 	"E3","Adog","Engineer",
@@ -251,6 +260,7 @@ loadList = {
 	"gpile":"./img/Building/ggpile.png",
 	"gyard":"./img/Building/ggyard.png",
 	"gweap":"./img/Building/ggweap.png",
+	"gpill":"./img/Building/ggpill.png",
 	"E3":"./img/Infantry/E3.png",
 	"adog":"./img/Infantry/adog.png",
 	"engineer":"./img/Infantry/engineer.png",
@@ -267,6 +277,7 @@ loadList = {
 	"createAirCmd":"./img/creat/heliicon.png",
 	"createGyard":"./img/creat/ayaricon.png",
 	"createGweap":"./img/creat/gwepicon.png",
+	"createGpill":"./img/creat/pillicon.png",
 }
 
 defaultplayers = {

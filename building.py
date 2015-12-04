@@ -14,13 +14,16 @@ gpileAnimation = None
 grefnAnimation = None
 gyardAnimation = None
 gweapAnimation = None
+gpillAnimation = None
 
 def initBuildingAnimations():
     global longBuildingHealthBlood, longBuildingHurtBlood,\
            longBuildingDangerBlood, shortBuildingHealthBlood,\
-           shortBuildingHurtBlood, shortBuildingDangerBlood
+           shortBuildingHurtBlood, shortBuildingDangerBlood,\
+           defenceHealthBlood, defenceHurtBlood, defenceeDangerBlood
     global aircmdAnimation, gcnstAnimation, powerAnimation, gpileAnimation,\
            grefnAnimation, gyardAnimation, gweapAnimation
+    global gpillAnimation
     bloodbarimg = images["buildingbloodbar"]
     longBuildingHealthBlood  = bloodbarimg.subsurface(0,0,300,10)
     longBuildingHurtBlood    = bloodbarimg.subsurface(0,10,300,10)
@@ -28,6 +31,9 @@ def initBuildingAnimations():
     shortBuildingHealthBlood = bloodbarimg.subsurface(0,0,150,10)
     shortBuildingHurtBlood   = bloodbarimg.subsurface(0,10,150,10)
     shortBuildingDangerBlood = bloodbarimg.subsurface(0,20,150,10)
+    defenceHealthBlood = bloodbarimg.subsurface(0,0,40,10)
+    defenceHurtBlood   = bloodbarimg.subsurface(0,10,40,10)
+    defenceDangerBlood = bloodbarimg.subsurface(0,20,40,10)
     aircmdAnimation = AirCmdAnimation()
     gcnstAnimation = GcnstAnimation()
     powerAnimation = PowerAnimation()
@@ -35,6 +41,7 @@ def initBuildingAnimations():
     gpileAnimation = GpileAnimation()
     gyardAnimation = GyardAnimation()
     gweapAnimation = GweapAnimation()
+    gpillAnimation = GpillAnimation()
 
 class Building(Unit):
     def __init__(self,player,animationset,animation=None):
@@ -79,6 +86,21 @@ class Building(Unit):
         else:
             ngrid = self.HP * 15 / self.fullHP
             blood = shortBuildingHealthBlood.subsurface(0,0,ngrid*10,10)
+            screen.blit(pygame.transform.rotate(blood,rotate),(self.x-offsetx,self.y-offsety))
+    def drawDefenceBloodBar(self,screen):
+        offsetx,offsety = 50,50
+        rotate = 30
+        if self.HP >= self.fullHP/2:
+            ngrid = self.HP * 4 / self.fullHP
+            blood = defenceHealthBlood.subsurface(0,0,ngrid*10,10)
+            screen.blit(pygame.transform.rotate(blood,rotate),(self.x-offsetx,self.y-offsety))
+        elif self.HP >= self.fullHP/4:
+            ngrid = self.HP * 4 / self.fullHP
+            blood = defenceHealthBlood.subsurface(0,0,ngrid*10,10)
+            screen.blit(pygame.transform.rotate(blood,rotate),(self.x-offsetx,self.y-offsety))
+        else:
+            ngrid = self.HP * 4 / self.fullHP
+            blood = defenceHealthBlood.subsurface(0,0,ngrid*10,10)
             screen.blit(pygame.transform.rotate(blood,rotate),(self.x-offsetx,self.y-offsety))
 
 class AirCmd(Building):
@@ -170,6 +192,18 @@ class Gcnst(Building):
     def drawBloodBar(self,screen):
         self.drawLongBloodBar(screen)
 classmap["Gcnst"] = Gcnst
+        
+class Gpill(Building):
+    def __init__(self,player,animation=None):
+        animationset = gpillAnimation
+        super(Gpill,self).__init__(player,animationset,animation)
+        self.size = sizeofunit["Gpill"]
+        self.fullHP = 400
+        self.HP = self.fullHP
+        self.name = "Gpill"
+    def drawBloodBar(self,screen):
+        self.drawDefenceBloodBar(screen)
+classmap["Gpill"] = Gpill
 
 class PowerAnimation(AnimationSet):
     def __init__(self):
@@ -417,6 +451,38 @@ class GcnstAnimation(AnimationSet):
             y += playeroffset
         
         x,y,m,n = 0,339,20,1
+        for player in range(numofplayer):
+            animation = Animation()
+            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
+            self.addAnimation("destroy_%d"%player,animation)
+            y += playeroffset
+
+class GpillAnimation(AnimationSet):
+    def __init__(self):
+        super(GpillAnimation,self).__init__()
+        image = images["gpill"]
+        offsetx,offsety = 49,64
+        self.originalAnimation = "build"
+        width,height = 102,96
+        playeroffset = 96
+        
+        x,y,m,n = 204,0,8,1
+        for player in range(numofplayer):
+            animation = Animation()
+            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
+            animation.loop = False
+            self.addAnimation("build_%d"%player,animation)
+            y += playeroffset
+        
+        x,y,m,n = 0,0,1,1
+        for player in range(numofplayer):
+            animation = Animation()
+            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
+            self.addAnimation("normal_%d"%player,animation)
+            self.getAnimation("build_%d"%player).next = animation
+            y += playeroffset
+        
+        x,y,m,n = 102,0,1,1
         for player in range(numofplayer):
             animation = Animation()
             animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
