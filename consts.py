@@ -91,6 +91,7 @@ sizeofunit = {
 	"AirCmd":12,
 	"Gcnst":20,
 	"Gyard":20,
+	"Gweap":12,
 }
 modify = {
 	"Power":[0,24],
@@ -99,6 +100,7 @@ modify = {
 	"AirCmd":[-50,0],
 	"Gcnst":[20,-20],
 	"Gyard":[0,0],
+	"Gweap":[0,-10],
 }
 typeofunit = {
 	"Adog":"infantry",
@@ -110,6 +112,7 @@ typeofunit = {
 	"Grefn":"building",
 	"AirCmd":"building",
 	"Gyard":"building",
+	"Gweap":"building",
 	"Gcnst":"building",
 }
 costofunit = {
@@ -122,6 +125,7 @@ costofunit = {
 	"Gpile":500,
 	"AirCmd":1000,
 	"Gyard":1000,
+	"Gweap":2000,
 	"Gcnst":3000,
 }
 canland = {
@@ -134,6 +138,7 @@ canland = {
 	"Gpile":True,
 	"AirCmd":True,
 	"Gyard":False,
+	"Gweap":True,
 	"Gcnst":True,
 }
 canwater = {
@@ -146,6 +151,7 @@ canwater = {
 	"Gpile":False,
 	"AirCmd":False,
 	"Gyard":True,
+	"Gweap":False,
 	"Gcnst":False,
 }
 requisite = {
@@ -154,6 +160,7 @@ requisite = {
 	"Gpile":["Gcnst","Power"],
 	"AirCmd":["Gpile","Gcnst","Grefn"],
 	"Gyard":["Gpile","Gcnst","Grefn"],
+	"Gweap":["Gpile","Gcnst","Grefn"],
 	"E3":["Gpile"],
 	"Adog":["Gpile"],
 	"Engineer":["Gpile","Grefn"],
@@ -161,6 +168,7 @@ requisite = {
 }
 createPosition = {
     "Gpile":(-50,50),
+    "Gweap":(100,50),
 }
 createAnimation = {
 	"E3":"runsw",
@@ -175,9 +183,11 @@ pointerset = {
     "AirCmd":[(0,0),(-1,1),(1,1),(0,1),(-1,0),(-2,0)],
     "Gyard":[(0,0),(0,-1),(-1,0),(1,0),(-2,0),(2,0),(-3,1),(-1,1),(1,1),(3,1),
 		(-2,1),(0,1),(2,1),(-1,2),(1,2),(0,2)],
+    "Gweap":[(0,0),(0,-1),(-1,0),(1,0),(-2,0),(2,0),(-1,1),(1,1),(3,1),(0,1),
+        (2,1),(1,2)],
 }
 allbuildings = [
-	"Power","Grefn","Gpile","AirCmd","Gyard",
+	"Power","Grefn","Gpile","AirCmd","Gweap","Gyard",
 ]
 alldefences= [
 ]
@@ -240,6 +250,7 @@ loadList = {
 	"grefn":"./img/Building/ggrefn.png",
 	"gpile":"./img/Building/ggpile.png",
 	"gyard":"./img/Building/ggyard.png",
+	"gweap":"./img/Building/ggweap.png",
 	"E3":"./img/Infantry/E3.png",
 	"adog":"./img/Infantry/adog.png",
 	"engineer":"./img/Infantry/engineer.png",
@@ -255,6 +266,7 @@ loadList = {
 	"createMCV":"./img/creat/mcvicon.png",
 	"createAirCmd":"./img/creat/heliicon.png",
 	"createGyard":"./img/creat/ayaricon.png",
+	"createGweap":"./img/creat/gwepicon.png",
 }
 
 defaultplayers = {

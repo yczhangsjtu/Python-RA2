@@ -24,7 +24,7 @@ class Game():
         self.running = False
         self.players = [Player(i) for i in range(2)]
         for player in self.players:
-            player.money = 10000
+            player.money = 30000
         
         for player in playerData:
             data = playerData[player]
@@ -93,7 +93,7 @@ class Game():
                 if player.infantryIsReady and player.mainGpile != None:
                     player.createInfantry(player.mainGpile,self)
                 if player.vehicleIsReady and player.mainGweap != None:
-                    player.createVehicle(player.mainGpile,self)
+                    player.createVehicle(player.mainGweap,self)
             self.step()
     
     def get_battle_rect():
@@ -208,7 +208,8 @@ class Player():
         builded = self.getVehicleInFactory()
         if builded != None and self.vehicleIsReady:
             name = builded[2]
-            offsetx,offsety = gweap.createPosition()
+            offsetx = gweap.offsetx + createPosition["Gweap"][0]
+            offsety = gweap.offsety + createPosition["Gweap"][1]
             animation = createAnimation[name]
             vehicle = classmap[name](self.index,animation)
             if characters.addUnit(vehicle,offsetx,offsety):

@@ -13,13 +13,14 @@ powerAnimation = None
 gpileAnimation = None
 grefnAnimation = None
 gyardAnimation = None
+gweapAnimation = None
 
 def initBuildingAnimations():
     global longBuildingHealthBlood, longBuildingHurtBlood,\
            longBuildingDangerBlood, shortBuildingHealthBlood,\
            shortBuildingHurtBlood, shortBuildingDangerBlood
     global aircmdAnimation, gcnstAnimation, powerAnimation, gpileAnimation,\
-           grefnAnimation, gyardAnimation
+           grefnAnimation, gyardAnimation, gweapAnimation
     bloodbarimg = images["buildingbloodbar"]
     longBuildingHealthBlood  = bloodbarimg.subsurface(0,0,300,10)
     longBuildingHurtBlood    = bloodbarimg.subsurface(0,10,300,10)
@@ -33,6 +34,7 @@ def initBuildingAnimations():
     grefnAnimation = GrefnAnimation()
     gpileAnimation = GpileAnimation()
     gyardAnimation = GyardAnimation()
+    gweapAnimation = GweapAnimation()
 
 class Building(Unit):
     def __init__(self,player,animationset,animation=None):
@@ -143,6 +145,19 @@ class Gyard(Building):
     def drawBloodBar(self,screen):
         self.drawLongBloodBar(screen)
 classmap["Gyard"] = Gyard
+        
+class Gweap(Building):
+    def __init__(self,player,animation=None):
+        animationset = gweapAnimation
+        super(Gweap,self).__init__(player,animationset,animation)
+        self.size = sizeofunit["Gweap"]
+        self.fullHP = 1000
+        self.HP = self.fullHP
+        self.name = "Gweap"
+        self.power = -25
+    def drawBloodBar(self,screen):
+        self.drawShortBloodBar(screen)
+classmap["Gweap"] = Gweap
         
 class Gcnst(Building):
     def __init__(self,player,animation=None):
@@ -344,6 +359,38 @@ class GyardAnimation(AnimationSet):
             self.addAnimation("destroysmallrepair_%d"%player,animation)
             y += playeroffset
             
+class GweapAnimation(AnimationSet):
+    def __init__(self):
+        super(GweapAnimation,self).__init__()
+        image = images["gweap"]
+        offsetx,offsety = 228,234
+        self.originalAnimation = "build"
+        width,height = 399,336
+        playeroffset = 1008
+        
+        x,y,m,n = 0,672,25,1
+        for player in range(numofplayer):
+            animation = Animation()
+            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
+            animation.loop = False
+            self.addAnimation("build_%d"%player,animation)
+            y += playeroffset
+        
+        x,y,m,n = 0,0,15,1
+        for player in range(numofplayer):
+            animation = Animation()
+            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
+            self.addAnimation("normal_%d"%player,animation)
+            self.getAnimation("build_%d"%player).next = animation
+            y += playeroffset
+        
+        x,y,m,n = 0,336,15,1
+        for player in range(numofplayer):
+            animation = Animation()
+            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
+            self.addAnimation("destroy_%d"%player,animation)
+            y += playeroffset
+
 class GcnstAnimation(AnimationSet):
     def __init__(self):
         super(GcnstAnimation,self).__init__()
