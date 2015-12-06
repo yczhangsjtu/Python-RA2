@@ -1,6 +1,6 @@
 import pygame
 
-from unit import Unit
+from unit import MobileUnit
 from map import getAbsPos, getGridPos
 from animation import Animation, AnimationSet
 from data import images, classmap
@@ -23,7 +23,7 @@ def initInfantryAnimations():
     adogAnimation = AdogAnimation()
     engineerAnimation = EngineerAnimation()
 
-class Infantry(Unit):
+class Infantry(MobileUnit):
     def __init__(self,player,animationset,animation=None):
         super(Infantry,self).__init__(player,animationset,animation)
         self.rect = infantryRect
@@ -39,18 +39,6 @@ class Infantry(Unit):
             ngrid = self.HP * 8 / self.fullHP
             screen.blit(infantryDangerBlood.subsurface(0,0,ngrid*3+1,5),(self.x-12,self.y-40))
     
-    def step(self,map,characters):
-        super(Infantry,self).step(map,characters)
-        if self.target != None:
-            if isinstance(self.target,tuple):
-                x,y = self.target
-                self.moveTo(x,y,characters)
-            else:
-                x,y = self.target.offsetx,self.target.offsety
-                if dist(self.offsetx,self.offsety,x,y) > self.range:
-                    self.moveTo(x,y,characters)
-        
-        
 class Adog(Infantry):
     def __init__(self,player,animation=None):
         animationset = adogAnimation

@@ -1,6 +1,6 @@
 import pygame
 
-from unit import Unit
+from unit import MobileUnit
 from map import getAbsPos, getGridPos, getGridCenter
 from animation import Animation, AnimationSet
 from data import images, classmap
@@ -20,7 +20,7 @@ def initVehicleAnimations():
 	vehicleDangerBlood = bloodbarimg.subsurface(0,8,73,5)
 	mcvAnimation = MCVAnimation()
 
-class Vehicle(Unit):
+class Vehicle(MobileUnit):
 	def __init__(self,player,animationset,animation=None):
 		super(Vehicle,self).__init__(player,animationset,animation)
 		self.expandInto = None
@@ -44,25 +44,16 @@ class Vehicle(Unit):
 			
 	def step(self,map,characters):
 		super(Vehicle,self).step(map,characters)
-		if self.target != None:
-			if isinstance(self.target,tuple):
-				x,y = self.target
-				self.moveTo(x,y,characters)
+		if self.animation == "expand_%d"%(self.player) and self.end:
+			oldsize = self.size
+			self.size = sizeofunit[self.expandInto]
+			offsetx,offsety = getGridCenter(self.offsetx,self.offsety)
+			offsetx += modify[self.expandInto][0]
+			offsety += modify[self.expandInto][1]
+			if characters.unitSet.available(self,offsetx,offsety):
+				self.replace = self.expandInto
 			else:
-				x,y = self.target.offsetx,self.target.offsety
-				if dist(self.offsetx,self.offsety,x,y) > self.range:
-					self.moveTo(x,y,characters)
-		else:
-			if self.animation == "expand_%d"%(self.player) and self.end:
-				oldsize = self.size
-				self.size = sizeofunit[self.expandInto]
-				offsetx,offsety = getGridCenter(self.offsetx,self.offsety)
-				offsetx += modify[self.expandInto][0]
-				offsety += modify[self.expandInto][1]
-				if characters.unitSet.available(self,offsetx,offsety):
-					self.replace = self.expandInto
-				else:
-					self.size = oldsize
+				self.size = oldsize
 	
 	def expand(self):
 		oldsize = self.size

@@ -9,10 +9,9 @@ from game import Game
 from load import Loader, loadImages
 from consts import *
 from data import images
-from startmenu import StartMenu
 from listbox import ListBox
 from panels import SelectMapPanel, MapEditor, GameController, GameBackController,\
-        MapBackController
+        MapBackController, StartMenu
 from map import Map, initMap
 from game import Game
 from building import initBuildingAnimations

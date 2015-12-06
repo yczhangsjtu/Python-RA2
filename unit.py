@@ -205,3 +205,18 @@ class Unit(object):
         return self.get_rect().width
     def height(self):
         return self.get_rect().height
+
+class MobileUnit(Unit):
+    def __init__(self,player,animationset,animation=None):
+        super(MobileUnit,self).__init__(player,animationset,animation);
+    def step(self,map,characters):
+        super(MobileUnit,self).step(map,characters)
+        if self.target != None:
+            if isinstance(self.target,tuple):
+                x,y = self.target
+                self.moveTo(x,y,characters)
+            else:
+                x,y = self.target.offsetx,self.target.offsety
+                if dist(self.offsetx,self.offsety,x,y) > self.range:
+                    self.moveTo(x,y,characters)
+
