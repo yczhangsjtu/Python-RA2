@@ -85,63 +85,20 @@ class E3Animation(AnimationSet):
         playeroffset = 504
         
         y,m,n = 0,1,1
-        for player in range(2):
-            x = 0
-            for direction in directions:
-                animation = Animation()
-                animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-                self.addAnimation("stand%s_%d"%(direction,player),animation)
-                x += width * m
-            y += playeroffset
-        
+        self.addAnimationFromSpriteSheetDir(image,0,y,width,height,m,n,offsetx,offsety,playeroffset,"stand")
         y,m,n = 216,6,1
-        for player in range(2):
-            x = 0
-            for direction in directions:
-                animation = Animation()
-                animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-                animation.loop = False
-                animation.next = self.getAnimation("stand%s_%d"%(direction,player))
-                self.addAnimation("run%s_%d"%(direction,player),animation)
-                x += width * m
-            y += playeroffset
-            
+        self.addAnimationFromSpriteSheetDir(image,0,y,width,height,m,n,offsetx,offsety,playeroffset,"run",False,"stand")
         y,m,n = 288,6,1
-        for player in range(2):
-            x = 0
-            for direction in directions:
-                animation = Animation()
-                animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-                animation.loop = False
-                animation.next = self.getAnimation("stand%s_%d"%(direction,player))
-                self.addAnimation("crawl%s_%d"%(direction,player),animation)
-                x += width * m
-            y += playeroffset
-        
+        self.addAnimationFromSpriteSheetDir(image,0,y,width,height,m,n,offsetx,offsety,playeroffset,"crawl",False,"stand")
         y,m,n = 360,6,1
-        for player in range(2):
-            x = 0
-            for direction in directions:
-                animation = Animation()
-                animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-                animation.loop = False
-                animation.next = self.getAnimation("stand%s_%d"%(direction,player))
-                self.addAnimation("attack%s_%d"%(direction,player),animation)
-                x += width * m
-            y += playeroffset
-            
+        self.addAnimationFromSpriteSheetDir(image,0,y,width,height,m,n,offsetx,offsety,playeroffset,"attack",False,"stand")
         y,m,n = 432,6,1
-        for player in range(2):
-            x = 0
-            for direction in directions:
-                animation = Animation()
-                animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-                animation.loop = False
-                animation.next = self.getAnimation("stand%s_%d"%(direction,player))
-                self.addAnimation("crawlattack%s_%d"%(direction,player),animation)
-                x += width * m
-            y += playeroffset
-        
+        self.addAnimationFromSpriteSheetDir(image,0,y,width,height,m,n,offsetx,offsety,playeroffset,"crawlattack",False,"stand")
+        x,y,m,n = 2220,144,15,1
+        self.addAnimationFromSpriteSheet(image,0,y,width,height,m,n,offsetx,offsety,playeroffset,"die1",False)
+        x,y,m,n = 3330,144,15,1
+        self.addAnimationFromSpriteSheet(image,0,y,width,height,m,n,offsetx,offsety,playeroffset,"die2",False)
+
         x,y,m,n = 1110,72,15,1
         for player in range(2):
             animation = Animation()
@@ -159,22 +116,6 @@ class E3Animation(AnimationSet):
             animation.next = self.getAnimation("standsw_%d"%(player))
             self.addAnimation("squeez_%d"%(player),animation)
             y += playeroffset
-        
-        x,y,m,n = 2220,144,15,1
-        for player in range(2):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            animation.loop = False
-            self.addAnimation("die1_%d"%(player),animation)
-            y += playeroffset
-            
-        x,y,m,n = 3330,144,15,1
-        for player in range(2):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            animation.loop = False
-            self.addAnimation("die2_%d"%(player),animation)
-            y += playeroffset
             
 class AdogAnimation(AnimationSet):
     def __init__(self):
@@ -186,38 +127,15 @@ class AdogAnimation(AnimationSet):
         playeroffset = 288
         
         y,m,n = 0,1,1
-        for player in range(2):
-            x = 0
-            for direction in directions:
-                animation = Animation()
-                animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-                self.addAnimation("stand%s_%d"%(direction,player),animation)
-                x += width * m
-            y += playeroffset
-        
+        self.addAnimationFromSpriteSheetDir(image,0,y,width,height,m,n,offsetx,offsety,playeroffset,"stand")
         y,m,n = 72,6,1
-        for player in range(2):
-            x = 0
-            for direction in directions:
-                animation = Animation()
-                animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-                animation.loop = False
-                animation.next = self.getAnimation("stand%s_%d"%(direction,player))
-                self.addAnimation("run%s_%d"%(direction,player),animation)
-                x += width * m
-            y += playeroffset
-        
+        self.addAnimationFromSpriteSheetDir(image,0,y,width,height,m,n,offsetx,offsety,playeroffset,"run",False,"stand")
         y,m,n = 216,6,1
-        for player in range(2):
-            x = 0
-            for direction in directions:
-                animation = Animation()
-                animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-                animation.loop = False
-                animation.next = self.getAnimation("stand%s_%d"%(direction,player))
-                self.addAnimation("attack%s_%d"%(direction,player),animation)
-                x += width * m
-            y += playeroffset
+        self.addAnimationFromSpriteSheetDir(image,0,y,width,height,m,n,offsetx,offsety,playeroffset,"attack",False,"stand")
+        x,y,m,n = 2220,144,15,1
+        self.addAnimationFromSpriteSheet(image,0,y,width,height,m,n,offsetx,offsety,playeroffset,"die1",False)
+        x,y,m,n = 3330,144,15,1
+        self.addAnimationFromSpriteSheet(image,0,y,width,height,m,n,offsetx,offsety,playeroffset,"die2",False)
         
         x,y,m,n = 0,144,15,1
         for player in range(2):
@@ -235,22 +153,6 @@ class AdogAnimation(AnimationSet):
             animation.loop = False
             animation.next = self.getAnimation("standsw_%d"%(player))
             self.addAnimation("squeez_%d"%(player),animation)
-            y += playeroffset
-        
-        x,y,m,n = 2220,144,15,1
-        for player in range(2):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            animation.loop = False
-            self.addAnimation("die1_%d"%(player),animation)
-            y += playeroffset
-            
-        x,y,m,n = 3330,144,15,1
-        for player in range(2):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            animation.loop = False
-            self.addAnimation("die2_%d"%(player),animation)
             y += playeroffset
             
 class EngineerAnimation(AnimationSet):

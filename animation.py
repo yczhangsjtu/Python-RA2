@@ -3,6 +3,8 @@ import pygame
 from imagesprite import ImageSprite
 from consts import *
 
+directions = ["n","nw","w","sw","s","se","e","ne"]
+
 class Animation(pygame.sprite.GroupSingle):
     def __init__(self):
         super(Animation,self).__init__()
@@ -132,6 +134,21 @@ class AnimationSet(pygame.sprite.GroupSingle):
                 animation.next = self.getAnimation("%s_%d"%(nextanim,player))
             if prevanim != None:
                 self.getAnimation("%s_%d"%(prevanim,player)).next = animation
+            y += playeroffset
+
+    def addAnimationFromSpriteSheetDir(self,image,x,y,width,height,m,n,offsetx,offsety,playeroffset,name,loop=True,nextanim=None,prevanim=None):
+        for player in range(numofplayer):
+            X = x
+            for direction in directions:
+                animation = Animation()
+                animation.addImageSpriteSheet(image,X,y,width,height,m,n,offsetx,offsety)
+                self.addAnimation("%s%s_%d"%(name,direction,player),animation)
+                if not loop: animation.loop = False
+                if nextanim != None:
+                    animation.next = self.getAnimation("%s%s_%d"%(nextanim,direction,player))
+                if prevanim != None:
+                    self.getAnimation("%s%s_%d"%(prevanim,direction,player)).next = animation
+                X += width * m
             y += playeroffset
 
 class SimpleAnimation(Animation):
