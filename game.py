@@ -90,10 +90,10 @@ class Game():
         if self.running:
             for player in self.players:
                 player._update()
-                if player.infantryIsReady and player.mainGpile != None:
-                    player.createInfantry(player.mainGpile,self)
-                if player.vehicleIsReady and player.mainGweap != None:
-                    player.createVehicle(player.mainGweap,self)
+                if player.createIsReady["infantry"] and player.mainGpile != None:
+                    player.createMobUnit(player.mainGpile,"infantry",self)
+                if player.createIsReady["vehicle"] and player.mainGweap != None:
+                    player.createMobUnit(player.mainGweap,"vehicle",self)
             self.step()
     
     def get_battle_rect():
@@ -146,74 +146,42 @@ class Player():
         self.numOfUnit = {}
         self.numOfUnitInCreate = {}
 
-        self.buildingList = []
-        self.defenceList = []
-        self.infantryList = []
-        self.vehicleList = []
+        self.createButtonList = {"building":[],"defence":[],
+                "infantry":[],"vehicle":[]}
 
-        self.buildingCreateList = []
-        self.buildingMoneyCost = 0
-        self.buildingIsReady = False
-        self.buildingStop = False
-        self.defenceCreateList = []
-        self.defenceMoneyCost = 0
-        self.defenceIsReady = False
-        self.defenceStop = False
-        self.infantryCreateList = []
-        self.infantryMoneyCost = 0
-        self.infantryIsReady = False
-        self.infantryStop = False
-        self.vehicleCreateList = []
-        self.vehicleMoneyCost = 0
-        self.vehicleIsReady = False
-        self.vehicleStop = False
+        self.createList = {"building":[],"defence":[],
+                "infantry":[],"vehicle":[]}
+        self.createMoneyCost = {"building":0,"defence":0,
+                "infantry":0,"vehicle":0}
+        self.createIsReady = {"building":False,"defence":False,
+                "infantry":False,"vehicle":False}
+        self.createStop = {"building":False,"defence":False,
+                "infantry":False,"vehicle":False}
 
         self.mainGpile = None
         self.mainGweap = None
-	
-    def createBuilding(self,col,row,characters):
-        builded = self.getBuildingInFactory()
-        if builded != None and self.buildingIsReady:
+    
+    def createFixUnit(self,col,row,t,characters):
+        builded = self.getUnitInFactory(t)
+        if builded != None and self.createIsReady[t]:
             name = builded[2]
             offsetx,offsety = getAbsPos(col,row,True)
             offsetx += modify[name][0]
             offsety += modify[name][1]
-            building = classmap[name](self.index)
-            if characters.addUnit(building,offsetx,offsety):
-                self.__popBuildingList()
+            unit = classmap[name](self.index)
+            if characters.addUnit(unit,offsetx,offsety):
+                self.__popCreateList(t)
 
-    def createDefence(self,col,row,characters):
-        builded = self.getDefenceInFactory()
-        if builded != None and self.defenceIsReady:
+    def createMobUnit(self,factory,t,characters):
+        builded = self.getUnitInFactory(t)
+        if builded != None and self.createIsReady[t]:
             name = builded[2]
-            offsetx,offsety = getAbsPos(col,row,True)
-            offsetx += modify[name][0]
-            offsety += modify[name][1]
-            defence = classmap[name](self.index)
-            if characters.addUnit(defence,offsetx,offsety):
-                self.__popDefenceList()
-
-    def createInfantry(self,gpile,characters):
-        builded = self.getInfantryInFactory()
-        if builded != None and self.infantryIsReady:
-            name = builded[2]
-            offsetx = gpile.offsetx + createPosition["Gpile"][0]
-            offsety = gpile.offsety + createPosition["Gpile"][1]
+            offsetx = factory.offsetx + createPosition[factory.name][0]
+            offsety = factory.offsety + createPosition[factory.name][1]
             animation = createAnimation[name]
-            infantry = classmap[name](self.index,animation)
-            if characters.addUnit(infantry,offsetx,offsety):
-                self.__popInfantryList()
-
-    def createVehicle(self,gweap,characters):
-        builded = self.getVehicleInFactory()
-        if builded != None and self.vehicleIsReady:
-            name = builded[2]
-            offsetx = gweap.offsetx + createPosition["Gweap"][0]
-            offsety = gweap.offsety + createPosition["Gweap"][1]
-            animation = createAnimation[name]
-            vehicle = classmap[name](self.index,animation)
-            if characters.addUnit(vehicle,offsetx,offsety):
-                self.__popVehicleList()
+            unit = classmap[name](self.index,animation)
+            if characters.addUnit(unit,offsetx,offsety):
+                self.__popCreateList(t)
 
     def _addUnit(self,unit):
         unit.player = self.index
@@ -228,14 +196,9 @@ class Player():
         self.numOfUnit[unit.name] -= 1
 
     def _update(self):
-        self.__updateBuildingList()
-        self.__updateBuildingCreateList()
-        self.__updateDefenceList()
-        self.__updateDefenceCreateList()
-        self.__updateInfantryList()
-        self.__updateInfantryCreateList()
-        self.__updateVehicleList()
-        self.__updateVehicleCreateList()
+        for t in ["building","defence","infantry","vehicle"]:
+            self.__updateCreateButtonList(t)
+            self.__stepCreateList(t)
         self.__resetMainFactories()
         self.__updatePower()
 
@@ -266,73 +229,24 @@ class Player():
                     self.mainGweap = unit
                     break
 
-    def cancelBuildingList(self):
-        if len(self.buildingCreateList) > 0:
-            if self.buildingStop or self.buildingIsReady:
-                self.buildingCreateList.pop(0)
-                self.money += self.buildingMoneyCost
-                self.buildingMoneyCost = 0
-                self.buildingStop = False
-                self.buildingIsReady = False
+    def cancelCreateList(self,t):
+        if len(self.createList[t]) > 0:
+            if self.createStop[t] or self.createIsReady[t]:
+                self.createList[t].pop(0)
+                self.money += self.createMoneyCost[t]
+                self.createMoneyCost[t] = 0
+                self.createStop[t] = False
+                self.createIsReady[t] = False
             else:
-                self.buildingStop = True
-    def cancelDefenceList(self):
-        if len(self.defenceCreateList) > 0:
-            if self.defenceStop or self.defenceIsReady:
-                self.defenceCreateList.pop(0)
-                self.money += self.defenceMoneyCost
-                self.defenceMoneyCost = 0
-                self.defenceStop = False
-                self.defenceIsReady = False
-            else:
-                self.defenceStop = True
-    def cancelInfantryList(self):
-        if len(self.infantryCreateList) > 0:
-            if self.infantryStop:
-                self.infantryCreateList.pop(0)
-                self.money += self.infantryMoneyCost
-                self.infantryMoneyCost = 0
-                if len(self.infantryCreateList) == 0:
-                    self.infantryStop = False
-            else:
-                self.infantryStop = True
-    def cancelVehicleList(self):
-        if len(self.vehicleCreateList) > 0:
-            if self.vehicleStop:
-                self.vehicleCreateList.pop(0)
-                self.money += self.vehicleMoneyCost
-                self.vehicleMoneyCost = 0
-                if len(self.vehicleCreateList) == 0:
-                    self.vehicleStop = False
-            else:
-                self.vehicleStop = True
+                self.createStop[t] = True
 
-    def getBuildingInFactory(self):
-        if len(self.buildingCreateList) > 0:
-            return self.buildingCreateList[0]
-        return None
-    def getDefenceInFactory(self):
-        if len(self.defenceCreateList) > 0:
-            return self.defenceCreateList[0]
-        return None
-    def getInfantryInFactory(self):
-        if len(self.infantryCreateList) > 0:
-            return self.infantryCreateList[0]
-        return None
-    def getVehicleInFactory(self):
-        if len(self.vehicleCreateList) > 0:
-            return self.vehicleCreateList[0]
+    def getUnitInFactory(self,t):
+        if len(self.createList[t]) > 0:
+            return self.createList[t][0]
         return None
 
     def addToCreateList(self,name):
-        if typeofunit[name] == "building":
-            self.buildingCreateList.append([costofunit[name],costofunit[name],name])
-        elif typeofunit[name] == "defence":
-            self.defenceCreateList.append([costofunit[name],costofunit[name],name])
-        elif typeofunit[name] == "infantry":
-            self.infantryCreateList.append([costofunit[name],costofunit[name],name])
-        elif typeofunit[name] == "vehicle":
-            self.vehicleCreateList.append([costofunit[name],costofunit[name],name])
+        self.createList[typeofunit[name]].append([costofunit[name],costofunit[name],name])
         if name in self.numOfUnitInCreate:
             self.numOfUnitInCreate[name] += 1
         else:
@@ -348,123 +262,35 @@ class Player():
             return self.numOfUnitInCreate[name]
         return 0
 
-    def __updateBuildingCreateList(self):
-        if len(self.buildingCreateList) > 0:
-            if self.buildingStop: return
-            if self.buildingCreateList[0][0] > 0:
+    def __stepCreateList(self,t):
+        if len(self.createList[t]) > 0:
+            if self.createStop[t]: return
+            if self.createList[t][0][0] > 0:
                 if self.money > 0:
-                    if self.buildingCreateList[0][0] >= createspeed:
-                        self.buildingCreateList[0][0] -= createspeed
-                        self.buildingMoneyCost += createspeed
+                    if self.createList[t][0][0] >= createspeed:
+                        self.createList[t][0][0] -= createspeed
+                        self.createMoneyCost[t] += createspeed
                         self.money -= createspeed
                     else:
-                        self.buildingMoneyCost += self.buildingCreateList[0][0]
-                        self.money -= self.buildingCreateList[0][0]
-                        self.buildingCreateList[0][0] = 0
-                self.buildingIsReady = False
+                        self.createMoneyCost[t] += self.createList[t][0][0]
+                        self.money -= self.createList[t][0][0]
+                        self.createList[t][0][0] = 0
+                self.createIsReady[t] = False
             else:
-                self.buildingIsReady = True
-    def __updateDefenceCreateList(self):
-        if len(self.defenceCreateList) > 0:
-            if self.defenceStop: return
-            if self.defenceCreateList[0][0] > 0:
-                if self.money > 0:
-                    if self.defenceCreateList[0][0] >= createspeed:
-                        self.defenceCreateList[0][0] -= createspeed
-                        self.defenceMoneyCost += createspeed
-                        self.money -= createspeed
-                    else:
-                        self.defenceMoneyCost += self.defenceCreateList[0][0]
-                        self.money -= self.defenceCreateList[0][0]
-                        self.defenceCreateList[0][0] = 0
-                self.defenceIsReady = False
-            else:
-                self.defenceIsReady = True
-    def __updateInfantryCreateList(self):
-        if len(self.infantryCreateList) > 0:
-            if self.infantryStop: return
-            if self.infantryCreateList[0][0] > 0:
-                if self.money > 0:
-                    if self.infantryCreateList[0][0] >= createspeed:
-                        self.infantryCreateList[0][0] -= createspeed
-                        self.infantryMoneyCost += createspeed
-                        self.money -= createspeed
-                    else:
-                        self.infantryMoneyCost += self.infantryCreateList[0][0]
-                        self.money -= self.infantryCreateList[0][0]
-                        self.infantryCreateList[0][0] = 0
-            else:
-                self.infantryIsReady = True
-    def __updateVehicleCreateList(self):
-        if len(self.vehicleCreateList) > 0:
-            if self.vehicleStop: return
-            if self.vehicleCreateList[0][0] > 0:
-                if self.money > 0:
-                    if self.vehicleCreateList[0][0] >= createspeed:
-                        self.vehicleCreateList[0][0] -= createspeed
-                        self.vehicleMoneyCost += createspeed
-                        self.money -= createspeed
-                    else:
-                        self.vehicleMoneyCost += self.vehicleCreateList[0][0]
-                        self.money -= self.vehicleCreateList[0][0]
-                        self.vehicleCreateList[0][0] = 0
-            else:
-                self.vehicleIsReady = True
+                self.createIsReady[t] = True
 
-    def __updateBuildingList(self):
-        self.buildingList = []
-        for building in allbuildings:
+    def __updateCreateButtonList(self,t):
+        self.createButtonList[t] = []
+        for unit in allunits[t]:
             enough = True
-            for req in requisite[building]:
+            for req in requisite[unit]:
                 if not req in self.numOfUnit or self.numOfUnit[req] <= 0:
                     enough = False
             if enough:
-                self.buildingList.append(building)
-    def __updateDefenceList(self):
-        self.defenceList = []
-        for defence in alldefences:
-            enough = True
-            for req in requisite[defence]:
-                if not req in self.numOfUnit or self.numOfUnit[req] <= 0:
-                    enough = False
-            if enough:
-                self.defenceList.append(defence)
-    def __updateInfantryList(self):
-        self.infantryList = []
-        for infantry in allinfantries:
-            enough = True
-            for req in requisite[infantry]:
-                if not req in self.numOfUnit or self.numOfUnit[req] <= 0:
-                    enough = False
-            if enough:
-                self.infantryList.append(infantry)
-    def __updateVehicleList(self):
-        self.vehicleList = []
-        for vehicle in allvehicles:
-            enough = True
-            for req in requisite[vehicle]:
-                if not req in self.numOfUnit or self.numOfUnit[req] <= 0:
-                    enough = False
-            if enough:
-                self.vehicleList.append(vehicle)
+                self.createButtonList[t].append(unit)
 
-    def __popBuildingList(self):
-        if len(self.buildingCreateList) > 0:
-            self.buildingCreateList.pop(0)
-            self.buildingMoneyCost = 0
-            self.buildingIsReady = False
-    def __popDefenceList(self):
-        if len(self.defenceCreateList) > 0:
-            self.defenceCreateList.pop(0)
-            self.defenceMoneyCost = 0
-            self.defenceIsReady = False
-    def __popInfantryList(self):
-        if len(self.infantryCreateList) > 0:
-            self.infantryCreateList.pop(0)
-            self.infantryMoneyCost = 0
-            self.infantryIsReady = False
-    def __popVehicleList(self):
-        if len(self.vehicleCreateList) > 0:
-            self.vehicleCreateList.pop(0)
-            self.vehicleIsReady = False
-            self.vehicleMoneyCost = 0
+    def __popCreateList(self,t):
+        if len(self.createList[t]) > 0:
+            self.createList[t].pop(0)
+            self.createMoneyCost[t] = 0
+            self.createIsReady[t] = False

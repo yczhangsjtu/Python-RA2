@@ -206,6 +206,12 @@ allinfantries = [
 allvehicles = [
 	"MCV",
 ]
+allunits = {
+    "building":allbuildings,
+    "defence" :alldefences,
+    "infantry":allinfantries,
+    "vehicle" :allvehicles,
+}
 
 loadList = {
 	"loadimg":"./img/startimage.png",

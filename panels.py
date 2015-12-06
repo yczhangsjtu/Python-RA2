@@ -134,31 +134,16 @@ class BattleFieldController(SpriteContainer):
         self.buttons.add(self.sellbtn)
 
         self.tab = Set()
-        self.tabbtn0 = TabButton(0,self.tab,ButtonSet())
-        self.tabbtn0.children.group = pygame.sprite.Group()
-        self.tabbtn0.children.scroll = 0
-        self.addSprite(self.tabbtn0,tabbtnx,self.repairbtn.bottom())
-        self.buttons.add(self.tabbtn0)
-        self.tab.add(self.tabbtn0)
-        self.tabbtn1 = TabButton(1,self.tab,ButtonSet())
-        self.tabbtn1.children.scroll = 0
-        self.tabbtn1.children.group = pygame.sprite.Group()
-        self.addSprite(self.tabbtn1,self.tabbtn0.right(),self.repairbtn.bottom())
-        self.buttons.add(self.tabbtn1)
-        self.tab.add(self.tabbtn1)
-        self.tabbtn2 = TabButton(2,self.tab,ButtonSet())
-        self.tabbtn2.children.scroll = 0
-        self.tabbtn2.children.group = pygame.sprite.Group()
-        self.addSprite(self.tabbtn2,self.tabbtn1.right(),self.repairbtn.bottom())
-        self.buttons.add(self.tabbtn2)
-        self.tab.add(self.tabbtn2)
-        self.tabbtn3 = TabButton(3,self.tab,ButtonSet())
-        self.tabbtn3.children.scroll = 0
-        self.tabbtn3.children.group = pygame.sprite.Group()
-        self.addSprite(self.tabbtn3,self.tabbtn2.right(),self.repairbtn.bottom())
-        self.buttons.add(self.tabbtn3)
-        self.tab.add(self.tabbtn3)
-        self.tabbtn0.under()
+        self.tabbtn = []
+        for i in range(4):
+            self.tabbtn.append(TabButton(i,self.tab,ButtonSet()))
+            self.tab.add(self.tabbtn[i])
+            self.buttons.add(self.tabbtn[i])
+        self.addSprite(self.tabbtn[0],tabbtnx,self.repairbtn.bottom())
+        for i in range(1,4):
+            self.addSprite(self.tabbtn[i],self.tabbtn[i-1].right(),\
+                    self.repairbtn.bottom())
+        self.tabbtn[0].under()
 
     def save(self):
         pass
@@ -180,14 +165,9 @@ class BattleFieldController(SpriteContainer):
         self.drawCreateButtons(screen)
 
     def drawCreateButtons(self,screen):
-        if self.tabbtn0.children.visible:
-            self.drawCreateButtonSet(self.tabbtn0.children,screen)
-        if self.tabbtn1.children.visible:
-            self.drawCreateButtonSet(self.tabbtn1.children,screen)
-        if self.tabbtn2.children.visible:
-            self.drawCreateButtonSet(self.tabbtn2.children,screen)
-        if self.tabbtn3.children.visible:
-            self.drawCreateButtonSet(self.tabbtn3.children,screen)
+        for i in range(4):
+            if self.tabbtn[i].children.visible:
+                self.drawCreateButtonSet(self.tabbtn[i].children,screen)
 
     def drawCreateButtonSet(self,buttonSet,screen):
         if not buttonSet.visible: return
@@ -230,14 +210,9 @@ class BattleFieldController(SpriteContainer):
         
     def onMouseDown(self,x,y,button):
         super(BattleFieldController,self).onMouseDown(x,y,button)
-        if self.tabbtn0.children.visible:
-            self.clickButtonSet(self.tabbtn0.children,x,y,button)
-        if self.tabbtn1.children.visible:
-            self.clickButtonSet(self.tabbtn1.children,x,y,button)
-        if self.tabbtn2.children.visible:
-            self.clickButtonSet(self.tabbtn2.children,x,y,button)
-        if self.tabbtn3.children.visible:
-            self.clickButtonSet(self.tabbtn3.children,x,y,button)
+        for i in range(4):
+            if self.tabbtn[i].children.visible:
+                self.clickButtonSet(self.tabbtn[i].children,x,y,button)
         self.updateMinimapView(x,y)
         
     def onMouseUp(self,x,y,button):
@@ -274,14 +249,8 @@ class GameController(BattleFieldController):
         self.groupThree = Set()
         self.selected = Set()
 
-        self.createProgress0 = SimpleAnimation(images["progress"],\
-                0,0,60,48,55,1,0,0)
-        self.createProgress1 = SimpleAnimation(images["progress"],\
-                0,0,60,48,55,1,0,0)
-        self.createProgress2 = SimpleAnimation(images["progress"],\
-                0,0,60,48,55,1,0,0)
-        self.createProgress3 = SimpleAnimation(images["progress"],\
-                0,0,60,48,55,1,0,0)
+        self.createProgress = [SimpleAnimation(images["progress"],\
+                0,0,60,48,55,1,0,0) for i in range(4)]
 
         self.groupOneButton = GameCtrlButton(0)
         self.groupOneButton.setMouseListener(self.setGroupOne)
@@ -337,60 +306,28 @@ class GameController(BattleFieldController):
         self.pointerset = None
 
     def addToCreateList(self,name):
-        if typeofunit[name] == "building":
-            builded = self.player.getBuildingInFactory()
+        t = typeofunit[name]
+        if t in ["building","defence"]:
+            builded = self.player.getUnitInFactory(t)
             if builded != None:
                 if builded[2] == name:
                     if builded[0] == 0:
                         self.selectBuildingPosition = name
-                    elif self.player.buildingStop:
-                        self.player.buildingStop = False
+                    elif self.player.createStop[t]:
+                        self.player.createStop[t] = False
                     else:
                         self.cannotApply()
                 else:
                     self.cannotApply()
-            else:
-                self.player.addToCreateList(name)
-        elif typeofunit[name] == "defence":
-            builded = self.player.getDefenceInFactory()
-            if builded != None:
-                if builded[2] == name:
-                    if builded[0] == 0:
-                        self.selectBuildingPosition = name
-                    elif self.player.defenceStop:
-                        self.player.defenceStop = False
-                    else:
-                        self.cannotApply()
-                else:
-                    self.cannotApply()
-            else:
-                self.player.addToCreateList(name)
-        elif typeofunit[name] == "infantry":
-            self.player.addToCreateList(name)
-        elif typeofunit[name] == "vehicle":
-            self.player.addToCreateList(name)
+                return
+        self.player.addToCreateList(name)
 
     def cancelCreateList(self,name):
-        if typeofunit[name] == "building":
-            builded = self.player.getBuildingInFactory()
-            if builded != None:
-                if builded[2] == name:
-                    self.player.cancelBuildingList()
-        elif typeofunit[name] == "defence":
-            builded = self.player.getDefenceInFactory()
-            if builded != None:
-                if builded[2] == name:
-                    self.player.cancelDefenceList()
-        elif typeofunit[name] == "infantry":
-            builded = self.player.getInfantryInFactory()
-            if builded != None:
-                if builded[2] == name:
-                    self.player.cancelInfantryList()
-        elif typeofunit[name] == "vehicle":
-            builded = self.player.getVehicleInFactory()
-            if builded != None:
-                if builded[2] == name:
-                    self.player.cancelVehicleList()
+        t = typeofunit[name]
+        builded = self.player.getUnitInFactory(t)
+        if builded != None:
+            if builded[2] == name:
+                self.player.cancelCreateList(t)
 
     def takeOverGame(self,game,player):
         self.characters = game
@@ -523,10 +460,8 @@ class GameController(BattleFieldController):
         pass
 
     def update(self):
-        self.updateBuildingButtons()
-        self.updateDefenceButtons()
-        self.updateInfantryButtons()
-        self.updateVehicleButtons()
+        for i,t in enumerate(["building","defence","infantry","vehicle"]):
+            self.updateCreateButtons(i,t)
         self.cleanupRemovedUnits()
 
     def cleanupRemovedUnits(self):
@@ -535,96 +470,31 @@ class GameController(BattleFieldController):
         self.groupThree.intersection_update(self.player.units)
         self.selected.intersection_update(self.player.units)
 
-    def updateBuildingButtons(self):
-        builded = self.player.getBuildingInFactory()
-        visible = self.tabbtn0.children.visible
-        self.tabbtn0.children = ButtonSet()
-        buttonset = self.tabbtn0.children
+    def updateCreateButtons(self,index,t):
+        builded = self.player.getUnitInFactory(t)
+        visible = self.tabbtn[index].children.visible
+        self.tabbtn[index].children = ButtonSet()
+        buttonset = self.tabbtn[index].children
         buttonset.visible = visible
         buttonset.scroll = 0
         buttonset.group = pygame.sprite.Group()
         buttonset.overgroup = pygame.sprite.Group()
-        for i,building in enumerate(self.player.buildingList):
-            buttonset.add(self.createButtons[building])
-            self.createButtons[building].index = i
-            buttonset.group.add(self.createButtons[building])
+        for i,unit in enumerate(self.player.createButtonList[t]):
+            buttonset.add(self.createButtons[unit])
+            self.createButtons[unit].index = i
+            buttonset.group.add(self.createButtons[unit])
             if builded != None:
-                if builded[2] != building:
-                    self.createButtons[building].disable()
+                if builded[2] != unit:
+                    self.createButtons[unit].disable()
                 else:
-                    x,y = self.createButtons[building].getpos()
-                    buttonset.createProgress = self.createProgress0
-                    self.createProgress0.setIndex(54*(builded[1]-builded[0])/builded[1])
-                    self.createProgress0.setpos(x,y)
-                    buttonset.overgroup.add(self.createProgress0)
+                    x,y = self.createButtons[unit].getpos()
+                    buttonset.createProgress = self.createProgress[index]
+                    buttonset.createProgress.setIndex(54*(builded[1]-builded[0])/builded[1])
+                    buttonset.createProgress.setpos(x,y)
+                    buttonset.overgroup.add(buttonset.createProgress)
             else:
-                self.createButtons[building].recover()
+                self.createButtons[unit].recover()
 
-    def updateDefenceButtons(self):
-        builded = self.player.getDefenceInFactory()
-        visible = self.tabbtn1.children.visible
-        self.tabbtn1.children = ButtonSet()
-        buttonset = self.tabbtn1.children
-        buttonset.visible = visible
-        buttonset.scroll = 0
-        buttonset.group = pygame.sprite.Group()
-        buttonset.overgroup = pygame.sprite.Group()
-        for i,defence in enumerate(self.player.defenceList):
-            buttonset.add(self.createButtons[defence])
-            self.createButtons[defence].index = i
-            buttonset.group.add(self.createButtons[defence])
-            if builded != None:
-                if builded[2] != defence:
-                    self.createButtons[defence].disable()
-                else:
-                    x,y = self.createButtons[defence].getpos()
-                    buttonset.createProgress = self.createProgress1
-                    self.createProgress1.setIndex(54*(builded[1]-builded[0])/builded[1])
-                    self.createProgress1.setpos(x,y)
-                    buttonset.overgroup.add(self.createProgress1)
-
-    def updateInfantryButtons(self):
-        builded = self.player.getInfantryInFactory()
-        visible = self.tabbtn2.children.visible
-        self.tabbtn2.children = ButtonSet()
-        buttonset = self.tabbtn2.children
-        buttonset.visible = visible
-        buttonset.scroll = 0
-        buttonset.group = pygame.sprite.Group()
-        buttonset.overgroup = pygame.sprite.Group()
-        for i,infantry in enumerate(self.player.infantryList):
-            buttonset.add(self.createButtons[infantry])
-            self.createButtons[infantry].index = i
-            buttonset.group.add(self.createButtons[infantry])
-            if builded != None:
-                if builded[2] == infantry:
-                    x,y = self.createButtons[infantry].getpos()
-                    buttonset.createProgress = self.createProgress2
-                    self.createProgress2.setIndex(54*(builded[1]-builded[0])/builded[1])
-                    self.createProgress2.setpos(x,y)
-                    buttonset.overgroup.add(self.createProgress2)
-
-    def updateVehicleButtons(self):
-        builded = self.player.getVehicleInFactory()
-        visible = self.tabbtn3.children.visible
-        self.tabbtn3.children = ButtonSet()
-        buttonset = self.tabbtn3.children
-        buttonset.visible = visible
-        buttonset.scroll = 0
-        buttonset.group = pygame.sprite.Group()
-        buttonset.overgroup = pygame.sprite.Group()
-        for i,vehicle in enumerate(self.player.vehicleList):
-            buttonset.add(self.createButtons[vehicle])
-            self.createButtons[vehicle].index = i
-            buttonset.group.add(self.createButtons[vehicle])
-            if builded != None:
-                if builded[2] == vehicle:
-                    x,y = self.createButtons[vehicle].getpos()
-                    buttonset.createProgress = self.createProgress3
-                    self.createProgress3.setIndex(54*(builded[1]-builded[0])/builded[1])
-                    self.createProgress3.setpos(x,y)
-                    buttonset.overgroup.add(self.createProgress3)
-    
     def onMouseMove(self,x,y,button1=None,button2=None,button3=None):
         super(GameController,self).onMouseMove(x,y,button1,button2,button3)
         if self.selectBuildingPosition != "":
@@ -647,10 +517,8 @@ class GameController(BattleFieldController):
                     if not self.goodToPutBuilding(self.selectBuildingPosition,col,row):
                         return
                 col,row = self.pointerset[0]
-                if typeofunit[self.selectBuildingPosition] == "building":
-                    self.player.createBuilding(col,row,self.characters)
-                elif  typeofunit[self.selectBuildingPosition] == "defence":
-                    self.player.createDefence(col,row,self.characters)
+                t = typeofunit[self.selectBuildingPosition]
+                self.player.createFixUnit(col,row,t,self.characters)
                 self.pointerset = None
                 self.selectBuildingPosition = ""
                 return

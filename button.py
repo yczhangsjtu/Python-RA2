@@ -195,6 +195,7 @@ class ButtonSet(Set):
     def __init__(self):
         super(ButtonSet,self).__init__()
         self.visible = False
-        self.group = None
+        self.group = pygame.sprite.Group()
         self.overgroup = None
         self.createProgress = None
+        self.scroll = 0
