@@ -1,6 +1,7 @@
 import pygame
 
 from imagesprite import ImageSprite
+from consts import *
 
 class Animation(pygame.sprite.GroupSingle):
     def __init__(self):
@@ -120,6 +121,18 @@ class AnimationSet(pygame.sprite.GroupSingle):
             return name,animation.index
         else:
             return animation.next.name,0
+    
+    def addAnimationFromSpriteSheet(self,image,x,y,width,height,m,n,offsetx,offsety,playeroffset,name,loop=True,nextanim=None,prevanim=None):
+        for player in range(numofplayer):
+            animation = Animation()
+            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
+            self.addAnimation("%s_%d"%(name,player),animation)
+            if not loop: animation.loop = False
+            if nextanim != None:
+                animation.next = self.getAnimation("%s_%d"%(nextanim,player))
+            if prevanim != None:
+                self.getAnimation("%s_%d"%(prevanim,player)).next = animation
+            y += playeroffset
 
 class SimpleAnimation(Animation):
     def __init__(self,image,x,y,width,height,m,n,offsetx,offsety):

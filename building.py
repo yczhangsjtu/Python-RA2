@@ -215,27 +215,11 @@ class PowerAnimation(AnimationSet):
         playeroffset = 330
         
         x,y,m,n = 0,165,25,1
-        for player in range(numofplayer):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            animation.loop = False
-            self.addAnimation("build_%d"%player,animation)
-            y += playeroffset
-        
+        self.addAnimationFromSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety,playeroffset,"build",False)
         x,y,m,n = 0,0,8,1
-        for player in range(numofplayer):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            self.addAnimation("normal_%d"%player,animation)
-            self.getAnimation("build_%d"%player).next = animation
-            y += playeroffset
-        
+        self.addAnimationFromSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety,playeroffset,"normal",True,None,"build")
         x,y,m,n = 1704,0,8,1
-        for player in range(numofplayer):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            self.addAnimation("destroy_%d"%player,animation)
-            y += playeroffset
+        self.addAnimationFromSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety,playeroffset,"destroy")
 
 class GrefnAnimation(AnimationSet):
     def __init__(self):
@@ -247,27 +231,11 @@ class GrefnAnimation(AnimationSet):
         playeroffset = 294
         
         x,y,m,n = 630,0,25,1
-        for player in range(numofplayer):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            animation.loop = False
-            self.addAnimation("build_%d"%player,animation)
-            y += playeroffset
-        
+        self.addAnimationFromSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety,playeroffset,"build",False)
         x,y,m,n = 0,0,1,1
-        for player in range(numofplayer):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            self.addAnimation("normal_%d"%player,animation)
-            self.getAnimation("build_%d"%player).next = animation
-            y += playeroffset
-        
+        self.addAnimationFromSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety,playeroffset,"normal",True,None,"build")
         x,y,m,n = 315,0,1,1
-        for player in range(numofplayer):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            self.addAnimation("destroy_%d"%player,animation)
-            y += playeroffset
+        self.addAnimationFromSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety,playeroffset,"destroy")
 
 class GpileAnimation(AnimationSet):
     def __init__(self):
@@ -279,27 +247,11 @@ class GpileAnimation(AnimationSet):
         playeroffset = 666
         
         x,y,m,n = 0,444,25,1
-        for player in range(numofplayer):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            animation.loop = False
-            self.addAnimation("build_%d"%player,animation)
-            y += playeroffset
-        
+        self.addAnimationFromSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety,playeroffset,"build",False)
         x,y,m,n = 0,0,8,1
-        for player in range(numofplayer):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            self.addAnimation("normal_%d"%player,animation)
-            self.getAnimation("build_%d"%player).next = animation
-            y += playeroffset
-        
+        self.addAnimationFromSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety,playeroffset,"normal",True,None,"build")
         x,y,m,n = 0,222,8,1
-        for player in range(numofplayer):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            self.addAnimation("destroy_%d"%player,animation)
-            y += playeroffset
+        self.addAnimationFromSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety,playeroffset,"destroy")
 
 class AirCmdAnimation(AnimationSet):
     def __init__(self):
@@ -311,27 +263,11 @@ class AirCmdAnimation(AnimationSet):
         playeroffset = 486
         
         x,y,m,n = 0,243,25,1
-        for player in range(numofplayer):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            animation.loop = False
-            self.addAnimation("build_%d"%player,animation)
-            y += playeroffset
-        
+        self.addAnimationFromSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety,playeroffset,"build",False)
         x,y,m,n = 0,0,6,1
-        for player in range(numofplayer):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            self.addAnimation("normal_%d"%player,animation)
-            self.getAnimation("build_%d"%player).next = animation
-            y += playeroffset
-        
+        self.addAnimationFromSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety,playeroffset,"normal",True,None,"build")
         x,y,m,n = 1692,0,6,1
-        for player in range(numofplayer):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            self.addAnimation("destroy_%d"%player,animation)
-            y += playeroffset
+        self.addAnimationFromSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety,playeroffset,"destroy")
 
 class GyardAnimation(AnimationSet):
     def __init__(self):
@@ -343,55 +279,19 @@ class GyardAnimation(AnimationSet):
         playeroffset = 3105
         
         x,y,m,n = 0,2760,25,1
-        for player in range(numofplayer):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            animation.loop = False
-            self.addAnimation("build_%d"%player,animation)
-            y += playeroffset
-        
+        self.addAnimationFromSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety,playeroffset,"build",False)
         x,y,m,n = 0,0,15,1
-        for player in range(numofplayer):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            self.addAnimation("normal_%d"%player,animation)
-            self.getAnimation("build_%d"%player).next = animation
-            y += playeroffset
-        
+        self.addAnimationFromSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety,playeroffset,"normal",True,None,"build")
         x,y,m,n = 0,345,15,1
-        for player in range(numofplayer):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            self.addAnimation("destroy_%d"%player,animation)
-            y += playeroffset
-
+        self.addAnimationFromSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety,playeroffset,"destroy")
         x,y,m,n = 0,690,21,2
-        for player in range(numofplayer):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            self.addAnimation("normalbigrepair_%d"%player,animation)
-            y += playeroffset
-
+        self.addAnimationFromSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety,playeroffset,"normalbigrepair")
         x,y,m,n = 0,1380,21,2
-        for player in range(numofplayer):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            self.addAnimation("destroybigrepair_%d"%player,animation)
-            y += playeroffset
-
+        self.addAnimationFromSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety,playeroffset,"destroybigrepair")
         x,y,m,n = 0,2070,18,1
-        for player in range(numofplayer):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            self.addAnimation("normalsmallrepair_%d"%player,animation)
-            y += playeroffset
-
+        self.addAnimationFromSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety,playeroffset,"normalsmallrepair")
         x,y,m,n = 0,2415,18,1
-        for player in range(numofplayer):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            self.addAnimation("destroysmallrepair_%d"%player,animation)
-            y += playeroffset
+        self.addAnimationFromSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety,playeroffset,"destroysmallrepair")
             
 class GweapAnimation(AnimationSet):
     def __init__(self):
@@ -403,27 +303,13 @@ class GweapAnimation(AnimationSet):
         playeroffset = 1008
         
         x,y,m,n = 0,672,25,1
-        for player in range(numofplayer):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            animation.loop = False
-            self.addAnimation("build_%d"%player,animation)
-            y += playeroffset
+        self.addAnimationFromSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety,playeroffset,"build",False)
         
         x,y,m,n = 0,0,15,1
-        for player in range(numofplayer):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            self.addAnimation("normal_%d"%player,animation)
-            self.getAnimation("build_%d"%player).next = animation
-            y += playeroffset
+        self.addAnimationFromSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety,playeroffset,"normal",True,None,"build")
         
         x,y,m,n = 0,336,15,1
-        for player in range(numofplayer):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            self.addAnimation("destroy_%d"%player,animation)
-            y += playeroffset
+        self.addAnimationFromSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety,playeroffset,"destroy")
 
 class GcnstAnimation(AnimationSet):
     def __init__(self):
@@ -443,19 +329,9 @@ class GcnstAnimation(AnimationSet):
             y += playeroffset
         
         x,y,m,n = 0,0,20,1
-        for player in range(numofplayer):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            self.addAnimation("normal_%d"%player,animation)
-            self.getAnimation("build_%d"%player).next = animation
-            y += playeroffset
-        
+        self.addAnimationFromSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety,playeroffset,"normal",True,None,"build")
         x,y,m,n = 0,339,20,1
-        for player in range(numofplayer):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            self.addAnimation("destroy_%d"%player,animation)
-            y += playeroffset
+        self.addAnimationFromSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety,playeroffset,"destroy")
 
 class GpillAnimation(AnimationSet):
     def __init__(self):
@@ -467,24 +343,8 @@ class GpillAnimation(AnimationSet):
         playeroffset = 96
         
         x,y,m,n = 204,0,8,1
-        for player in range(numofplayer):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            animation.loop = False
-            self.addAnimation("build_%d"%player,animation)
-            y += playeroffset
-        
+        self.addAnimationFromSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety,playeroffset,"build",False)
         x,y,m,n = 0,0,1,1
-        for player in range(numofplayer):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            self.addAnimation("normal_%d"%player,animation)
-            self.getAnimation("build_%d"%player).next = animation
-            y += playeroffset
-        
+        self.addAnimationFromSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety,playeroffset,"normal",True,None,"build")
         x,y,m,n = 102,0,1,1
-        for player in range(numofplayer):
-            animation = Animation()
-            animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
-            self.addAnimation("destroy_%d"%player,animation)
-            y += playeroffset
+        self.addAnimationFromSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety,playeroffset,"destroy")
