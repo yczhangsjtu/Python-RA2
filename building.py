@@ -57,51 +57,27 @@ class Building(Unit):
         self.rect.center = (self.x,self.y)
         return self.rect
     
+    def __drawBuildingBloodBar(self,screen,mng,offsetx,offsety):
+        rotate = 30
+        if self.HP >= self.fullHP/2:
+            ngrid = self.HP * mng / self.fullHP
+            blood = longBuildingHealthBlood.subsurface(0,0,ngrid*10,10)
+            screen.blit(pygame.transform.rotate(blood,rotate),(self.x-offsetx,self.y-offsety))
+        elif self.HP >= self.fullHP/4:
+            ngrid = self.HP * mng / self.fullHP
+            blood = longBuildingHealthBlood.subsurface(0,0,ngrid*10,10)
+            screen.blit(pygame.transform.rotate(blood,rotate),(self.x-offsetx,self.y-offsety))
+        else:
+            ngrid = self.HP * mng / self.fullHP
+            blood = longBuildingHealthBlood.subsurface(0,0,ngrid*10,10)
+            screen.blit(pygame.transform.rotate(blood,rotate),(self.x-offsetx,self.y-offsety))
+
     def drawLongBloodBar(self,screen):
-        offsetx,offsety = 200,200
-        rotate = 30
-        if self.HP >= self.fullHP/2:
-            ngrid = self.HP * 30 / self.fullHP
-            blood = longBuildingHealthBlood.subsurface(0,0,ngrid*10,10)
-            screen.blit(pygame.transform.rotate(blood,rotate),(self.x-offsetx,self.y-offsety))
-        elif self.HP >= self.fullHP/4:
-            ngrid = self.HP * 30 / self.fullHP
-            blood = longBuildingHealthBlood.subsurface(0,0,ngrid*10,10)
-            screen.blit(pygame.transform.rotate(blood,rotate),(self.x-offsetx,self.y-offsety))
-        else:
-            ngrid = self.HP * 30 / self.fullHP
-            blood = longBuildingHealthBlood.subsurface(0,0,ngrid*10,10)
-            screen.blit(pygame.transform.rotate(blood,rotate),(self.x-offsetx,self.y-offsety))
+        self.__drawBuildingBloodBar(screen,30,200,200)
     def drawShortBloodBar(self,screen):
-        offsetx,offsety = 100,150
-        rotate = 30
-        if self.HP >= self.fullHP/2:
-            ngrid = self.HP * 15 / self.fullHP
-            blood = shortBuildingHealthBlood.subsurface(0,0,ngrid*10,10)
-            screen.blit(pygame.transform.rotate(blood,rotate),(self.x-offsetx,self.y-offsety))
-        elif self.HP >= self.fullHP/4:
-            ngrid = self.HP * 15 / self.fullHP
-            blood = shortBuildingHealthBlood.subsurface(0,0,ngrid*10,10)
-            screen.blit(pygame.transform.rotate(blood,rotate),(self.x-offsetx,self.y-offsety))
-        else:
-            ngrid = self.HP * 15 / self.fullHP
-            blood = shortBuildingHealthBlood.subsurface(0,0,ngrid*10,10)
-            screen.blit(pygame.transform.rotate(blood,rotate),(self.x-offsetx,self.y-offsety))
+        self.__drawBuildingBloodBar(screen,15,100,150)
     def drawDefenceBloodBar(self,screen):
-        offsetx,offsety = 50,50
-        rotate = 30
-        if self.HP >= self.fullHP/2:
-            ngrid = self.HP * 4 / self.fullHP
-            blood = defenceHealthBlood.subsurface(0,0,ngrid*10,10)
-            screen.blit(pygame.transform.rotate(blood,rotate),(self.x-offsetx,self.y-offsety))
-        elif self.HP >= self.fullHP/4:
-            ngrid = self.HP * 4 / self.fullHP
-            blood = defenceHealthBlood.subsurface(0,0,ngrid*10,10)
-            screen.blit(pygame.transform.rotate(blood,rotate),(self.x-offsetx,self.y-offsety))
-        else:
-            ngrid = self.HP * 4 / self.fullHP
-            blood = defenceHealthBlood.subsurface(0,0,ngrid*10,10)
-            screen.blit(pygame.transform.rotate(blood,rotate),(self.x-offsetx,self.y-offsety))
+        self.__drawBuildingBloodBar(screen,4,50,50)
 
 class AirCmd(Building):
     def __init__(self,player,animation=None):

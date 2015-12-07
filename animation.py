@@ -124,7 +124,8 @@ class AnimationSet(pygame.sprite.GroupSingle):
         else:
             return animation.next.name,0
     
-    def addAnimationFromSpriteSheet(self,image,x,y,width,height,m,n,offsetx,offsety,playeroffset,name,loop=True,nextanim=None,prevanim=None):
+    def addAnimationFromSpriteSheet(self,image,x,y,width,height,m,n,offsetx,offsety,\
+            playeroffset,name,loop=True,nextanim=None,prevanim=None):
         for player in range(numofplayer):
             animation = Animation()
             animation.addImageSpriteSheet(image,x,y,width,height,m,n,offsetx,offsety)
@@ -136,7 +137,8 @@ class AnimationSet(pygame.sprite.GroupSingle):
                 self.getAnimation("%s_%d"%(prevanim,player)).next = animation
             y += playeroffset
 
-    def addAnimationFromSpriteSheetDir(self,image,x,y,width,height,m,n,offsetx,offsety,playeroffset,name,loop=True,nextanim=None,prevanim=None):
+    def addAnimationFromSpriteSheetDir(self,image,x,y,width,height,m,n,offsetx,offsety,\
+            playeroffset,name,loop=True,nextanim=None,prevanim=None):
         for player in range(numofplayer):
             X = x
             for direction in directions:
@@ -164,7 +166,6 @@ class SimpleAnimation(Animation):
     def onMouseMove(self,x,y,button1=None,button2=None,button3=None):
         pass
     def onMouseUp(self,x,y,button):
-        pass
         pass
     def bottom(self):
         return self.sprite.rect.bottom

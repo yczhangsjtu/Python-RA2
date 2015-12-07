@@ -1,11 +1,6 @@
 import sys
 import pygame
 
-"""
-from button import RA2Button, PalatteButton
-from map import Map, initMap, groundData
-from game import Game
-"""
 from load import Loader, loadImages
 from consts import *
 from data import images
@@ -21,17 +16,13 @@ from vehicle import initVehicleAnimations
 def load():
     global screen
     loader = Loader()
-    
-    
     loader.loadimg("loadimg")
     loader.load(images["loadimg"],screen,loadImages)
 
 def gameInit():
-    global ctrlLayer, characterLayer, mapLayer, startMenu, selectMapPanel, editMapPanel, mapfile,\
+    global ctrlLayer, characterLayer, mapLayer, startMenu, selectMapPanel, editMapPanel,\
         mapEditor, gameController, gameBackController, mapBackController, saveMapPanel
     
-    mapfile = "map0.txt"
-
     startMenu = StartMenu(startNewGame, selectMap, startMapEditor, quit)
     selectMapPanel = SelectMapPanel(selectMapBack,backToStartMenu)
     editMapPanel = SelectMapPanel(editMap,backToStartMenu)
@@ -42,19 +33,20 @@ def gameInit():
     saveMapPanel = SelectMapPanel(saveMapBack,backToMapBackController)
     
     ctrlLayer = startMenu
-    characterLayer = pygame.sprite.Group()
-    mapLayer = pygame.sprite.Group()
+    characterLayer = None
+    mapLayer = None
     
 def startNewGame():
     global ctrlLayer, startMenu, mapLayer, characterLayer
-    mapfile = "./map/%s"%(startMenu.mapfilename)
     ctrlLayer = gameController
     mapLayer = Map(mapwidth,mapheight)
     characterLayer = Game(mapLayer)
+
     characterLayer.initNewGame(defaultplayers)
     ctrlLayer.takeOverGame(characterLayer,characterLayer.players[0])
     ctrlLayer.map = mapLayer
-    mapLayer.read(mapfile)
+    mapLayer.read("./map/%s"%(startMenu.mapfilename))
+
     loader = Loader()
     loader.load(images["loadmap"],screen,mapLayer.load,\
         [images["bar"].subsurface(0,0,barlength,barheight),(barx,bary)])
@@ -68,13 +60,13 @@ def selectMap():
 def exitMap():
     global ctrlLayer,mapLayer
     ctrlLayer = startMenu
-    mapLayer = pygame.sprite.Group()
+    mapLayer = None
 
 def exitGame():
     global ctrlLayer,mapLayer,characterLayer
     ctrlLayer = startMenu
-    mapLayer = pygame.sprite.Group()
-    characterLayer = pygame.sprite.Group()
+    mapLayer = None
+    characterLayer = None
     
 def selectMapBack():
     global ctrlLayer
@@ -123,11 +115,11 @@ def backToMapBackController():
     ctrlLayer = mapBackController
 
 def backToStartMenu():
-    global ctrlLayer, mapLayer
+    global ctrlLayer
     ctrlLayer = startMenu
     
 def editMap():
-    global mapEditor, ctrlLayer, mapLayer, mapfile
+    global mapEditor, ctrlLayer, mapLayer
     mapfile = "./map/%s"%(editMapPanel.listBox.selectedtext())
     ctrlLayer = mapEditor
     mapEditor.mapfile = mapfile
@@ -195,9 +187,12 @@ if __name__ == "__main__":
     gameInit()
     
     while True:
-        mapLayer.draw(screen)
-        characterLayer.draw(screen)
-        ctrlLayer.draw(screen)
+        if hasattr(mapLayer,"draw"):
+            mapLayer.draw(screen)
+        if hasattr(characterLayer,"draw"):
+            characterLayer.draw(screen)
+        if hasattr(ctrlLayer,"draw"):
+            ctrlLayer.draw(screen)
         pygame.display.flip()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
