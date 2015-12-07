@@ -1,6 +1,6 @@
 import pygame
 
-from unit import MobileUnit
+from unit import *
 from map import getAbsPos, getGridPos
 from animation import Animation, AnimationSet
 from data import images, classmap
@@ -11,14 +11,9 @@ e3Animation = None
 adogAnimation = None
 directions = ["n","nw","w","sw","s","se","e","ne"]
 infantryRect = pygame.Rect(0,0,15,25)
-    
+
 def initInfantryAnimations():
-    global bloodbarimg, infantryHealthBlood, infantryHurtBlood, infantryDangerBlood
     global e3Animation, adogAnimation, engineerAnimation
-    bloodbarimg = images["bloodbar"]
-    infantryHealthBlood = bloodbarimg.subsurface(0,0,25,5)
-    infantryHurtBlood = bloodbarimg.subsurface(0,4,25,5)
-    infantryDangerBlood = bloodbarimg.subsurface(0,8,25,5)
     e3Animation = E3Animation()
     adogAnimation = AdogAnimation()
     engineerAnimation = EngineerAnimation()
@@ -29,15 +24,16 @@ class Infantry(MobileUnit):
         self.rect = infantryRect
     
     def drawBloodBar(self,screen):
-        if self.HP >= self.fullHP/2:
-            ngrid = self.HP * 8 / self.fullHP
-            screen.blit(infantryHealthBlood.subsurface(0,0,ngrid*3+1,5),(self.x-12,self.y-40))
-        elif self.HP >= self.fullHP/4:
-            ngrid = self.HP * 8 / self.fullHP
-            screen.blit(infantryHurtBlood.subsurface(0,0,ngrid*3+1,5),(self.x-12,self.y-40))
-        else:
-            ngrid = self.HP * 8 / self.fullHP
-            screen.blit(infantryDangerBlood.subsurface(0,0,ngrid*3+1,5),(self.x-12,self.y-40))
+        self.drawMobBloodBar(screen,8,12,40)
+        # if self.HP >= self.fullHP/2:
+        #     ngrid = self.HP * 8 / self.fullHP
+        #     screen.blit(infantryHealthBlood.subsurface(0,0,ngrid*3+1,5),(self.x-12,self.y-40))
+        # elif self.HP >= self.fullHP/4:
+        #     ngrid = self.HP * 8 / self.fullHP
+        #     screen.blit(infantryHurtBlood.subsurface(0,0,ngrid*3+1,5),(self.x-12,self.y-40))
+        # else:
+        #     ngrid = self.HP * 8 / self.fullHP
+        #     screen.blit(infantryDangerBlood.subsurface(0,0,ngrid*3+1,5),(self.x-12,self.y-40))
     
 class Adog(Infantry):
     def __init__(self,player,animation=None):

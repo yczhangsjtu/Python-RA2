@@ -8,6 +8,13 @@ from data import images
 
 directions = ["nw","w","sw","s","se","e","ne","n"]
 
+def initBloodBars():
+    global bloodbarimg, infantryHealthBlood, infantryHurtBlood, infantryDangerBlood
+    bloodbarimg = images["bloodbar"]
+    infantryHealthBlood = bloodbarimg.subsurface(0,0,25,5)
+    infantryHurtBlood = bloodbarimg.subsurface(0,4,25,5)
+    infantryDangerBlood = bloodbarimg.subsurface(0,8,25,5)
+    
 def dist(x1,y1,x2,y2):
     return abs(x1-x2)+abs(y1-y2)
     
@@ -208,7 +215,8 @@ class Unit(object):
 
 class MobileUnit(Unit):
     def __init__(self,player,animationset,animation=None):
-        super(MobileUnit,self).__init__(player,animationset,animation);
+        super(MobileUnit,self).__init__(player,animationset,animation)
+
     def step(self,map,characters):
         super(MobileUnit,self).step(map,characters)
         if self.target != None:
@@ -220,3 +228,13 @@ class MobileUnit(Unit):
                 if dist(self.offsetx,self.offsety,x,y) > self.range:
                     self.moveTo(x,y,characters)
 
+    def drawMobBloodBar(self,screen,mng,offsetx,offsety):
+        if self.HP >= self.fullHP/2:
+            ngrid = self.HP * mng / self.fullHP
+            screen.blit(infantryHealthBlood.subsurface(0,0,ngrid*3+1,5),(self.x-offsetx,self.y-offsety))
+        elif self.HP >= self.fullHP/4:
+            ngrid = self.HP * mng / self.fullHP
+            screen.blit(infantryHurtBlood.subsurface(0,0,ngrid*3+1,5),(self.x-offsetx,self.y-offsety))
+        else:
+            ngrid = self.HP * mng / self.fullHP
+            screen.blit(infantryDangerBlood.subsurface(0,0,ngrid*3+1,5),(self.x-offsetx,self.y-offsety))

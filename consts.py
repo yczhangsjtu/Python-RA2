@@ -94,6 +94,30 @@ sizeofunit = {
 	"Gweap":12,
 	"Gpill":6,
 }
+fullHPofunit = {
+	"Adog":100,
+	"Engineer":100,
+	"E3":100,
+	"MCV":3000,
+	"Power":1000,
+	"Gpile":1000,
+	"Grefn":2000,
+	"AirCmd":1000,
+	"Gcnst":3000,
+	"Gyard":1500,
+	"Gweap":1000,
+	"Gpill":400,
+}
+powerofbuilding = {
+	"Power":200,
+	"Gpile":-25,
+	"Grefn":-35,
+	"AirCmd":-25,
+	"Gcnst":0,
+	"Gyard":-25,
+	"Gweap":-25,
+	"Gpill":0,
+}
 modify = {
 	"Power":[0,24],
 	"Grefn":[0,54],

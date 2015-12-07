@@ -44,12 +44,18 @@ def initBuildingAnimations():
     gpillAnimation = GpillAnimation()
 
 class Building(Unit):
-    def __init__(self,player,animationset,animation=None):
+    def __init__(self,player,animationset,name,animation=None):
         super(Building,self).__init__(player,animationset,animation)
         self.rect = buildingRect
         self.modifyx = 0
         self.modifyy = 0
         self.regionselectable = False
+
+        self.size = sizeofunit[name]
+        self.fullHP = fullHPofunit[name]
+        self.HP = self.fullHP
+        self.name = name
+        self.power = powerofbuilding[name]
     
     def get_rect(self):
         self.rect.width = self.size * 8
@@ -82,12 +88,7 @@ class Building(Unit):
 class AirCmd(Building):
     def __init__(self,player,animation=None):
         animationset = aircmdAnimation
-        super(AirCmd,self).__init__(player,animationset,animation)
-        self.size = sizeofunit["AirCmd"]
-        self.fullHP = 1000
-        self.HP = self.fullHP
-        self.name = "AirCmd"
-        self.power = -25
+        super(AirCmd,self).__init__(player,animationset,"AirCmd",animation)
     def drawBloodBar(self,screen):
         self.drawShortBloodBar(screen)
 classmap["AirCmd"] = AirCmd
@@ -95,12 +96,7 @@ classmap["AirCmd"] = AirCmd
 class Power(Building):
     def __init__(self,player,animation=None):
         animationset = powerAnimation
-        super(Power,self).__init__(player,animationset,animation)
-        self.size = sizeofunit["Power"]
-        self.fullHP = 1000
-        self.HP = self.fullHP
-        self.name = "Power"
-        self.power = 200
+        super(Power,self).__init__(player,animationset,"Power",animation)
     def drawBloodBar(self,screen):
         self.drawShortBloodBar(screen)
 classmap["Power"] = Power
@@ -108,12 +104,7 @@ classmap["Power"] = Power
 class Grefn(Building):
     def __init__(self,player,animation=None):
         animationset = grefnAnimation
-        super(Grefn,self).__init__(player,animationset,animation)
-        self.size = sizeofunit["Grefn"]
-        self.fullHP = 2000
-        self.HP = self.fullHP
-        self.name = "Grefn"
-        self.power = -35
+        super(Grefn,self).__init__(player,animationset,"Grefn",animation)
     def drawBloodBar(self,screen):
         self.drawShortBloodBar(screen)
 classmap["Grefn"] = Grefn
@@ -121,12 +112,7 @@ classmap["Grefn"] = Grefn
 class Gpile(Building):
     def __init__(self,player,animation=None):
         animationset = gpileAnimation
-        super(Gpile,self).__init__(player,animationset,animation)
-        self.size = sizeofunit["Gpile"]
-        self.fullHP = 1000
-        self.HP = self.fullHP
-        self.name = "Gpile"
-        self.power = -25
+        super(Gpile,self).__init__(player,animationset,"Gpile",animation)
     def drawBloodBar(self,screen):
         self.drawShortBloodBar(screen)
 classmap["Gpile"] = Gpile
@@ -134,12 +120,7 @@ classmap["Gpile"] = Gpile
 class Gyard(Building):
     def __init__(self,player,animation=None):
         animationset = gyardAnimation
-        super(Gyard,self).__init__(player,animationset,animation)
-        self.size = sizeofunit["Gyard"]
-        self.fullHP = 1500
-        self.HP = self.fullHP
-        self.name = "Gyard"
-        self.power = -25
+        super(Gyard,self).__init__(player,animationset,"Gyard",animation)
     def drawBloodBar(self,screen):
         self.drawLongBloodBar(screen)
 classmap["Gyard"] = Gyard
@@ -147,12 +128,7 @@ classmap["Gyard"] = Gyard
 class Gweap(Building):
     def __init__(self,player,animation=None):
         animationset = gweapAnimation
-        super(Gweap,self).__init__(player,animationset,animation)
-        self.size = sizeofunit["Gweap"]
-        self.fullHP = 1000
-        self.HP = self.fullHP
-        self.name = "Gweap"
-        self.power = -25
+        super(Gweap,self).__init__(player,animationset,"Gweap",animation)
     def drawBloodBar(self,screen):
         self.drawShortBloodBar(screen)
 classmap["Gweap"] = Gweap
@@ -160,11 +136,7 @@ classmap["Gweap"] = Gweap
 class Gcnst(Building):
     def __init__(self,player,animation=None):
         animationset = gcnstAnimation
-        super(Gcnst,self).__init__(player,animationset,animation)
-        self.size = sizeofunit["Gcnst"]
-        self.fullHP = 3000
-        self.HP = self.fullHP
-        self.name = "Gcnst"
+        super(Gcnst,self).__init__(player,animationset,"Gcnst",animation)
     def drawBloodBar(self,screen):
         self.drawLongBloodBar(screen)
 classmap["Gcnst"] = Gcnst
@@ -172,11 +144,7 @@ classmap["Gcnst"] = Gcnst
 class Gpill(Building):
     def __init__(self,player,animation=None):
         animationset = gpillAnimation
-        super(Gpill,self).__init__(player,animationset,animation)
-        self.size = sizeofunit["Gpill"]
-        self.fullHP = 400
-        self.HP = self.fullHP
-        self.name = "Gpill"
+        super(Gpill,self).__init__(player,animationset,"Gpill",animation)
     def drawBloodBar(self,screen):
         self.drawDefenceBloodBar(screen)
 classmap["Gpill"] = Gpill

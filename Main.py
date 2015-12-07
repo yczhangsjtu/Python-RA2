@@ -9,9 +9,6 @@ from panels import SelectMapPanel, MapEditor, GameController, GameBackController
         MapBackController, StartMenu
 from map import Map, initMap
 from game import Game
-from building import initBuildingAnimations
-from infantry import initInfantryAnimations
-from vehicle import initVehicleAnimations
 
 def load():
     global screen
