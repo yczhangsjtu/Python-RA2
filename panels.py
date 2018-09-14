@@ -1,5 +1,4 @@
 import pygame
-from sets import Set
 from math import log,exp
 
 from listbox import ListBox
@@ -173,7 +172,7 @@ class BattleFieldController(SpriteContainer):
         self.addSprite(self.sellbtn,self.repairbtn.right(),self.repairbtn.top())
         self.buttons.add(self.sellbtn)
 
-        self.tab = Set()
+        self.tab = set()
         self.tabbtn = []
         for i in range(4):
             self.tabbtn.append(TabButton(i,self.tab,ButtonSet()))
@@ -213,7 +212,7 @@ class BattleFieldController(SpriteContainer):
         if not buttonSet.visible: return
         for button in buttonSet:
             ix = button.index % 2
-            iy = button.index / 2 + buttonSet.scroll
+            iy = int(button.index / 2) + buttonSet.scroll
             button.setpos(ix*createbtnw+createbtnx,iy*createbtnh+self.side0.top())
         buttonSet.group.draw(screen)
 
@@ -284,10 +283,10 @@ class GameController(BattleFieldController):
         super(GameController,self).__init__(gotoBackController)
         
         self.minimap = None
-        self.groupOne = Set()
-        self.groupTwo = Set()
-        self.groupThree = Set()
-        self.selected = Set()
+        self.groupOne = set()
+        self.groupTwo = set()
+        self.groupThree = set()
+        self.selected = set()
 
         self.createProgress = [SimpleAnimation(images["progress"],\
                 0,0,60,48,55,1,0,0) for i in range(4)]
@@ -423,13 +422,13 @@ class GameController(BattleFieldController):
         ppowern = int((1-exp(-max(self.player.powergen,self.player.powerload)*log(2)/200)) * powern)
         if self.player.powergen > self.player.powerload:
             powergenn = ppowern
-            powerloadn = self.player.powerload*ppowern/self.player.powergen
+            powerloadn = int(self.player.powerload*ppowern/self.player.powergen)
         else:
             powerloadn = ppowern
             if self.player.powerload == 0:
                 powergenn = 0
             else:
-                powergenn = self.player.powergen*ppowern/self.player.powerload
+                powergenn = int(self.player.powergen*ppowern/self.player.powerload)
         for i in range(powern):
             screen.blit(self.powere.image,(powerx,powery-i*2))
         if self.player.powerhigh:
@@ -475,7 +474,7 @@ class GameController(BattleFieldController):
             self.selected = self.groupThree.copy()
     
     def selectSameType(self):
-        selectedTypes = Set()
+        selectedTypes = set()
         for unit in self.selected:
             selectedTypes.add(unit.name)
         original = len(self.selected)
@@ -529,7 +528,7 @@ class GameController(BattleFieldController):
                 else:
                     x,y = self.createButtons[unit].getpos()
                     buttonset.createProgress = self.createProgress[index]
-                    buttonset.createProgress.setIndex(54*(builded[1]-builded[0])/builded[1])
+                    buttonset.createProgress.setIndex(int(54*(builded[1]-builded[0])/builded[1]))
                     buttonset.createProgress.setpos(x,y)
                     buttonset.overgroup.add(buttonset.createProgress)
             else:
@@ -584,7 +583,7 @@ class GameController(BattleFieldController):
                 w = abs(self.mousedownx-self.mousex)
                 h = abs(self.mousedowny-self.mousey)
                 rect = pygame.Rect(x,y,w,h)
-                self.selected = Set()
+                self.selected = set()
                 for unit in self.player.units:
                     if rect.contains(unit.get_rect()):
                         if unit.regionselectable:
@@ -597,11 +596,11 @@ class GameController(BattleFieldController):
                             nounit = False
                             unit.onDoubleClick()
                             break
-                    self.selected = Set()
+                    self.selected = set()
                     if nounit:
                         for unit in self.player.units:
                             if unit.get_rect().contains(pygame.Rect(x,y,1,1)):
-                                self.selected = Set([unit])
+                                self.selected = set([unit])
                                 break
             self.mousedrag = False
             self.mousedown = False

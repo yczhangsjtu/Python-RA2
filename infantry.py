@@ -171,7 +171,7 @@ class EngineerAnimation(AnimationSet):
                 animation.addBrokenSpriteSheet(image,x,y,i0,j0,width,height,left,right,count,offsetx,offsety)
                 self.addAnimation("stand%s_%d"%(direction,player),animation)
                 i0 += count
-                j0 += i0 / right
+                j0 += int(i0 / right)
                 i0 %= right
         
             count = 6
@@ -182,7 +182,7 @@ class EngineerAnimation(AnimationSet):
                 animation.next = self.getAnimation("stand%s_%d"%(direction,player))
                 self.addAnimation("run%s_%d"%(direction,player),animation)
                 i0 += count
-                j0 += i0 / right
+                j0 += int(i0 / right)
                 i0 %= right
         
             count = 15
@@ -192,7 +192,7 @@ class EngineerAnimation(AnimationSet):
             animation.next = self.getAnimation("standsw_%d"%(player))
             self.addAnimation("stool_%d"%(player),animation)
             i0 += count
-            j0 += i0 / right
+            j0 += int(i0 / right)
             i0 %= right
             
             count = 15
@@ -202,7 +202,7 @@ class EngineerAnimation(AnimationSet):
             animation.next = self.getAnimation("standsw_%d"%(player))
             self.addAnimation("read_%d"%(player),animation)
             i0 += count
-            j0 += i0 / right
+            j0 += int(i0 / right)
             i0 %= right
 
             count = 6
@@ -213,7 +213,7 @@ class EngineerAnimation(AnimationSet):
                 animation.next = self.getAnimation("stand%s_%d"%(direction,player))
                 self.addAnimation("crawl%s_%d"%(direction,player),animation)
                 i0 += count
-                j0 += i0 / right
+                j0 += int(i0 / right)
                 i0 %= right
         
             count = 15
@@ -222,7 +222,7 @@ class EngineerAnimation(AnimationSet):
             animation.loop = False
             self.addAnimation("die1_%d"%(player),animation)
             i0 += count
-            j0 += i0 / right
+            j0 += int(i0 / right)
             i0 %= right
             
             count = 15
@@ -231,7 +231,7 @@ class EngineerAnimation(AnimationSet):
             animation.loop = False
             self.addAnimation("die2_%d"%(player),animation)
             i0 += count
-            j0 += i0 / right
+            j0 += int(i0 / right)
             i0 %= right
 
             count = 6
@@ -242,7 +242,7 @@ class EngineerAnimation(AnimationSet):
                 animation.next = self.getAnimation("stand%s_%d"%(direction,player))
                 self.addAnimation("search%s_%d"%(direction,player),animation)
                 i0 += count
-                j0 += i0 / right
+                j0 += int(i0 / right)
                 i0 %= right
 
             count = 2
@@ -252,7 +252,7 @@ class EngineerAnimation(AnimationSet):
                 animation.loop = False
                 self.addAnimation("getdown%s_%d"%(direction,player),animation)
                 i0 += count
-                j0 += i0 / right
+                j0 += int(i0 / right)
                 i0 %= right
 
             count = 2
@@ -263,7 +263,7 @@ class EngineerAnimation(AnimationSet):
                 animation.next = self.getAnimation("stand%s_%d"%(direction,player))
                 self.addAnimation("getup%s_%d"%(direction,player),animation)
                 i0 += count
-                j0 += i0 / right
+                j0 += int(i0 / right)
                 i0 %= right
 
             count = 9
@@ -272,7 +272,7 @@ class EngineerAnimation(AnimationSet):
             animation.loop = False
             self.addAnimation("cheer_%d"%(player),animation)
             i0 += count
-            j0 += i0 / right
+            j0 += int(i0 / right)
             i0 %= right
 
             y += playeroffset

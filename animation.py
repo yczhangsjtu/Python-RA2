@@ -1,4 +1,5 @@
 import pygame
+import traceback
 
 from imagesprite import ImageSprite
 from consts import *
@@ -34,8 +35,12 @@ class Animation(pygame.sprite.GroupSingle):
     def addBrokenSpriteSheet(self,image,x,y,i0,j0,width,height,left,right,count,offsetx,offsety):
         i,j = i0,j0
         for k in range(count):
-            subimage = image.subsurface(x+i*width,y+j*height,width,height)
-            self.addImageSprite(subimage,offsetx,offsety)
+            try:
+                subimage = image.subsurface(x+i*width,y+j*height,width,height)
+                self.addImageSprite(subimage,offsetx,offsety)
+            except:
+                print(traceback.format_exc())
+                print(x,y,width,height,i,j)
             i += 1
             if i >= right:
                 i = left

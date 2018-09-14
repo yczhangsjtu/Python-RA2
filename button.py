@@ -1,6 +1,5 @@
 import pygame
 
-from sets import Set
 from data import images
 from imagesprite import ImageSprite
 from spritecontainer import ExtendSprite
@@ -191,7 +190,7 @@ class TabButton(Button):
     def onMouseMove(self,x,y):
         pass
 
-class ButtonSet(Set):
+class ButtonSet(set):
     def __init__(self):
         super(ButtonSet,self).__init__()
         self.visible = False
