@@ -20,8 +20,9 @@ class Game():
     self.players = []
 
   def initNewGame(self, playerData):
-    self.unitSet = TreeContainer(
-        10, 10, self.map.groundwidth-20, self.map.groundheight-20)
+    self.unitSet = TreeContainer(10, 10,
+                                 self.map.groundwidth-20,
+                                 self.map.groundheight-20)
     self.running = False
     self.players = [Player(i) for i in range(2)]
     for player in self.players:

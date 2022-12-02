@@ -27,15 +27,6 @@ class Infantry(MobileUnit):
 
   def drawBloodBar(self, screen):
     self.drawMobBloodBar(screen, 8, 12, 40)
-    # if self.HP >= self.fullHP/2:
-    #     ngrid = self.HP * 8 / self.fullHP
-    #     screen.blit(infantryHealthBlood.subsurface(0,0,ngrid*3+1,5),(self.x-12,self.y-40))
-    # elif self.HP >= self.fullHP/4:
-    #     ngrid = self.HP * 8 / self.fullHP
-    #     screen.blit(infantryHurtBlood.subsurface(0,0,ngrid*3+1,5),(self.x-12,self.y-40))
-    # else:
-    #     ngrid = self.HP * 8 / self.fullHP
-    #     screen.blit(infantryDangerBlood.subsurface(0,0,ngrid*3+1,5),(self.x-12,self.y-40))
 
 
 class Adog(Infantry):

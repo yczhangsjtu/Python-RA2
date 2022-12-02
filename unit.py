@@ -27,10 +27,8 @@ class Unit(object):
     self.player = player
     self.animationset = animationset
     self.name = ""
-    if animation is None:
-      self.animation = "%s_%d" % (animationset.originalAnimation, player)
-    else:
-      self.animation = "%s_%d" % (animation, player)
+    self.animation = f"%s_{player}" % (animationset.originalAnimation
+                                       if animation is None else animation)
     self.index = 0
     self.target = None
     self.rect = pygame.Rect(0, 0, 1, 1)
