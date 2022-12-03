@@ -9,6 +9,7 @@ from imagesprite import ImageSprite
 from spritecontainer import SpriteContainer
 from animation import SimpleAnimation
 from map import getGridPos, addPos, getAbsPos
+from building import Gweap, Gpile
 from consts import *
 
 
@@ -612,7 +613,7 @@ class GameController(BattleFieldController):
           for unit in self.selected:
             if unit.get_rect().contains(pygame.Rect(x, y, 1, 1)):
               nounit = False
-              unit.onDoubleClick()
+              self.onDoubleClickUnit(unit)
               break
           self.selected = set()
           if nounit:
@@ -622,6 +623,13 @@ class GameController(BattleFieldController):
                 break
       self.mousedrag = False
       self.mousedown = False
+
+  def onDoubleClickUnit(self, unit):
+    unit.onDoubleClick()
+    if isinstance(unit, Gweap):
+      self.player.mainGweap = unit
+    elif isinstance(unit, Gpile):
+      self.player.mainGpile = unit
 
 
 class MapEditor(BattleFieldController):
