@@ -247,7 +247,7 @@ def save(input, output, palatte):
         file.write(struct.pack(f"{3 * BYTE}B", *[color for colors in defaultPalatte for color in colors]))
 
 def main():
-    input = load("input.bmp", "palatte.bmp", [0])
+    input = load("input.bmp", "palatte.bmp")
     save(input, "output.bmp", "palatte.bmp")
 
 if __name__ == "__main__":
