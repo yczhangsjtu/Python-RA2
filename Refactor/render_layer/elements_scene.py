@@ -26,4 +26,3 @@ class ElementsScene:
             side_height = (total_height - self.height) // 2
             pygame.draw.rect(screen, (0, 0, 0), (0, 0, total_width, side_height))
             pygame.draw.rect(screen, (0, 0, 0), (0, total_height - side_height, total_width, side_height))
-
