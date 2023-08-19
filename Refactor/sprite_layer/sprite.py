@@ -112,3 +112,32 @@ class Sprite:
 	
 	def get_area(self):
 		return self.sprite_data.get_area(self.state_name, self.frame_index)
+	
+	def get_frame_count(self):
+		return self.get_state_frame_count(self.state_name)
+	
+	def get_state_names(self):
+		return self.sprite_data.states.keys()
+	
+	def get_state_frame_count(self, state_name):
+		return len(self.sprite_data.states[state_name])
+	
+	def set_state(self, state_name):
+		assert state_name in self.get_state_names(), f"State name {state_name} not found"
+		self.state_name = state_name
+	
+	def set_frame(self, frame_index):
+		assert frame_index < self.get_frame_count(), f"Frame index {frame_index} out of bounds"
+		self.frame_index = frame_index
+	
+	def get_frame_index(self):
+		return self.frame_index
+	
+	def get_state_name(self):
+		return self.state_name
+	
+	def next_frame(self):
+		self.set_frame((self.get_frame_index() + 1) % self.get_frame_count())
+	
+	def prev_frame(self):
+		self.set_frame((self.get_frame_index() - 1) % self.get_frame_count())
