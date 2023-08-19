@@ -1,17 +1,19 @@
 import pygame
 
 class Game:
-    def __init__(self, width, height):
+    def __init__(self, width, height, frame_rate):
         self.width = width
         self.height = height
         self.screen = pygame.display.set_mode((width, height))
         self.systems = []
+        self.frame_rate = frame_rate
 
     def run(self):
         while True:
             self.handle_events()
             self.update()
             self.draw()
+            pygame.time.wait(int(1000 / self.frame_rate))
 
     def handle_events(self):
         for event in pygame.event.get():
