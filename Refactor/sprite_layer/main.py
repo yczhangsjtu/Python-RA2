@@ -9,6 +9,7 @@ def main():
     screen = pygame.display.set_mode((800, 600))
     sprite = Sprite(SpriteData("Refactor/data/aircmd.json"))
     sprite.set_pos(0, 0)
+    sprite.set_state("red_create")
 
     while True:
         for event in pygame.event.get():
