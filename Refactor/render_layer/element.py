@@ -42,5 +42,7 @@ class Element:
     def bottom_y(self):
         return self.position[1] + self.height
 
-    def draw(self, screen):
-        screen.blit(self.sprite_sheet, self.position, self.area)
+    def draw(self, screen, offset):
+        screen.blit(self.sprite_sheet,
+                    (self.position[0]+offset[0], self.position[1]+offset[1]),
+                    self.area)

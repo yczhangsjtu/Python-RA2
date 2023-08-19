@@ -10,11 +10,13 @@ class ElementsScene:
         screen.fill((255, 255, 255))
         total_width = screen.get_width()
         total_height = screen.get_height()
+        offset_x = max((total_width - self.width) // 2, 0)
+        offset_y = max((total_height - self.height) // 2, 0)
 
         for element in self.elements:
             if element.right_x < 0 or element.left_x >= self.width or element.bottom_y < 0 or element.top_y >= self.height:
                 continue
-            element.draw(screen)
+            element.draw(screen, (offset_x, offset_y))
 
         # Cover the parts that are outside of the scene
         if total_width > self.width:

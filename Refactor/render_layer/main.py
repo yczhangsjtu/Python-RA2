@@ -7,12 +7,12 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode((800, 600))
     scene = ElementsScene(600, 400, [
-        Element((0, 0), "img/Building/aircmd.png", (282, 0, 282, 243)),
-        Element((100, 0), "img/Building/aircmd.png", (282, 0, 282, 243)),
-        Element((200, 100), "img/Building/aircmd.png", (282, 0, 282, 243)),
-        Element((200, 200), "img/Building/aircmd.png", (282, 0, 282, 243)),
-        Element((300, 200), "img/Building/aircmd.png", (282, 0, 282, 243)),
-        Element((400, 300), "img/Building/aircmd.png", (282, 0, 282, 243)),
+        Element((0, 0), "Refactor/render_layer/img/Building/aircmd.png", (0, 0, 282, 243)),
+        Element((100, 0), "Refactor/render_layer/img/Building/aircmd.png", (282, 0, 282, 243)),
+        Element((200, 100), "Refactor/render_layer/img/Building/aircmd.png", (282, 0, 282, 243)),
+        Element((200, 200), "Refactor/render_layer/img/Building/aircmd.png", (282, 0, 282, 243)),
+        Element((300, 200), "Refactor/render_layer/img/Building/aircmd.png", (282, 0, 282, 243)),
+        Element((400, 300), "Refactor/render_layer/img/Building/aircmd.png", (282, 0, 282, 243)),
     ])
 
     while True:
