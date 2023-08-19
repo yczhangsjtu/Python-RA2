@@ -3,6 +3,12 @@ from Refactor.render_layer.element import Element
 
 
 class SpriteData:
+	"""
+	Class that represents sprite data.
+	Sprite data consists of the resources that are common in all the sprites
+	of the same type, including the image resources, the states and the frames
+	of each state.
+	"""
 	def __init__(self, data_path):
 		"""
 		:param data_path: Path to the JSON file with sprite data
@@ -65,6 +71,11 @@ class SpriteData:
 
 
 class Sprite:
+	"""
+	Class that represents a sprite. A sprite is a piece of sprite data with a particular
+	state and frame specified.
+	"""
+	
 	def __init__(self, sprite_data, pos=None):
 		"""
 		:param sprite_data: SpriteData instance
