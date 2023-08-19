@@ -7,6 +7,9 @@ class Game:
         self.screen = pygame.display.set_mode((width, height))
         self.systems = []
         self.frame_rate = frame_rate
+    
+    def add_system(self, system):
+        self.systems.append(system)
 
     def run(self):
         while True:
