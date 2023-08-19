@@ -141,3 +141,10 @@ class Sprite:
 	
 	def prev_frame(self):
 		self.set_frame((self.get_frame_index() - 1) % self.get_frame_count())
+	
+	def get_progress(self):
+		return self.get_frame_index() / self.get_frame_count()
+	
+	def set_progress(self, progress):
+		assert 0 <= progress <= 1, f"Progress {progress} out of bounds"
+		self.set_frame(min(int(progress * self.get_frame_count()), self.get_frame_count()-1))
