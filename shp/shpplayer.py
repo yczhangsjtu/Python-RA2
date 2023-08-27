@@ -2,7 +2,7 @@ import shp
 import pygame
 import os
 
-data = shp.load("Refactor/render_layer/img/shp/small/cow.shp",
+data = shp.load("Refactor/render_layer/img/shp/small/engineer.shp",
                 "Refactor/render_layer/img/pal/red.pal")
 w, h = data[0].w, data[0].h
 n = len(data)
