@@ -64,8 +64,8 @@ class ImageHeader:
 # } ImageData;
 
 class ImageData:
-    def __init__(self):
-        self.header = ImageHeader()
+    def __init__(self, header):
+        self.header = header
         self.data = None
 
 # typedef struct Image{
@@ -321,7 +321,6 @@ defaultPalatte = [
 def load(input, palatte):
 # 	Image *output = NULL;
 # 	LONGINT i = 1, imageSize = 0, d, s, k, j, x, y, w, h;
-    output = None
     i = 1
     imageSize = 0
     d = 0
@@ -335,7 +334,6 @@ def load(input, palatte):
 # 	FILE *file = NULL;
     file = None
 # 	FileHeader fileHeader;
-    fileHeader = FileHeader()
 # 	ImageHeader *pImageHeader = NULL;
     pImageHeader = None
 # 	ImageData *imageDatas = NULL;
@@ -357,27 +355,126 @@ def load(input, palatte):
 # 	fread(&fileHeader, sizeof(fileHeader), 1, file);
         check, width, height, num = struct.unpack("<2H2H", file.read(struct.calcsize("<2H2H")))
     
-    fileHeader = FileHeader(check, width, height, num)
+        fileHeader = FileHeader(check, width, height, num)
 
-# 	if(!(fileHeader.width && fileHeader.height))
-# 		perror("Zero size.\n");
-    if fileHeader.width == 0 or fileHeader.height == 0:
-        raise Exception("Zero size.")
-	
-# 	if(!fileHeader.num)
-# 		perror("Zero number of images.\n");
-    if fileHeader.num == 0:
-        raise Exception("Zero number of images.")
-	
-# 	if(fileHeader.check)
-# 		perror("Check nonzero.\n");
-    if fileHeader.check != 0:
-        raise Exception("Check nonzero. This is not a valid file.")
-	
-	
-		
+    # 	if(!(fileHeader.width && fileHeader.height))
+    # 		perror("Zero size.\n");
+        if fileHeader.width == 0 or fileHeader.height == 0:
+            raise Exception("Zero size.")
+        
+    # 	if(!fileHeader.num)
+    # 		perror("Zero number of images.\n");
+        if fileHeader.num == 0:
+            raise Exception("Zero number of images.")
+        
+    # 	if(fileHeader.check)
+    # 		perror("Check nonzero.\n");
+        if fileHeader.check != 0:
+            raise Exception("Check nonzero. This is not a valid file.")
 
-		
+    # 	imageDatas = (ImageData*)malloc(fileHeader.num * sizeof(ImageData));
+    # 	for(i = 0; i < fileHeader.num; i++)
+    # 		fread(&imageDatas[i].header, sizeof(ImageHeader), 1, file);
+        imageDatas = [ImageData(ImageHeader(*struct.unpack("<4H8B2I", file.read(struct.calcsize("<4H8B2I"))))) for _ in range(fileHeader.num)]
+
+    # 	*n = fileHeader.num;
+    # 	output = (Image*)malloc((*n) * sizeof(Image));
+        output = [Image() for _ in range(fileHeader.num)]
+
+    # 	for(i = 0; i < *n; i++)
+    # 	{
+        for i in range(fileHeader.num):
+    # 		output[i].w = fileHeader.width;
+    # 		output[i].h = fileHeader.height;
+    # 		pImageHeader = &imageDatas[i].header;
+            output[i].w = fileHeader.width
+            output[i].h = fileHeader.height
+            imageDatas[i].data = bytearray(output[i].w * output[i].h)
+    # 		if(pImageHeader->compression == 1)
+    # 			imageSize = pImageHeader->w * pImageHeader->h;
+            if imageDatas[i].header.compression == 1:
+                imageSize = imageDatas[i].header.w * imageDatas[i].header.h
+    # 		else
+    # 		{
+    # 			if(i == *n - 1)
+    # 			{
+    # 				fseek(file,0L,SEEK_END);
+    # 				imageSize = ftell(file) - pImageHeader->offset;
+    # 			}
+            else:
+                if i == fileHeader.num - 1:
+                    file.seek(0, 2)
+                    imageSize = file.tell() - imageDatas[i].header.offset
+    # 			else
+    # 			{
+                else:
+    # 				imageSize = imageDatas[i+1].header.offset - pImageHeader->offset;
+                    imageSize = imageDatas[i + 1].header.offset - imageDatas[i].header.offset
+    # 				if(imageSize <= 0)
+    # 				{
+    # 					fseek(file,0L,SEEK_END);
+    # 					imageSize = ftell(file) - pImageHeader->offset;
+    # 					*n = i+1;
+    # 				}
+                    if imageSize <= 0:
+                        file.seek(0, 2)
+                        imageSize = file.tell() - imageDatas[i].header.offset
+    # 			}
+    # 		}
+
+
+    # 		fseek(file,pImageHeader->offset,SEEK_SET);
+    # 		allocImageData(&imageDatas[i]);
+    # 		imageData = (BYTE*)malloc(imageSize * sizeof(BYTE));
+    # 		fread(imageData,sizeof(BYTE),imageSize,file);
+            file.seek(imageDatas[i].header.offset, 0)
+            imageData = bytearray(imageSize)
+            file.readinto(imageData)
+
+    # 		if(pImageHeader->compression == 2)
+    # 			decompress2(imageDatas[i].data,imageData,pImageHeader->w,pImageHeader->h);
+    # 		if(pImageHeader->compression == 3)
+    # 			decompress3(imageDatas[i].data,imageData,pImageHeader->w,pImageHeader->h);
+    # 		else
+    # 			decompress1(imageDatas[i].data,imageData,pImageHeader->w,pImageHeader->h);
+            if imageDatas[i].header.compression == 2:
+                decompress2(imageDatas[i].data, imageData, imageDatas[i].header.w, imageDatas[i].header.h)
+            elif imageDatas[i].header.compression == 3:
+                decompress3(imageDatas[i].data, imageData, imageDatas[i].header.w, imageDatas[i].header.h)
+            else:
+                decompress1(imageDatas[i].data, imageData, imageDatas[i].header.w, imageDatas[i].header.h)
+    # 		output[i].data = (BYTE*)malloc(output[i].w * output[i].h * 4);
+            output[i].data = bytearray(output[i].w * output[i].h * 4)
+    # 		x = imageDatas[i].header.x;
+    # 		y = imageDatas[i].header.y;
+    # 		w = imageDatas[i].header.w;
+    # 		h = imageDatas[i].header.h;
+            x = imageDatas[i].header.x
+            y = imageDatas[i].header.y
+            w = imageDatas[i].header.w
+            h = imageDatas[i].header.h
+    # 		for(k = 0; k < h; k++)
+    # 		{
+    # 			for(j = 0; j < w; j++)
+    # 			{
+            for k in range(h):
+                for j in range(w):
+    # 				s = k * w + j;
+    # 				d = ((k + y) * output[i].w + x + j) * 4;
+    # 				output[i].data[d]   = defaultPalatte[imageDatas[i].data[s]][0]*4+3;
+    # 				output[i].data[d+1] = defaultPalatte[imageDatas[i].data[s]][1]*4+3;
+    # 				output[i].data[d+2] = defaultPalatte[imageDatas[i].data[s]][2]*4+3;
+    # 				if(imageDatas[i].data[s]) output[i].data[d+3] = 255;
+                    s = k * w + j
+                    d = ((k + y) * output[i].w + x + j) * 4
+                    output[i].data[d] = defaultPalatte[imageDatas[i].data[s]][0] * 4 + 3
+                    output[i].data[d + 1] = defaultPalatte[imageDatas[i].data[s]][1] * 4 + 3
+                    output[i].data[d + 2] = defaultPalatte[imageDatas[i].data[s]][2] * 4 + 3
+                    if imageDatas[i].data[s] != 0:
+                        output[i].data[d + 3] = 255
+    # 			}
+    # 		}
+    # 	}
 # 	for(i = 0; i < *n; i++)
 # 		freeImageData(&imageDatas[i]);
 # 	for(i = *n; i < *n; i++)
@@ -387,112 +484,9 @@ def load(input, palatte):
 	
 # 	return output;
 # }
-
-# 	imageDatas = (ImageData*)malloc(fileHeader.num * sizeof(ImageData));
-# 	for(i = 0; i < fileHeader.num; i++)
-# 		fread(&imageDatas[i].header, sizeof(ImageHeader), 1, file);
-    imageDatas = [ImageData() for _ in range(fileHeader.num)]
-    for i in range(fileHeader.num):
-        imageDatas[i].header = ImageHeader(*struct.unpack("<4H4B2I", file.read(struct.calcsize("<4H4B2I"))))
-
-# 	*n = fileHeader.num;
-# 	output = (Image*)malloc((*n) * sizeof(Image));
-    output = [Image() for _ in range(fileHeader.num)]
-
-# 	for(i = 0; i < *n; i++)
-# 	{
-    for i in range(fileHeader.num):
-# 		output[i].w = fileHeader.width;
-# 		output[i].h = fileHeader.height;
-# 		pImageHeader = &imageDatas[i].header;
-        output[i].w = fileHeader.width
-        output[i].h = fileHeader.height
-        imageDatas[i].data = bytearray(output.w * output.h)
-# 		if(pImageHeader->compression == 1)
-# 			imageSize = pImageHeader->w * pImageHeader->h;
-        if imageDatas[i].header.compression == 1:
-            imageSize = imageDatas[i].header.w * imageDatas[i].header.h
-# 		else
-# 		{
-# 			if(i == *n - 1)
-# 			{
-# 				fseek(file,0L,SEEK_END);
-# 				imageSize = ftell(file) - pImageHeader->offset;
-# 			}
-        else:
-            if i == fileHeader.num - 1:
-                file.seek(0, 2)
-                imageSize = file.tell() - imageDatas[i].header.offset
-# 			else
-# 			{
-            else:
-# 				imageSize = imageDatas[i+1].header.offset - pImageHeader->offset;
-                imageSize = imageDatas[i + 1].header.offset - imageDatas[i].header.offset
-# 				if(imageSize <= 0)
-# 				{
-# 					fseek(file,0L,SEEK_END);
-# 					imageSize = ftell(file) - pImageHeader->offset;
-# 					*n = i+1;
-# 				}
-                if imageSize <= 0:
-                    file.seek(0, 2)
-                    imageSize = file.tell() - imageDatas[i].header.offset
-# 			}
-# 		}
-
-
-# 		fseek(file,pImageHeader->offset,SEEK_SET);
-# 		allocImageData(&imageDatas[i]);
-# 		imageData = (BYTE*)malloc(imageSize * sizeof(BYTE));
-# 		fread(imageData,sizeof(BYTE),imageSize,file);
-        file.seek(imageDatas[i].header.offset, 0)
-        imageData = bytearray(imageSize)
-        file.readinto(imageData)
-
-# 		if(pImageHeader->compression == 2)
-# 			decompress2(imageDatas[i].data,imageData,pImageHeader->w,pImageHeader->h);
-# 		if(pImageHeader->compression == 3)
-# 			decompress3(imageDatas[i].data,imageData,pImageHeader->w,pImageHeader->h);
-# 		else
-# 			decompress1(imageDatas[i].data,imageData,pImageHeader->w,pImageHeader->h);
-        if pImageHeader[i].compression == 2:
-            decompress2(imageDatas[i].data, imageData, imageDatas[i].header.w, imageDatas[i].header.h)
-        elif pImageHeader[i].compression == 3:
-            decompress3(imageDatas[i].data, imageData, imageDatas[i].header.w, imageDatas[i].header.h)
-        else:
-            decompress1(imageDatas[i].data, imageData, imageDatas[i].header.w, imageDatas[i].header.h)
-# 		output[i].data = (BYTE*)malloc(output[i].w * output[i].h * 4);
-        output[i].data = bytearray(output[i].w * output[i].h * 4)
-# 		x = imageDatas[i].header.x;
-# 		y = imageDatas[i].header.y;
-# 		w = imageDatas[i].header.w;
-# 		h = imageDatas[i].header.h;
-        x = imageDatas[i].header.x
-        y = imageDatas[i].header.y
-        w = imageDatas[i].header.w
-        h = imageDatas[i].header.h
-# 		for(k = 0; k < h; k++)
-# 		{
-# 			for(j = 0; j < w; j++)
-# 			{
-        for k in range(h):
-            for j in range(w):
-# 				s = k * w + j;
-# 				d = ((k + y) * output[i].w + x + j) * 4;
-# 				output[i].data[d]   = defaultPalatte[imageDatas[i].data[s]][0]*4+3;
-# 				output[i].data[d+1] = defaultPalatte[imageDatas[i].data[s]][1]*4+3;
-# 				output[i].data[d+2] = defaultPalatte[imageDatas[i].data[s]][2]*4+3;
-# 				if(imageDatas[i].data[s]) output[i].data[d+3] = 255;
-                s = k * w + j
-                d = ((k + y) * output.w + x + j) * 4
-                output.data[d] = defaultPalatte[imageDatas[i].data[s]][0] * 4 + 3
-                output.data[d + 1] = defaultPalatte[imageDatas[i].data[s]][1] * 4 + 3
-                output.data[d + 2] = defaultPalatte[imageDatas[i].data[s]][2] * 4 + 3
-                if imageDatas[i].data[s]:
-                    output.data[d + 3] = 255
-# 			}
-# 		}
-
     return output
-# 		free(imageData);
-# 	}
+
+if __name__ == "__main__":
+    print("This is a module, not a script.")
+    print("Use 'import shp' to use it.")
+    exit(1)

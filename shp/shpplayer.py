@@ -1,14 +1,11 @@
-import shpfile
+import shp
 import pygame
-import sys
 import os
 
-data = shpfile.load(os.path.join(os.path.dirname(__file__),
-                                 "../img/shp/small/cow.shp"),
-                    os.path.join(os.path.dirname(__file__),
-                                 "../img/pal/red.pal"))
-w, h = data[0]
-n = len(data)-1
+data = shp.load("Refactor/render_layer/img/shp/small/cow.shp",
+                "Refactor/render_layer/img/pal/red.pal")
+w, h = data[0].w, data[0].h
+n = len(data)
 
 print("%d, %dx%d" % (n, w, h))
 
@@ -30,7 +27,7 @@ def drawOnPixelArray(array, d, w, h):
 frames = [None]*n
 for i in range(n):
     frames[i] = pygame.Surface([w, h]).convert_alpha()
-    drawOnPixelArray(pygame.PixelArray(frames[i]), data[i+1], w, h)
+    drawOnPixelArray(pygame.PixelArray(frames[i]), data[i].data, w, h)
 
 k = 0
 clock = pygame.time.Clock()
